@@ -3,6 +3,7 @@
  *
  * Main entry point for the security scanning and false positive filtering system.
  * Target: <5% false positive rate through multi-layer validation.
+ * Target: <3 minute average scan time through parallel execution.
  */
 
 // Core types
@@ -60,6 +61,47 @@ export {
   createMockLLMClient,
   calculateAIValidationImpact,
 } from './ai-validation';
+
+// Performance tracking (for <3 minute scan time target)
+export type {
+  ScanTool,
+  ToolTiming,
+  ScanPerformanceMetrics,
+  ToolExecutionResult,
+  ParallelExecutionOptions,
+  PerformanceSummary,
+} from './performance';
+
+export {
+  MAX_SCAN_TIME_MS,
+  TARGET_SCAN_TIME_MS,
+  TOOL_TIME_LIMITS,
+  ScanPerformanceTracker,
+  createTimeout,
+  withTimeout,
+  executeToolWithTimeout,
+  executeToolsInParallel,
+  generatePerformanceSummary,
+  meetsScanTimeTarget,
+  estimateCompletionTime,
+} from './performance';
+
+// Scan executor (orchestrates complete scans)
+export type {
+  ScanTarget,
+  ToolExecutor,
+  ToolExecutorRegistry,
+  ScanExecutionOptions,
+  ScanProgress,
+  ScanExecutionResult,
+} from './scan-executor';
+
+export {
+  ScanExecutor,
+  createMockToolExecutors,
+  quickScan,
+  validateScanTime,
+} from './scan-executor';
 
 // Main scanning pipeline
 import type { RawFinding, TriageConfig, TriageResult, TriageStats } from './types';
