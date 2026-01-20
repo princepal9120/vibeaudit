@@ -106,7 +106,7 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
     res.status(201).json(scan);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: error.errors[0].message });
+      res.status(400).json({ error: error.issues[0].message });
       return;
     }
     next(error);
@@ -117,7 +117,7 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
 router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const scanId = req.params.id;
+    const scanId = req.params.id as string;
 
     const scan = await prisma.scan.findFirst({
       where: {
@@ -153,7 +153,7 @@ router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) =
 router.delete('/:id', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const scanId = req.params.id;
+    const scanId = req.params.id as string;
 
     // Verify ownership
     const scan = await prisma.scan.findFirst({
@@ -183,7 +183,7 @@ router.delete('/:id', async (req: AuthRequest, res: Response, next: NextFunction
 router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const scanId = req.params.id;
+    const scanId = req.params.id as string;
 
     // Get original scan
     const originalScan = await prisma.scan.findFirst({
@@ -241,7 +241,7 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
 router.get('/:id/progress', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const scanId = req.params.id;
+    const scanId = req.params.id as string;
 
     // Verify ownership
     const scan = await prisma.scan.findFirst({

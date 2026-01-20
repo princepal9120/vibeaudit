@@ -23,6 +23,10 @@ export const auth = betterAuth({
       clientId: config.githubClientId,
       clientSecret: config.githubClientSecret,
     },
+    google: {
+      clientId: config.googleClientId,
+      clientSecret: config.googleClientSecret,
+    },
   },
 
   session: {
@@ -43,14 +47,7 @@ export const auth = betterAuth({
   account: {
     accountLinking: {
       enabled: true,
-      trustedProviders: ['github'],
-    },
-  },
-
-  advanced: {
-    generateId: () => {
-      // Use cuid for IDs (matches Prisma schema)
-      return crypto.randomUUID();
+      trustedProviders: ['github', 'google'],
     },
   },
 });

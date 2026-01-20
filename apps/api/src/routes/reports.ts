@@ -2,6 +2,7 @@ import { Router, type Request, type Response, type NextFunction } from 'express'
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../db.js';
 import { authenticateToken, optionalAuth, getUserId, type AuthRequest } from '../middleware/auth.js';
+import { generatePdf } from '../services/pdf-generator.js';
 
 const router = Router();
 
@@ -9,7 +10,7 @@ const router = Router();
 router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const reportId = req.params.id;
+    const reportId = req.params.id as string;
 
     const report = await prisma.report.findFirst({
       where: {
@@ -50,15 +51,16 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, ne
 router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const reportId = req.params.id;
+    const reportId = req.params.id as string;
 
+    // Verify ownership
     const report = await prisma.report.findFirst({
       where: {
         id: reportId,
         userId,
       },
       select: {
-        pdfUrl: true,
+        id: true,
       },
     });
 
@@ -67,13 +69,13 @@ router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response
       return;
     }
 
-    if (!report.pdfUrl) {
-      res.status(404).json({ error: 'PDF not yet generated' });
-      return;
-    }
+    // Generate PDF on-the-fly
+    const pdfBuffer = await generatePdf(reportId);
 
-    // Redirect to S3 URL or serve from local storage
-    res.redirect(report.pdfUrl);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="vibeaudit-report-${reportId}.pdf"`);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    res.send(pdfBuffer);
   } catch (error) {
     next(error);
   }
@@ -83,7 +85,7 @@ router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response
 router.post('/:id/share', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const reportId = req.params.id;
+    const reportId = req.params.id as string;
     const expiresInDays = parseInt(req.body.expiresInDays) || 30;
 
     // Verify ownership
@@ -117,6 +119,7 @@ router.post('/:id/share', authenticateToken, async (req: AuthRequest, res: Respo
     });
 
     res.json({
+      shareToken: updatedReport.shareToken,
       shareUrl: `/reports/shared/${updatedReport.shareToken}`,
       expiresAt: updatedReport.shareExpiresAt,
     });
@@ -129,7 +132,7 @@ router.post('/:id/share', authenticateToken, async (req: AuthRequest, res: Respo
 router.delete('/:id/share', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
-    const reportId = req.params.id;
+    const reportId = req.params.id as string;
 
     // Verify ownership
     const report = await prisma.report.findFirst({
@@ -161,7 +164,7 @@ router.delete('/:id/share', authenticateToken, async (req: AuthRequest, res: Res
 // GET /api/reports/shared/:token - View shared report (no auth required)
 router.get('/shared/:token', optionalAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { token } = req.params;
+    const token = req.params.token as string;
 
     const report = await prisma.report.findFirst({
       where: {
@@ -210,12 +213,12 @@ router.get('/shared/:token', optionalAuth, async (req: Request, res: Response, n
       return;
     }
 
-    // Remove sensitive user info
-    const { user, ...reportData } = report;
+    // Extract user and rest of report data
+    const { user, ...reportData } = report as typeof report & { user: { name: string | null } };
 
     res.json({
       ...reportData,
-      authorName: user.name || 'Anonymous',
+      authorName: user?.name || 'Anonymous',
       isSharedView: true,
     });
   } catch (error) {
