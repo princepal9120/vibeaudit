@@ -1,55 +1,62 @@
 import { type Request, type Response, type NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { config } from '../config.js';
+import { auth, type Session, type User } from '../lib/auth.js';
+import { fromNodeHeaders } from 'better-auth/node';
 
 export interface AuthRequest extends Request {
-  userId?: number;
+  user?: User;
+  session?: Session;
 }
 
-interface JWTPayload {
-  userId: number;
-}
-
-export function authenticateToken(
+export async function authenticateToken(
   req: AuthRequest,
   res: Response,
   next: NextFunction
-): void {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1]; // Bearer TOKEN
-
-  if (!token) {
-    res.status(401).json({ error: 'Authentication required' });
-    return;
-  }
-
+): Promise<void> {
   try {
-    const payload = jwt.verify(token, config.jwtSecret) as JWTPayload;
-    req.userId = payload.userId;
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
+
+    if (!session) {
+      res.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+
+    req.user = session.user;
+    req.session = session;
     next();
   } catch (error) {
-    res.status(403).json({ error: 'Invalid or expired token' });
+    res.status(401).json({ error: 'Invalid session' });
     return;
   }
 }
 
-// Optional authentication - allows unauthenticated requests but adds userId if token present
-export function optionalAuth(
+// Optional authentication - allows unauthenticated requests but adds user if session present
+export async function optionalAuth(
   req: AuthRequest,
   res: Response,
   next: NextFunction
-): void {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1];
+): Promise<void> {
+  try {
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
 
-  if (token) {
-    try {
-      const payload = jwt.verify(token, config.jwtSecret) as JWTPayload;
-      req.userId = payload.userId;
-    } catch {
-      // Token invalid, but that's okay for optional auth
+    if (session) {
+      req.user = session.user;
+      req.session = session;
     }
+  } catch {
+    // Session invalid, but that's okay for optional auth
   }
 
   next();
+}
+
+// Helper to get user ID from request
+export function getUserId(req: AuthRequest): string {
+  if (!req.user?.id) {
+    throw new Error('User not authenticated');
+  }
+  return req.user.id;
 }

@@ -4,8 +4,8 @@ import { config } from '../config.js';
 import { processScanJob } from './scan-worker.js';
 
 export interface ScanJobData {
-  scanId: number;
-  userId: number;
+  scanId: string;
+  userId: string;
   githubRepoUrl?: string;
   liveUrl?: string;
   branch: string;

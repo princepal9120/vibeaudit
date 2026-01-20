@@ -1,6 +1,5 @@
 import { type Job } from 'bullmq';
 import { prisma } from '../db.js';
-import { config } from '../config.js';
 import type { ScanJobData } from './queue.js';
 import { runSemgrep } from '../services/scanners/semgrep.js';
 import { runNpmAudit } from '../services/scanners/npm-audit.js';
@@ -165,7 +164,7 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
 }
 
 async function updateScanStatus(
-  scanId: number,
+  scanId: string,
   status: 'QUEUED' | 'CLONING' | 'SCANNING' | 'ANALYZING' | 'GENERATING_REPORT' | 'COMPLETED' | 'FAILED',
   progress: string,
   progressPercent: number

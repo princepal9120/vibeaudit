@@ -1,7 +1,7 @@
 import { Router, type Response, type NextFunction } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db.js';
-import { authenticateToken, type AuthRequest } from '../middleware/auth.js';
+import { authenticateToken, getUserId, type AuthRequest } from '../middleware/auth.js';
 import { addScanJob } from '../workers/queue.js';
 
 const router = Router();
@@ -22,13 +22,14 @@ const createScanSchema = z.object({
 // GET /api/scans - List user's scans
 router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    const userId = getUserId(req);
     const page = parseInt(req.query.page as string) || 1;
     const limit = Math.min(parseInt(req.query.limit as string) || 10, 50);
     const offset = (page - 1) * limit;
 
     const [scans, total] = await Promise.all([
       prisma.scan.findMany({
-        where: { userId: req.userId },
+        where: { userId },
         orderBy: { createdAt: 'desc' },
         skip: offset,
         take: limit,
@@ -44,7 +45,7 @@ router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
           },
         },
       }),
-      prisma.scan.count({ where: { userId: req.userId } }),
+      prisma.scan.count({ where: { userId } }),
     ]);
 
     res.json({
@@ -64,12 +65,13 @@ router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
 // POST /api/scans - Create new scan
 router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    const userId = getUserId(req);
     const body = createScanSchema.parse(req.body);
 
     // Create scan record
     const scan = await prisma.scan.create({
       data: {
-        userId: req.userId!,
+        userId,
         githubRepoUrl: body.githubRepoUrl,
         liveUrl: body.liveUrl,
         branch: body.branch || 'main',
@@ -83,7 +85,7 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
     try {
       await addScanJob({
         scanId: scan.id,
-        userId: req.userId!,
+        userId,
         githubRepoUrl: body.githubRepoUrl,
         liveUrl: body.liveUrl,
         branch: body.branch || 'main',
@@ -114,17 +116,13 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
 // GET /api/scans/:id - Get single scan
 router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const scanId = parseInt(req.params.id);
-
-    if (isNaN(scanId)) {
-      res.status(400).json({ error: 'Invalid scan ID' });
-      return;
-    }
+    const userId = getUserId(req);
+    const scanId = req.params.id;
 
     const scan = await prisma.scan.findFirst({
       where: {
         id: scanId,
-        userId: req.userId,
+        userId,
       },
       include: {
         report: {
@@ -154,18 +152,14 @@ router.get('/:id', async (req: AuthRequest, res: Response, next: NextFunction) =
 // DELETE /api/scans/:id - Delete scan
 router.delete('/:id', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const scanId = parseInt(req.params.id);
-
-    if (isNaN(scanId)) {
-      res.status(400).json({ error: 'Invalid scan ID' });
-      return;
-    }
+    const userId = getUserId(req);
+    const scanId = req.params.id;
 
     // Verify ownership
     const scan = await prisma.scan.findFirst({
       where: {
         id: scanId,
-        userId: req.userId,
+        userId,
       },
     });
 
@@ -188,18 +182,14 @@ router.delete('/:id', async (req: AuthRequest, res: Response, next: NextFunction
 // POST /api/scans/:id/rescan - Re-run existing scan
 router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const scanId = parseInt(req.params.id);
-
-    if (isNaN(scanId)) {
-      res.status(400).json({ error: 'Invalid scan ID' });
-      return;
-    }
+    const userId = getUserId(req);
+    const scanId = req.params.id;
 
     // Get original scan
     const originalScan = await prisma.scan.findFirst({
       where: {
         id: scanId,
-        userId: req.userId,
+        userId,
       },
     });
 
@@ -211,7 +201,7 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
     // Create new scan with same parameters
     const newScan = await prisma.scan.create({
       data: {
-        userId: req.userId!,
+        userId,
         githubRepoUrl: originalScan.githubRepoUrl,
         liveUrl: originalScan.liveUrl,
         branch: originalScan.branch,
@@ -225,7 +215,7 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
     try {
       await addScanJob({
         scanId: newScan.id,
-        userId: req.userId!,
+        userId,
         githubRepoUrl: originalScan.githubRepoUrl || undefined,
         liveUrl: originalScan.liveUrl || undefined,
         branch: originalScan.branch || 'main',
@@ -250,18 +240,14 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
 // GET /api/scans/:id/progress - Get scan progress (SSE)
 router.get('/:id/progress', async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const scanId = parseInt(req.params.id);
-
-    if (isNaN(scanId)) {
-      res.status(400).json({ error: 'Invalid scan ID' });
-      return;
-    }
+    const userId = getUserId(req);
+    const scanId = req.params.id;
 
     // Verify ownership
     const scan = await prisma.scan.findFirst({
       where: {
         id: scanId,
-        userId: req.userId,
+        userId,
       },
     });
 

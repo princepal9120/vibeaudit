@@ -1,24 +1,20 @@
 import { Router, type Request, type Response, type NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../db.js';
-import { authenticateToken, optionalAuth, type AuthRequest } from '../middleware/auth.js';
+import { authenticateToken, optionalAuth, getUserId, type AuthRequest } from '../middleware/auth.js';
 
 const router = Router();
 
 // GET /api/reports/:id - Get report (requires auth)
 router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const reportId = parseInt(req.params.id);
-
-    if (isNaN(reportId)) {
-      res.status(400).json({ error: 'Invalid report ID' });
-      return;
-    }
+    const userId = getUserId(req);
+    const reportId = req.params.id;
 
     const report = await prisma.report.findFirst({
       where: {
         id: reportId,
-        userId: req.userId,
+        userId,
       },
       include: {
         scan: {
@@ -53,17 +49,13 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, ne
 // GET /api/reports/:id/pdf - Download PDF report
 router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const reportId = parseInt(req.params.id);
-
-    if (isNaN(reportId)) {
-      res.status(400).json({ error: 'Invalid report ID' });
-      return;
-    }
+    const userId = getUserId(req);
+    const reportId = req.params.id;
 
     const report = await prisma.report.findFirst({
       where: {
         id: reportId,
-        userId: req.userId,
+        userId,
       },
       select: {
         pdfUrl: true,
@@ -90,19 +82,15 @@ router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response
 // POST /api/reports/:id/share - Generate share link
 router.post('/:id/share', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const reportId = parseInt(req.params.id);
+    const userId = getUserId(req);
+    const reportId = req.params.id;
     const expiresInDays = parseInt(req.body.expiresInDays) || 30;
-
-    if (isNaN(reportId)) {
-      res.status(400).json({ error: 'Invalid report ID' });
-      return;
-    }
 
     // Verify ownership
     const report = await prisma.report.findFirst({
       where: {
         id: reportId,
-        userId: req.userId,
+        userId,
       },
     });
 
@@ -140,18 +128,14 @@ router.post('/:id/share', authenticateToken, async (req: AuthRequest, res: Respo
 // DELETE /api/reports/:id/share - Revoke share link
 router.delete('/:id/share', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const reportId = parseInt(req.params.id);
-
-    if (isNaN(reportId)) {
-      res.status(400).json({ error: 'Invalid report ID' });
-      return;
-    }
+    const userId = getUserId(req);
+    const reportId = req.params.id;
 
     // Verify ownership
     const report = await prisma.report.findFirst({
       where: {
         id: reportId,
-        userId: req.userId,
+        userId,
       },
     });
 

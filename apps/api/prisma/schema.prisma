@@ -1,5 +1,5 @@
 // Prisma schema for VibeAudit
-// Based on PRD Section 7
+// Uses better-auth for authentication
 
 generator client {
   provider = "prisma-client-js"
@@ -10,27 +10,85 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  password  String?   // null if OAuth
-  name      String?
-  avatar    String?   // GitHub avatar URL
-  githubId  String?   @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+// ==========================================
+// better-auth models (required field names)
+// ==========================================
 
-  scans     Scan[]
-  reports   Report[]
+model user {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  name          String?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions      session[]
+  accounts      account[]
+
+  // VibeAudit relations
+  scans         Scan[]
+  reports       Report[]
 
   @@index([email])
-  @@index([githubId])
 }
 
+model session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user                  user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([providerId, accountId])
+}
+
+model verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ==========================================
+// VibeAudit models
+// ==========================================
+
 model Scan {
-  id              Int       @id @default(autoincrement())
-  userId          Int
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String    @id @default(cuid())
+  userId          String
+  user            user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   githubRepoUrl   String?
   liveUrl         String?
@@ -71,11 +129,11 @@ enum ScanStatus {
 }
 
 model Report {
-  id              Int       @id @default(autoincrement())
-  scanId          Int       @unique
+  id              String    @id @default(cuid())
+  scanId          String    @unique
   scan            Scan      @relation(fields: [scanId], references: [id], onDelete: Cascade)
-  userId          Int
-  user            User      @relation(fields: [userId], references: [id])
+  userId          String
+  user            user      @relation(fields: [userId], references: [id])
 
   securityScore   Int       // 0-100
 
@@ -104,8 +162,8 @@ model Report {
 }
 
 model Finding {
-  id              Int       @id @default(autoincrement())
-  reportId        Int
+  id              String    @id @default(cuid())
+  reportId        String
   report          Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
 
   // Core finding data
@@ -171,9 +229,9 @@ enum ScanSource {
 
 // Payment tracking (for pay-per-scan model)
 model Payment {
-  id              Int       @id @default(autoincrement())
-  userId          Int
-  scanId          Int?
+  id              String    @id @default(cuid())
+  userId          String
+  scanId          String?
 
   amount          Int       // Amount in cents
   currency        String    @default("usd")
