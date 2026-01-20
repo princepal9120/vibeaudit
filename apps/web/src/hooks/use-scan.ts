@@ -19,7 +19,7 @@ interface UseScanResult {
   scan: Scan | null;
   loading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
+  refetch: () => Promise<Scan | null>;
   isPolling: boolean;
 }
 
