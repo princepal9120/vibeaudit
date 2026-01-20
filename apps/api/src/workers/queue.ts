@@ -1,5 +1,4 @@
 import { Queue, Worker, type Job } from 'bullmq';
-import Redis from 'ioredis';
 import { config } from '../config.js';
 import { processScanJob } from './scan-worker.js';
 
@@ -11,23 +10,20 @@ export interface ScanJobData {
   branch: string;
 }
 
+// BullMQ connection options using URL
+const connectionOptions = {
+  url: config.redisUrl,
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
+};
+
 let scanQueue: Queue<ScanJobData> | null = null;
 let scanWorker: Worker<ScanJobData> | null = null;
-let redisConnection: Redis | null = null;
 
 export async function initializeQueue(): Promise<void> {
-  // Create Redis connection
-  redisConnection = new Redis(config.redisUrl, {
-    maxRetriesPerRequest: null,
-    enableReadyCheck: false,
-  });
-
-  // Test connection
-  await redisConnection.ping();
-
-  // Create queue
+  // Create queue with URL-based connection
   scanQueue = new Queue<ScanJobData>('scans', {
-    connection: redisConnection,
+    connection: connectionOptions,
     defaultJobOptions: {
       attempts: 3,
       backoff: {
@@ -50,7 +46,7 @@ export async function initializeQueue(): Promise<void> {
       return processScanJob(job);
     },
     {
-      connection: redisConnection,
+      connection: connectionOptions,
       concurrency: 2, // Process 2 scans at a time
       limiter: {
         max: 10,
@@ -115,8 +111,5 @@ export async function closeQueue(): Promise<void> {
   }
   if (scanQueue) {
     await scanQueue.close();
-  }
-  if (redisConnection) {
-    redisConnection.disconnect();
   }
 }
