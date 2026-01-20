@@ -142,6 +142,12 @@ export default function Home() {
   const [npsSubmitted, setNpsSubmitted] = useState(false);
   const [npsError, setNpsError] = useState("");
 
+  // Shipping intent state
+  const [shippingIntentFeedback, setShippingIntentFeedback] = useState("");
+  const [isSubmittingShippingIntent, setIsSubmittingShippingIntent] = useState(false);
+  const [shippingIntentSubmitted, setShippingIntentSubmitted] = useState(false);
+  const [shippingIntentError, setShippingIntentError] = useState("");
+
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -238,6 +244,35 @@ export default function Home() {
       setNpsError(err instanceof Error ? err.message : "Failed to submit feedback");
     } finally {
       setIsSubmittingNps(false);
+    }
+  };
+
+  const handleShippingIntent = async (wouldUse: boolean) => {
+    setShippingIntentError("");
+    setIsSubmittingShippingIntent(true);
+
+    try {
+      const res = await fetch("/api/shipping-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          wouldUseBeforeShipping: wouldUse,
+          feedback: shippingIntentFeedback,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      setShippingIntentSubmitted(true);
+      setShippingIntentFeedback("");
+    } catch (err) {
+      setShippingIntentError(err instanceof Error ? err.message : "Failed to submit");
+    } finally {
+      setIsSubmittingShippingIntent(false);
     }
   };
 
@@ -711,6 +746,85 @@ export default function Home() {
                 </CardContent>
               </Card>
             </form>
+          )}
+        </div>
+
+        {/* Shipping Intent Survey Section */}
+        <div className="mt-24" id="shipping-intent">
+          <div className="text-center mb-8">
+            <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-100">
+              Quick Question
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+              Would you use this before shipping?
+            </h2>
+            <p className="text-slate-600 max-w-xl mx-auto">
+              Imagine you&apos;re about to deploy your app. Would you run VibeAudit first?
+            </p>
+          </div>
+
+          {shippingIntentSubmitted ? (
+            <Card className="max-w-md mx-auto border-emerald-200 bg-emerald-50">
+              <CardContent className="pt-8 pb-8 text-center">
+                <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                  <CheckIcon className="h-6 w-6 text-emerald-600" />
+                </div>
+                <h3 className="font-semibold text-lg text-emerald-800 mb-2">
+                  Thanks for letting us know!
+                </h3>
+                <p className="text-emerald-700">
+                  Your feedback helps us build the right product.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card className="max-w-lg mx-auto border-slate-200">
+              <CardContent className="pt-6">
+                <div className="space-y-6">
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button
+                      type="button"
+                      onClick={() => handleShippingIntent(true)}
+                      disabled={isSubmittingShippingIntent}
+                      className="flex-1 h-14 text-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                    >
+                      {isSubmittingShippingIntent ? "Submitting..." : "Yes, I would"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => handleShippingIntent(false)}
+                      disabled={isSubmittingShippingIntent}
+                      className="flex-1 h-14 text-lg font-medium"
+                    >
+                      {isSubmittingShippingIntent ? "Submitting..." : "Probably not"}
+                    </Button>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="shippingIntentFeedback"
+                      className="block text-sm font-medium text-slate-700 mb-2"
+                    >
+                      What would make you more likely to use it? (optional)
+                    </label>
+                    <textarea
+                      id="shippingIntentFeedback"
+                      value={shippingIntentFeedback}
+                      onChange={(e) => setShippingIntentFeedback(e.target.value)}
+                      placeholder="e.g., faster scans, specific framework support, integrations..."
+                      rows={2}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                      disabled={isSubmittingShippingIntent}
+                    />
+                  </div>
+
+                  {shippingIntentError && (
+                    <p className="text-sm text-red-600 text-center">{shippingIntentError}</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
 
