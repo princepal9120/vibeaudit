@@ -1,0 +1,197 @@
+// Prisma schema for VibeAudit
+// Based on PRD Section 7
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String?   // null if OAuth
+  name      String?
+  avatar    String?   // GitHub avatar URL
+  githubId  String?   @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  scans     Scan[]
+  reports   Report[]
+
+  @@index([email])
+  @@index([githubId])
+}
+
+model Scan {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  githubRepoUrl   String?
+  liveUrl         String?
+  branch          String?   @default("main")
+
+  status          ScanStatus @default(QUEUED)
+  progress        String?    // "Scanning repo...", "Running DAST...", etc
+  progressPercent Int?       @default(0)
+  errorMessage    String?
+
+  // Scan metadata
+  totalFindings   Int?
+  criticalCount   Int?
+  highCount       Int?
+  mediumCount     Int?
+  lowCount        Int?
+
+  report          Report?
+
+  createdAt       DateTime  @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum ScanStatus {
+  QUEUED
+  CLONING
+  SCANNING
+  ANALYZING
+  GENERATING_REPORT
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model Report {
+  id              Int       @id @default(autoincrement())
+  scanId          Int       @unique
+  scan            Scan      @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id])
+
+  securityScore   Int       // 0-100
+
+  // Summary stats
+  totalFindings   Int       @default(0)
+  criticalCount   Int       @default(0)
+  highCount       Int       @default(0)
+  mediumCount     Int       @default(0)
+  lowCount        Int       @default(0)
+
+  // Generated content
+  executiveSummary String?  @db.Text
+  pdfUrl          String?   // S3 URL
+
+  // Sharing
+  shareToken      String?   @unique
+  shareExpiresAt  DateTime?
+
+  findings        Finding[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([shareToken])
+}
+
+model Finding {
+  id              Int       @id @default(autoincrement())
+  reportId        Int
+  report          Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  // Core finding data
+  title           String    // "SQL Injection", "Hardcoded API Key"
+  severity        Severity
+  category        FindingCategory
+  source          ScanSource // "semgrep", "zap", "npm-audit", "trivy", "gitleaks"
+
+  // AI-enhanced explanations
+  description     String    @db.Text // "What it is"
+  impact          String    @db.Text // "Why it matters"
+  remediation     String    @db.Text // "How to fix"
+
+  // Code context
+  filePath        String?
+  lineNumber      Int?
+  codeSnippet     String?   @db.Text
+
+  // Confidence and validation
+  confidence      Float     @default(1.0)
+  aiValidated     Boolean   @default(false)
+  falsePositive   Boolean   @default(false)
+
+  // Original tool output
+  rawFinding      Json      // Original finding from tool
+  ruleId          String?   // Tool-specific rule identifier
+
+  createdAt       DateTime  @default(now())
+
+  @@index([reportId])
+  @@index([severity])
+  @@index([category])
+  @@index([source])
+}
+
+enum Severity {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum FindingCategory {
+  INJECTION
+  SECRETS
+  AUTH
+  HEADERS
+  XSS
+  CSRF
+  DEPENDENCIES
+  CRYPTOGRAPHY
+  CONFIGURATION
+  OTHER
+}
+
+enum ScanSource {
+  SEMGREP
+  ZAP
+  NPM_AUDIT
+  TRIVY
+  GITLEAKS
+}
+
+// Payment tracking (for pay-per-scan model)
+model Payment {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  scanId          Int?
+
+  amount          Int       // Amount in cents
+  currency        String    @default("usd")
+  status          PaymentStatus @default(PENDING)
+
+  stripePaymentId String?   @unique
+  stripeSessionId String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([stripePaymentId])
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}

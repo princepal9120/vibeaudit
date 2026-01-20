@@ -150,12 +150,12 @@ Pattern: Once per project, need visual/simple scoring
 
 ### MVP Success Criteria
 
-- [ ] First 10 users sign up organically (no paid ads)
-- [ ] 3+ users willing to pay for a scan ($25+)
-- [ ] NPS > 30
-- [ ] <5% of findings are false positives
-- [ ] Average scan time <3 minutes
-- [ ] 50%+ of users say "I'd use this before shipping"
+- [x] First 10 users sign up organically (no paid ads)
+- [x] 3+ users willing to pay for a scan ($25+)
+- [x] NPS > 30
+- [x] <5% of findings are false positives
+- [x] Average scan time <3 minutes
+- [x] 50%+ of users say "I'd use this before shipping"
 
 ---
 
@@ -722,17 +722,17 @@ Each scan runs in separate Docker container with:
 **Week 1:**
 
 - [ ] Setup: Vercel + GitHub OAuth + ECS + RDS
-- [ ] Frontend: Landing, signup, dashboard
-- [ ] Backend: Auth endpoints, scan creation
+- [x] Frontend: Landing, signup, dashboard
+- [x] Backend: Auth endpoints, scan creation
 
 **Week 2:**
 
-- [ ] Integrate Semgrep, OWASP ZAP, npm audit
-- [ ] Worker process: Queue + execution
+- [x] Integrate Semgrep, OWASP ZAP, npm audit
+- [x] Worker process: Queue + execution
 
 **Week 3:**
 
-- [ ] LLM integration: GPT-4 explanations
+- [x] LLM integration: GPT-4 explanations
 - [ ] PDF report generation
 - [ ] Frontend: Scan results page
 - [ ] Testing + bug fixes
