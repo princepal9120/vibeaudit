@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 function ShieldIcon({ className }: { className?: string }) {
@@ -104,11 +104,36 @@ function SparklesIcon({ className }: { className?: string }) {
   );
 }
 
+function CreditCardIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+      />
+    </svg>
+  );
+}
+
 export default function Home() {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
+
+  // Pre-order state
+  const [preorderEmail, setPreorderEmail] = useState("");
+  const [selectedPlan, setSelectedPlan] = useState<"single" | "triple">("single");
+  const [isPreordering, setIsPreordering] = useState(false);
+  const [preorderSuccess, setPreorderSuccess] = useState(false);
+  const [preorderError, setPreorderError] = useState("");
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -140,6 +165,39 @@ export default function Home() {
       setError(err instanceof Error ? err.message : "Failed to sign up");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handlePreorder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPreorderError("");
+
+    if (!preorderEmail || !preorderEmail.includes("@")) {
+      setPreorderError("Please enter a valid email address");
+      return;
+    }
+
+    setIsPreordering(true);
+
+    try {
+      const res = await fetch("/api/preorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: preorderEmail, plan: selectedPlan }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      setPreorderSuccess(true);
+      setPreorderEmail("");
+    } catch (err) {
+      setPreorderError(err instanceof Error ? err.message : "Failed to reserve");
+    } finally {
+      setIsPreordering(false);
     }
   };
 
@@ -364,30 +422,165 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Pricing Preview */}
-        <div className="mt-24 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
-            Simple Pricing
-          </h2>
-          <p className="text-slate-600 mb-8 max-w-xl mx-auto">
-            No subscriptions. No minimums. Pay only when you scan.
-          </p>
-          <Card className="max-w-sm mx-auto border-emerald-200">
-            <CardContent className="pt-8 pb-8">
-              <p className="text-5xl font-bold text-slate-900">
-                $30
-                <span className="text-lg font-normal text-slate-500">
-                  /scan
-                </span>
+        {/* Early Bird Pre-order Section */}
+        <div className="mt-24" id="preorder">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-amber-100 text-amber-700 hover:bg-amber-100">
+              Limited Early Bird Pricing
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+              Lock in Founding Member Rates
+            </h2>
+            <p className="text-slate-600 max-w-xl mx-auto">
+              Reserve your scans now at early-bird prices. No payment today &mdash;
+              we&apos;ll email you when we launch. Prices go up after the first 50 members.
+            </p>
+          </div>
+
+          {preorderSuccess ? (
+            <Card className="max-w-md mx-auto border-emerald-200 bg-emerald-50">
+              <CardContent className="pt-8 pb-8 text-center">
+                <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                  <CheckIcon className="h-6 w-6 text-emerald-600" />
+                </div>
+                <h3 className="font-semibold text-lg text-emerald-800 mb-2">
+                  You&apos;re locked in!
+                </h3>
+                <p className="text-emerald-700">
+                  We&apos;ll email you as soon as VibeAudit launches with your exclusive early-bird pricing.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+              {/* Single Scan */}
+              <Card
+                className={`relative cursor-pointer transition-all ${
+                  selectedPlan === "single"
+                    ? "border-emerald-500 ring-2 ring-emerald-500 ring-opacity-50"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+                onClick={() => setSelectedPlan("single")}
+              >
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Single Scan</span>
+                    {selectedPlan === "single" && (
+                      <div className="h-6 w-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                        <CheckIcon className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                  </CardTitle>
+                  <CardDescription>Perfect for a single project audit</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <span className="text-4xl font-bold text-slate-900">$25</span>
+                    <span className="text-slate-500 ml-1">/scan</span>
+                    <span className="block text-sm text-slate-400 line-through">$30/scan after launch</span>
+                  </div>
+                  <ul className="space-y-2 text-sm text-slate-600">
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-4 w-4 text-emerald-500" />
+                      Full GitHub repo scan
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-4 w-4 text-emerald-500" />
+                      Live app security check
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-4 w-4 text-emerald-500" />
+                      AI-powered explanations
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-4 w-4 text-emerald-500" />
+                      PDF report for clients
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              {/* Triple Pack */}
+              <Card
+                className={`relative cursor-pointer transition-all ${
+                  selectedPlan === "triple"
+                    ? "border-emerald-500 ring-2 ring-emerald-500 ring-opacity-50"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+                onClick={() => setSelectedPlan("triple")}
+              >
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white hover:bg-emerald-600">
+                  Best Value
+                </Badge>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Triple Pack</span>
+                    {selectedPlan === "triple" && (
+                      <div className="h-6 w-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                        <CheckIcon className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                  </CardTitle>
+                  <CardDescription>For freelancers &amp; small teams</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4">
+                    <span className="text-4xl font-bold text-slate-900">$60</span>
+                    <span className="text-slate-500 ml-1">for 3 scans</span>
+                    <span className="block text-sm text-emerald-600 font-medium">Save $30 vs launch price</span>
+                  </div>
+                  <ul className="space-y-2 text-sm text-slate-600">
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-4 w-4 text-emerald-500" />
+                      Everything in Single Scan
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-4 w-4 text-emerald-500" />
+                      3 scans (use anytime)
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-4 w-4 text-emerald-500" />
+                      Priority support
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckIcon className="h-4 w-4 text-emerald-500" />
+                      Founding member badge
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Pre-order Form */}
+          {!preorderSuccess && (
+            <form onSubmit={handlePreorder} className="mt-8 max-w-md mx-auto">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={preorderEmail}
+                  onChange={(e) => setPreorderEmail(e.target.value)}
+                  className="flex-1 h-12 text-base"
+                  disabled={isPreordering}
+                />
+                <Button
+                  type="submit"
+                  className="h-12 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-medium gap-2"
+                  disabled={isPreordering}
+                >
+                  <CreditCardIcon className="h-4 w-4" />
+                  {isPreordering ? "Reserving..." : `Reserve for $${selectedPlan === "single" ? "25" : "60"}`}
+                </Button>
+              </div>
+              {preorderError && (
+                <p className="mt-2 text-sm text-red-600 text-center">{preorderError}</p>
+              )}
+              <p className="mt-4 text-sm text-slate-500 text-center">
+                No payment required today. We&apos;ll invoice you at launch.
               </p>
-              <p className="mt-4 text-slate-600">
-                Complete security audit with AI explanations and PDF report
-              </p>
-              <Badge className="mt-4 bg-emerald-100 text-emerald-700 hover:bg-emerald-100">
-                First scan free
-              </Badge>
-            </CardContent>
-          </Card>
+            </form>
+          )}
         </div>
 
         {/* CTA Section */}
