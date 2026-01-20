@@ -135,6 +135,13 @@ export default function Home() {
   const [preorderSuccess, setPreorderSuccess] = useState(false);
   const [preorderError, setPreorderError] = useState("");
 
+  // NPS state
+  const [npsScore, setNpsScore] = useState<number | null>(null);
+  const [npsFeedback, setNpsFeedback] = useState("");
+  const [isSubmittingNps, setIsSubmittingNps] = useState(false);
+  const [npsSubmitted, setNpsSubmitted] = useState(false);
+  const [npsError, setNpsError] = useState("");
+
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -198,6 +205,39 @@ export default function Home() {
       setPreorderError(err instanceof Error ? err.message : "Failed to reserve");
     } finally {
       setIsPreordering(false);
+    }
+  };
+
+  const handleNpsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setNpsError("");
+
+    if (npsScore === null) {
+      setNpsError("Please select a score");
+      return;
+    }
+
+    setIsSubmittingNps(true);
+
+    try {
+      const res = await fetch("/api/nps", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ score: npsScore, feedback: npsFeedback }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      setNpsSubmitted(true);
+      setNpsFeedback("");
+    } catch (err) {
+      setNpsError(err instanceof Error ? err.message : "Failed to submit feedback");
+    } finally {
+      setIsSubmittingNps(false);
     }
   };
 
@@ -579,6 +619,97 @@ export default function Home() {
               <p className="mt-4 text-sm text-slate-500 text-center">
                 No payment required today. We&apos;ll invoice you at launch.
               </p>
+            </form>
+          )}
+        </div>
+
+        {/* NPS Survey Section */}
+        <div className="mt-24" id="feedback">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4">
+              Quick Feedback
+            </h2>
+            <p className="text-slate-600 max-w-xl mx-auto">
+              How likely are you to recommend VibeAudit to a friend or colleague?
+            </p>
+          </div>
+
+          {npsSubmitted ? (
+            <Card className="max-w-md mx-auto border-emerald-200 bg-emerald-50">
+              <CardContent className="pt-8 pb-8 text-center">
+                <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+                  <CheckIcon className="h-6 w-6 text-emerald-600" />
+                </div>
+                <h3 className="font-semibold text-lg text-emerald-800 mb-2">
+                  Thank you for your feedback!
+                </h3>
+                <p className="text-emerald-700">
+                  Your input helps us build a better product for indie builders.
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <form onSubmit={handleNpsSubmit} className="max-w-lg mx-auto">
+              <Card className="border-slate-200">
+                <CardContent className="pt-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-slate-500">Not likely</span>
+                    <span className="text-sm text-slate-500">Very likely</span>
+                  </div>
+                  <div className="flex gap-1 sm:gap-2 justify-center mb-6">
+                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((score) => (
+                      <button
+                        key={score}
+                        type="button"
+                        onClick={() => setNpsScore(score)}
+                        className={`w-8 h-10 sm:w-10 sm:h-12 rounded-md text-sm sm:text-base font-medium transition-all ${
+                          npsScore === score
+                            ? score >= 9
+                              ? "bg-emerald-500 text-white"
+                              : score >= 7
+                              ? "bg-amber-500 text-white"
+                              : "bg-red-500 text-white"
+                            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        }`}
+                      >
+                        {score}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label
+                        htmlFor="npsFeedback"
+                        className="block text-sm font-medium text-slate-700 mb-2"
+                      >
+                        What would make VibeAudit more useful for you? (optional)
+                      </label>
+                      <textarea
+                        id="npsFeedback"
+                        value={npsFeedback}
+                        onChange={(e) => setNpsFeedback(e.target.value)}
+                        placeholder="Share your thoughts..."
+                        rows={3}
+                        className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                        disabled={isSubmittingNps}
+                      />
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+                      disabled={isSubmittingNps || npsScore === null}
+                    >
+                      {isSubmittingNps ? "Submitting..." : "Submit Feedback"}
+                    </Button>
+
+                    {npsError && (
+                      <p className="text-sm text-red-600 text-center">{npsError}</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </form>
           )}
         </div>
