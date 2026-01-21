@@ -245,7 +245,7 @@ export default function Home() {
   const [error, setError] = useState("");
 
   // Preorder/Waitlist State
-  const [preorderPlan, setPreorderPlan] = useState<"single" | "triple" | "waitlist" | "current" | null>(null);
+  const [preorderPlan, setPreorderPlan] = useState<"starter" | "pro" | "enterprise" | null>(null);
   const [preorderEmail, setPreorderEmail] = useState("");
   const [isPreorderSubmitting, setIsPreorderSubmitting] = useState(false);
   const [isPreorderSubmitted, setIsPreorderSubmitted] = useState(false);
@@ -317,8 +317,6 @@ export default function Home() {
     }
   };
 
-<<<<<<< Updated upstream
-=======
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -338,7 +336,6 @@ export default function Home() {
     },
   };
 
->>>>>>> Stashed changes
   return (
     <div className="min-h-screen bg-white">
       <script
@@ -857,147 +854,126 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-7xl mx-auto">
-            {/* Waitlist */}
-            <Card className="border-blue-200 bg-white">
-              <CardHeader className="text-center pb-2">
-                <CardTitle className="text-slate-900">Waitlist</CardTitle>
-                <CardDescription>Get early access</CardDescription>
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Starter (Free) */}
+            <Card className="border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">Starter</CardTitle>
+                <CardDescription className="text-base text-slate-500">For individual developers</CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-slate-900">$0</span>
+              <CardContent className="text-center px-6">
+                <div className="mb-6 flex items-baseline justify-center gap-1">
+                  <span className="text-5xl font-extrabold text-slate-900">$0</span>
                 </div>
-                <ul className="space-y-3 text-sm text-slate-600 mb-8">
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-blue-500" />
-                    Priority notification
+                <ul className="space-y-4 text-sm text-slate-600 mb-8 text-left">
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>1 public repo scan / month</span>
                   </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-blue-500" />
-                    Early bird discount
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>Secrets detection (API keys)</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>Dependency liability check</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>Basic security score</span>
                   </li>
                 </ul>
                 <Button
-                  onClick={() => setPreorderPlan("waitlist")}
-                  variant="outline"
-                  className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
+                  onClick={() => setPreorderPlan("starter")}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium"
                 >
                   Join Waitlist
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Free */}
-            <Card className="border-slate-200 bg-white">
-              <CardHeader className="text-center pb-2">
-                <CardTitle className="text-slate-900">Free</CardTitle>
-                <CardDescription>Try it out</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center">
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-slate-900">$0</span>
-                </div>
-                <ul className="space-y-3 text-sm text-slate-600 mb-8">
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    1 free scan
-                  </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    Full report
-                  </li>
-                </ul>
-                <Link href="/signup">
-                  <Button variant="outline" className="w-full">Get Started</Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            {/* Current (Waitlist Plan) */}
-            <Card className="border-emerald-200 bg-white relative">
+            {/* Pro (Paid - Waitlist) */}
+            <Card className="border-emerald-200 bg-white relative shadow-lg ring-1 ring-emerald-500">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge className="bg-emerald-600 text-white px-4 py-1">Current</Badge>
+                <Badge className="bg-emerald-600 text-white px-4 py-1.5 uppercase text-xs font-bold tracking-wide">Most Popular</Badge>
               </div>
-              <CardHeader className="text-center pb-2">
-                <CardTitle className="text-slate-900">Single Scan</CardTitle>
-                <CardDescription>Per project</CardDescription>
+              <CardHeader className="text-center pb-4 pt-8">
+                <CardTitle className="text-2xl font-bold text-slate-900">Pro</CardTitle>
+                <CardDescription className="text-base text-emerald-700 font-medium">For professional teams</CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-slate-900">$25</span>
-                  <span className="text-slate-500 ml-1">/scan</span>
+              <CardContent className="text-center px-6">
+                <div className="mb-6 flex items-baseline justify-center gap-1">
+                  <span className="text-5xl font-extrabold text-slate-900">$29</span>
+                  <span className="text-slate-500 text-lg">/mo</span>
                 </div>
-                <ul className="space-y-3 text-sm text-slate-600 mb-8">
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    GitHub + Live Scan
+                <ul className="space-y-4 text-sm text-slate-600 mb-8 text-left">
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>Unlimited private repo scans</span>
                   </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    PDF Report
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>Live URL / DAST scanning</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>AI-powered plain English fixes</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>Client-facing PDF reports</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>Priority email support</span>
                   </li>
                 </ul>
                 <Button
-                  onClick={() => setPreorderPlan("current")}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                  onClick={() => setPreorderPlan("pro")}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-md shadow-emerald-200"
                 >
                   Join Waitlist
                 </Button>
               </CardContent>
             </Card>
 
-            {/* Triple Pack */}
-            <Card className="border-slate-200 bg-white">
-              <CardHeader className="text-center pb-2">
-                <CardTitle className="text-slate-900">Triple Pack</CardTitle>
-                <CardDescription>Best value</CardDescription>
+            {/* Enterprise (Custom) */}
+            <Card className="border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">Enterprise</CardTitle>
+                <CardDescription className="text-base text-slate-500">For large organizations</CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-slate-900">$60</span>
+              <CardContent className="text-center px-6">
+                <div className="mb-6 flex items-baseline justify-center gap-1">
+                  <span className="text-5xl font-extrabold text-slate-900">Custom</span>
                 </div>
-                <ul className="space-y-3 text-sm text-slate-600 mb-8">
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    3 full scans
+                <ul className="space-y-4 text-sm text-slate-600 mb-8 text-left">
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-slate-400 shrink-0" />
+                    <span>CI/CD pipeline integration</span>
                   </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    Priority support
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-slate-400 shrink-0" />
+                    <span>Team collaboration & sharing</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-slate-400 shrink-0" />
+                    <span>Compliance mapping (SOC2)</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-slate-400 shrink-0" />
+                    <span>Dedicated Solution Architect</span>
                   </li>
                 </ul>
-                <Link href="/signup">
-                  <Button variant="outline" className="w-full">Buy Pack</Button>
-                </Link>
+                <Button
+                  onClick={() => setPreorderPlan("enterprise")}
+                  variant="outline"
+                  className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 font-medium"
+                >
+                  Contact Sales
+                </Button>
               </CardContent>
             </Card>
-
-            {/* Enterprise/Advanced (Placeholder for 'Current' if it meant something else) */}
-            <Card className="border-purple-200 bg-white">
-              <CardHeader className="text-center pb-2">
-                <CardTitle className="text-slate-900">Advanced</CardTitle>
-                <CardDescription>For teams</CardDescription>
-              </CardHeader>
-              <CardContent className="text-center">
-                <div className="mb-6">
-                  <span className="text-5xl font-bold text-slate-900">$150</span>
-                  <span className="text-slate-500 ml-1">/mo</span>
-                </div>
-                <ul className="space-y-3 text-sm text-slate-600 mb-8">
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-purple-500" />
-                    Unlimited scans
-                  </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-purple-500" />
-                    Team management
-                  </li>
-                </ul>
-                <Button variant="outline" className="w-full border-purple-200 text-purple-600 hover:bg-purple-50">Contact Sales</Button>
-              </CardContent>
-            </Card>
-
           </div>
         </div>
       </section>
@@ -1024,9 +1000,11 @@ export default function Home() {
                   <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckIcon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-900 mb-2">You&apos;re on the list!</h3>
-                  <p className="text-slate-600">Check your email for confirmation.</p>
-                  <Button onClick={() => setPreorderPlan(null)} className="mt-6 w-full">Close</Button>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">You&apos;re on the list!</h3>
+                  <p className="text-slate-600 leading-relaxed max-w-xs mx-auto mb-6">
+                    We are releasing this feature soon! You have been added to the priority list.
+                  </p>
+                  <Button onClick={() => setPreorderPlan(null)} className="w-full">Got it</Button>
                 </div>
               ) : (
                 <form onSubmit={handlePreorderSubmit} className="space-y-4">

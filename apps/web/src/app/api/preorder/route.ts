@@ -9,7 +9,7 @@ const PREORDERS_FILE = path.join(process.cwd(), "data", "preorders.json");
 
 interface Preorder {
   email: string;
-  plan: "single" | "triple" | "waitlist" | "current";
+  plan: "starter" | "pro" | "enterprise";
   price: number;
   createdAt: string;
   source: string;
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!plan || !["single", "triple", "waitlist", "current"].includes(plan)) {
+    if (!plan || !["starter", "pro", "enterprise"].includes(plan)) {
       return NextResponse.json(
         { error: "Please select a valid plan" },
         { status: 400 }
@@ -81,7 +81,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const price = plan === "single" ? 25 : plan === "triple" ? 60 : 0;
+    // Pricing placeholders
+    const price = plan === "starter" ? 0 : plan === "pro" ? 29 : 0; 
 
     const newPreorder: Preorder = {
       email: normalizedEmail,
@@ -100,12 +101,13 @@ export async function POST(request: NextRequest) {
         await resend.emails.send({
           from: "VibeAudit <notifications@vibeaudit.dev>",
           to: normalizedEmail,
-          subject: "You're on the VibeAudit waitlist!",
+          subject: "You're on the list! VibeAudit Feature Coming Soon",
           html: `
-            <h1>Welcome to the VibeAudit Waitlist!</h1>
-            <p>Thanks for joining the waitlist for the <strong>${plan}</strong> plan.</p>
-            <p>We'll notify you as soon as we're ready for more users.</p>
-            <p>Best,<br/>The VibeAudit Team</p>
+            <h1>We're building something great!</h1>
+            <p>Thanks for your interest in the <strong>${plan.charAt(0).toUpperCase() + plan.slice(1)}</strong> plan.</p>
+            <p>We are releasing this feature soon! You have been added to our priority list and will be one of the first to know when it goes live.</p>
+            <p>Stay tuned,</p>
+            <p>The VibeAudit Team</p>
           `,
         });
         console.log(`Confirmation email sent to ${normalizedEmail}`);
@@ -136,6 +138,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
 
 
 export async function GET() {
