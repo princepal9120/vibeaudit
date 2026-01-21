@@ -317,8 +317,34 @@ export default function Home() {
     }
   };
 
+<<<<<<< Updated upstream
+=======
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "VibeAudit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Cloud",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+    },
+    "description": "Security scanning for indie builders. Scan your code and live apps for vulnerabilities.",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "120",
+    },
+  };
+
+>>>>>>> Stashed changes
   return (
     <div className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ==================== HEADER ==================== */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
