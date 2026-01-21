@@ -6,29 +6,22 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { UserIcon, ShieldIcon, CheckIcon } from '@/components/icons';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
-function UserIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-    </svg>
-  );
-}
-
-function ShieldIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-    </svg>
-  );
-}
 
 function TrashIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+    </svg>
+  );
+}
+
+function AlertTriangleIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
     </svg>
   );
 }
@@ -91,28 +84,28 @@ export default function AccountPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Account Settings</h1>
-        <p className="text-slate-500 mt-1">Manage your profile and preferences</p>
+      <div className="text-center sm:text-left">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Account Settings</h1>
+        <p className="text-slate-500 mt-2">Manage your profile and preferences</p>
       </div>
 
       {/* Profile Section */}
-      <Card className="border-slate-200">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-              <UserIcon className="h-5 w-5 text-emerald-600" />
+      <Card className="border-slate-200/60 shadow-sm">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-emerald-50 flex items-center justify-center">
+              <UserIcon className="h-6 w-6 text-emerald-600" />
             </div>
             <div>
-              <CardTitle className="text-slate-900">Profile</CardTitle>
+              <CardTitle className="text-slate-900 text-lg">Profile</CardTitle>
               <CardDescription className="text-slate-500">Your personal information</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleUpdateProfile} className="space-y-4">
+          <form onSubmit={handleUpdateProfile} className="space-y-5">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Email</label>
+              <label className="text-sm font-semibold text-slate-700">Email</label>
               <Input
                 type="email"
                 value={session?.user?.email || ''}
@@ -123,7 +116,7 @@ export default function AccountPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Display Name</label>
+              <label className="text-sm font-semibold text-slate-700">Display Name</label>
               <Input
                 type="text"
                 value={name}
@@ -133,7 +126,7 @@ export default function AccountPage() {
               />
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 pt-2">
               <Button
                 type="submit"
                 disabled={saving}
@@ -142,7 +135,10 @@ export default function AccountPage() {
                 {saving ? 'Saving...' : 'Save Changes'}
               </Button>
               {saveSuccess && (
-                <span className="text-sm text-emerald-600">Changes saved!</span>
+                <span className="text-sm text-emerald-600 flex items-center gap-1">
+                  <CheckIcon className="h-4 w-4" />
+                  Changes saved!
+                </span>
               )}
             </div>
           </form>
@@ -150,58 +146,64 @@ export default function AccountPage() {
       </Card>
 
       {/* Usage & Plan Section */}
-      <Card className="border-slate-200">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-              <ShieldIcon className="h-5 w-5 text-blue-600" />
+      <Card className="border-slate-200/60 shadow-sm">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-blue-50 flex items-center justify-center">
+              <ShieldIcon className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <CardTitle className="text-slate-900">Usage & Plan</CardTitle>
+              <CardTitle className="text-slate-900 text-lg">Usage & Plan</CardTitle>
               <CardDescription className="text-slate-500">Your scan usage and billing</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+        <CardContent className="space-y-5">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-emerald-50/30 rounded-xl border border-emerald-100">
             <div>
-              <div className="font-medium text-slate-900">Current Plan</div>
+              <div className="font-semibold text-slate-900">Current Plan</div>
               <div className="text-sm text-slate-500">Pay-per-scan pricing</div>
             </div>
-            <Badge className="bg-emerald-100 text-emerald-700">Active</Badge>
+            <Badge variant="success" size="lg">Active</Badge>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 border border-slate-200 rounded-lg">
-              <div className="text-2xl font-bold text-slate-900">1</div>
-              <div className="text-sm text-slate-500">Free scan remaining</div>
+            <div className="p-5 border border-slate-200/60 rounded-xl bg-slate-50/50">
+              <div className="text-3xl font-bold text-emerald-600">1</div>
+              <div className="text-sm text-slate-500 mt-1">Free scan remaining</div>
             </div>
-            <div className="p-4 border border-slate-200 rounded-lg">
-              <div className="text-2xl font-bold text-slate-900">$30</div>
-              <div className="text-sm text-slate-500">Per additional scan</div>
+            <div className="p-5 border border-slate-200/60 rounded-xl bg-slate-50/50">
+              <div className="text-3xl font-bold text-slate-900">$30</div>
+              <div className="text-sm text-slate-500 mt-1">Per additional scan</div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100">
-            <h4 className="font-medium text-slate-900 mb-2">Scan Pricing</h4>
-            <ul className="space-y-2 text-sm text-slate-600">
-              <li className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
+          <div className="pt-5 border-t border-slate-100">
+            <h4 className="font-semibold text-slate-900 mb-3">What&apos;s Included</h4>
+            <ul className="space-y-3 text-sm text-slate-600">
+              <li className="flex items-center gap-3">
+                <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <CheckIcon className="h-3 w-3 text-emerald-600" />
+                </div>
                 1 free scan for new users
               </li>
-              <li className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                $30 per additional scan
+              <li className="flex items-center gap-3">
+                <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <CheckIcon className="h-3 w-3 text-emerald-600" />
+                </div>
+                Full SAST + DAST scanning
               </li>
-              <li className="flex items-center gap-2">
-                <svg className="h-4 w-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Volume discounts available
+              <li className="flex items-center gap-3">
+                <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <CheckIcon className="h-3 w-3 text-emerald-600" />
+                </div>
+                AI-powered explanations and fixes
+              </li>
+              <li className="flex items-center gap-3">
+                <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                  <CheckIcon className="h-3 w-3 text-emerald-600" />
+                </div>
+                PDF report generation
               </li>
             </ul>
           </div>
@@ -209,51 +211,58 @@ export default function AccountPage() {
       </Card>
 
       {/* Danger Zone */}
-      <Card className="border-red-200">
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-red-100 flex items-center justify-center">
-              <TrashIcon className="h-5 w-5 text-red-600" />
+      <Card className="border-red-200/60 shadow-sm">
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-red-50 flex items-center justify-center">
+              <AlertTriangleIcon className="h-6 w-6 text-red-600" />
             </div>
             <div>
-              <CardTitle className="text-slate-900">Danger Zone</CardTitle>
+              <CardTitle className="text-slate-900 text-lg">Danger Zone</CardTitle>
               <CardDescription className="text-slate-500">Irreversible account actions</CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="p-4 border border-red-200 rounded-lg bg-red-50">
-            <h4 className="font-medium text-slate-900 mb-1">Delete Account</h4>
-            <p className="text-sm text-slate-600 mb-4">
-              Permanently delete your account and all associated data. This action cannot be undone.
-            </p>
-            {deleteConfirm ? (
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="destructive"
-                  onClick={handleDeleteAccount}
-                  disabled={deleting}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  {deleting ? 'Deleting...' : 'Yes, Delete My Account'}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setDeleteConfirm(false)}
-                  className="border-slate-200"
-                >
-                  Cancel
-                </Button>
+          <div className="p-5 border border-red-200 rounded-xl bg-gradient-to-r from-red-50 to-red-50/30">
+            <div className="flex items-start gap-4">
+              <div className="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                <TrashIcon className="h-5 w-5 text-red-600" />
               </div>
-            ) : (
-              <Button
-                variant="outline"
-                onClick={() => setDeleteConfirm(true)}
-                className="border-red-200 text-red-600 hover:bg-red-50"
-              >
-                Delete Account
-              </Button>
-            )}
+              <div className="flex-1">
+                <h4 className="font-semibold text-slate-900 mb-1">Delete Account</h4>
+                <p className="text-sm text-slate-600 mb-4">
+                  Permanently delete your account and all associated data including scan history and reports. This action cannot be undone.
+                </p>
+                {deleteConfirm ? (
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <Button
+                      variant="destructive"
+                      onClick={handleDeleteAccount}
+                      disabled={deleting}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      {deleting ? 'Deleting...' : 'Yes, Delete My Account'}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setDeleteConfirm(false)}
+                      className="border-slate-200"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteConfirm(true)}
+                    className="border-red-200 text-red-600 hover:bg-red-100"
+                  >
+                    Delete Account
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

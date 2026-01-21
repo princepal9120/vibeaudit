@@ -4,6 +4,7 @@
  */
 
 import { Card, CardContent } from '@/components/ui/card';
+import { SecurityScoreGauge } from '@/components/ui/security-score-gauge';
 import {
   cn,
   getScoreColor,
@@ -30,33 +31,27 @@ export function SecurityScoreCard({
   showLabel = true,
   showGrade = false,
 }: SecurityScoreCardProps) {
-  const color = getScoreColor(score);
   const bgColor = getScoreBgColor(score);
   const borderColor = getScoreBorderColor(score);
-  const label = getScoreLabel(score);
   const grade = getScoreGrade(score);
 
   return (
-    <Card className={cn('border', bgColor, borderColor, className)}>
-      <CardContent className="py-6 text-center">
+    <Card className={cn('border shadow-sm', bgColor, borderColor, className)}>
+      <CardContent className="py-8 flex flex-col items-center justify-center">
         <div className="relative">
           {showGrade && (
             <div
               className={cn(
-                'absolute -top-2 -right-2 h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold',
-                bgColor,
-                color
+                'absolute -top-1 -right-1 h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold bg-white shadow-md',
+                getScoreColor(score)
               )}
             >
               {grade}
             </div>
           )}
-          <div className={cn('text-6xl font-bold', color)}>{score}</div>
+          <SecurityScoreGauge score={score} size="lg" showLabel={showLabel} />
         </div>
-        <div className="text-slate-500 mt-2">Security Score</div>
-        {showLabel && (
-          <div className={cn('text-sm font-medium mt-1', color)}>{label}</div>
-        )}
+        <div className="text-slate-500 text-sm mt-3">Security Score</div>
       </CardContent>
     </Card>
   );

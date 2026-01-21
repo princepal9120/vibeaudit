@@ -37,48 +37,52 @@ function ScanHeader({ scan, onBack }: ScanHeaderProps) {
   const isGitHub = Boolean(scan.githubRepoUrl);
   const target = getScanTarget(scan);
   const hasReport = Boolean(scan.report);
+  const isActive = isScanInProgress(scan.status);
+  const isFailed = isScanFailed(scan.status);
 
   return (
-    <div className="flex items-start justify-between">
-      <div>
-        <div className="flex items-center gap-3 mb-2">
-          {/* Scan Type Icon */}
-          <div
-            className={cn(
-              'h-12 w-12 rounded-xl flex items-center justify-center',
-              isGitHub ? 'bg-slate-100' : 'bg-blue-100'
-            )}
-          >
-            {isGitHub ? (
-              <GitHubIcon className="h-6 w-6 text-slate-700" />
-            ) : (
-              <GlobeIcon className="h-6 w-6 text-blue-600" />
-            )}
+    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div className="flex items-start gap-4">
+        {/* Scan Type Icon */}
+        <div
+          className={cn(
+            'h-14 w-14 rounded-2xl flex items-center justify-center flex-shrink-0',
+            isGitHub ? 'bg-slate-100' : 'bg-blue-50'
+          )}
+        >
+          {isGitHub ? (
+            <GitHubIcon className="h-7 w-7 text-slate-700" />
+          ) : (
+            <GlobeIcon className="h-7 w-7 text-blue-600" />
+          )}
+        </div>
+        {/* Target */}
+        <div className="min-w-0">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 truncate">{target}</h1>
+            <StatusBadge status={scan.status} showPulse={isActive} />
           </div>
-          {/* Target */}
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 truncate max-w-lg">{target}</h1>
-            <p className="text-slate-500 text-sm">
-              Started {formatDateLong(scan.createdAt)}
-            </p>
-          </div>
+          <p className="text-slate-500 text-sm mt-1">
+            Started {formatDateLong(scan.createdAt)}
+          </p>
         </div>
       </div>
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        {hasReport && (
+        <Button variant="outline" onClick={onBack} className="border-slate-200 hover:border-slate-300">
+          <ArrowLeftIcon className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Back</span>
+        </Button>
+        {hasReport && !isFailed && (
           <Link href={`/reports/${scan.report!.id}`}>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-              <DocumentIcon className="h-4 w-4 mr-2" />
-              View Report
+            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+              <DocumentIcon className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">View Full Report</span>
+              <span className="sm:hidden">Report</span>
             </Button>
           </Link>
         )}
-        <Button variant="outline" onClick={onBack} className="border-slate-200">
-          <ArrowLeftIcon className="h-4 w-4 mr-2" />
-          Back
-        </Button>
       </div>
     </div>
   );
@@ -99,16 +103,20 @@ function ProgressSection({ scan, isPolling }: ProgressSectionProps) {
   if (!isActive) return null;
 
   return (
-    <Card className="border-emerald-200 bg-emerald-50/50">
-      <CardContent className="py-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+    <Card className="border-emerald-200 bg-gradient-to-r from-emerald-50 to-emerald-50/30">
+      <CardContent className="py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
             {isPolling && <PulsingDot />}
-            <span className="text-slate-900 font-medium">
-              {scan.progress || 'Processing...'}
-            </span>
+            <div>
+              <span className="text-slate-900 font-semibold text-lg">
+                {scan.progress || 'Processing...'}
+              </span>
+              <p className="text-sm text-emerald-600 mt-0.5">
+                Auto-refreshing every 3s
+              </p>
+            </div>
           </div>
-          <StatusBadge status={scan.status} showPulse />
         </div>
         <ProgressBar value={scan.progressPercent || 0} />
       </CardContent>
@@ -129,13 +137,13 @@ function ErrorSection({ scan, onRetry }: ErrorSectionProps) {
   if (!isScanFailed(scan.status)) return null;
 
   return (
-    <Card className="border-red-200 bg-red-50">
-      <CardContent className="py-6">
-        <div className="flex items-center justify-between">
+    <Card className="border-red-200 bg-gradient-to-r from-red-50 to-red-50/30">
+      <CardContent className="py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+            <div className="h-14 w-14 rounded-2xl bg-red-100 flex items-center justify-center flex-shrink-0">
               <svg
-                className="h-6 w-6 text-red-600"
+                className="h-7 w-7 text-red-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -145,16 +153,16 @@ function ErrorSection({ scan, onRetry }: ErrorSectionProps) {
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Scan Failed</h3>
-              <p className="text-slate-600">
+              <h3 className="text-lg font-bold text-slate-900">Scan Failed</h3>
+              <p className="text-slate-600 mt-1">
                 {scan.errorMessage || 'An error occurred during the scan'}
               </p>
             </div>
           </div>
           {onRetry && (
-            <Button variant="outline" onClick={onRetry} className="border-red-200">
+            <Button variant="outline" onClick={onRetry} className="border-red-200 hover:bg-red-50">
               <RefreshIcon className="h-4 w-4 mr-2" />
-              Retry
+              Retry Scan
             </Button>
           )}
         </div>
@@ -177,16 +185,16 @@ function ResultsSection({ scan }: ResultsSectionProps) {
   if (!report) return null;
 
   return (
-    <>
+    <div className="space-y-6">
       {/* Score and Summary Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Security Score Card */}
         <SecurityScoreCard score={report.securityScore} showLabel showGrade />
 
         {/* Findings Summary */}
-        <Card className="border-slate-200 lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-slate-900">Findings Summary</CardTitle>
+        <Card className="border-slate-200/60 lg:col-span-2 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-slate-900 text-lg">Findings Summary</CardTitle>
           </CardHeader>
           <CardContent>
             <FindingsSummary
@@ -201,9 +209,9 @@ function ResultsSection({ scan }: ResultsSectionProps) {
 
       {/* Executive Summary */}
       {report.executiveSummary && (
-        <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-slate-900">Executive Summary</CardTitle>
+        <Card className="border-slate-200/60 shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-slate-900 text-lg">Executive Summary</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
@@ -214,12 +222,14 @@ function ResultsSection({ scan }: ResultsSectionProps) {
       )}
 
       {/* Findings List */}
-      <FindingsListWithHeader
-        findings={report.findings}
-        title="Security Findings"
-        showCount
-      />
-    </>
+      <div className="pt-4">
+        <FindingsListWithHeader
+          findings={report.findings}
+          title="Security Findings"
+          showCount
+        />
+      </div>
+    </div>
   );
 }
 

@@ -24,18 +24,18 @@ interface ScanTypeIconProps {
 }
 
 function ScanTypeIcon({ isGitHub, className }: ScanTypeIconProps) {
-  const baseClasses = 'h-10 w-10 rounded-lg flex items-center justify-center';
+  const baseClasses = 'h-11 w-11 rounded-xl flex items-center justify-center transition-colors';
 
   if (isGitHub) {
     return (
-      <div className={cn(baseClasses, 'bg-slate-100', className)}>
+      <div className={cn(baseClasses, 'bg-slate-100 group-hover:bg-slate-200', className)}>
         <GitHubIcon className="h-5 w-5 text-slate-700" />
       </div>
     );
   }
 
   return (
-    <div className={cn(baseClasses, 'bg-blue-100', className)}>
+    <div className={cn(baseClasses, 'bg-blue-50 group-hover:bg-blue-100', className)}>
       <GlobeIcon className="h-5 w-5 text-blue-600" />
     </div>
   );
@@ -82,7 +82,7 @@ export function ScanCard({ scan, className }: ScanCardProps) {
     <Link href={`/scans/${scan.id}`}>
       <Card
         className={cn(
-          'border-slate-200 hover:border-emerald-300 hover:shadow-sm transition-all cursor-pointer',
+          'border-slate-200/60 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer group',
           className
         )}
       >
@@ -93,7 +93,7 @@ export function ScanCard({ scan, className }: ScanCardProps) {
             <div className="flex items-center gap-4 min-w-0">
               <ScanTypeIcon isGitHub={isGitHub} />
               <div className="min-w-0">
-                <div className="font-medium text-slate-900 truncate">{target}</div>
+                <div className="font-semibold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">{target}</div>
                 <div className="text-sm text-slate-500">{formatDate(scan.createdAt)}</div>
               </div>
             </div>

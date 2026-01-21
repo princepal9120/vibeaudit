@@ -22,23 +22,32 @@ interface FindingDetailProps {
 
 function FindingDetail({ finding }: FindingDetailProps) {
   return (
-    <div className="mt-4 pt-4 border-t border-slate-100 space-y-4">
+    <div className="mt-5 pt-5 border-t border-slate-100 space-y-5">
       {/* What it is */}
-      <div>
-        <h4 className="text-sm font-semibold text-slate-700 mb-1.5">What it is</h4>
-        <p className="text-slate-600 text-sm leading-relaxed">{finding.description}</p>
+      <div className="bg-slate-50 rounded-xl p-4">
+        <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+          <span className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center text-xs text-blue-600">1</span>
+          What it is
+        </h4>
+        <p className="text-slate-600 text-sm leading-relaxed pl-7">{finding.description}</p>
       </div>
 
       {/* Why it matters */}
-      <div>
-        <h4 className="text-sm font-semibold text-slate-700 mb-1.5">Why it matters</h4>
-        <p className="text-slate-600 text-sm leading-relaxed">{finding.impact}</p>
+      <div className="bg-amber-50 rounded-xl p-4">
+        <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+          <span className="h-5 w-5 rounded-full bg-amber-100 flex items-center justify-center text-xs text-amber-600">2</span>
+          Why it matters
+        </h4>
+        <p className="text-slate-600 text-sm leading-relaxed pl-7">{finding.impact}</p>
       </div>
 
       {/* How to fix */}
-      <div>
-        <h4 className="text-sm font-semibold text-slate-700 mb-1.5">How to fix</h4>
-        <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap">
+      <div className="bg-emerald-50 rounded-xl p-4">
+        <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+          <span className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center text-xs text-emerald-600">3</span>
+          How to fix
+        </h4>
+        <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap pl-7">
           {finding.remediation}
         </p>
       </div>
@@ -46,19 +55,25 @@ function FindingDetail({ finding }: FindingDetailProps) {
       {/* Code snippet */}
       {finding.codeSnippet && (
         <div>
-          <h4 className="text-sm font-semibold text-slate-700 mb-1.5">Code</h4>
-          <pre className="bg-slate-900 text-slate-100 p-4 rounded-lg text-sm overflow-x-auto font-mono">
+          <h4 className="text-sm font-semibold text-slate-700 mb-2">Vulnerable Code</h4>
+          <pre className="bg-slate-900 text-slate-100 p-4 rounded-xl text-sm overflow-x-auto font-mono">
             {finding.codeSnippet}
           </pre>
         </div>
       )}
 
       {/* Metadata */}
-      <div className="flex items-center gap-4 pt-2 text-xs text-slate-500">
-        <span>Confidence: {Math.round(finding.confidence * 100)}%</span>
-        {finding.ruleId && <span>Rule: {finding.ruleId}</span>}
+      <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-500">
+        <span className="bg-slate-100 px-2 py-1 rounded-md">
+          Confidence: {Math.round(finding.confidence * 100)}%
+        </span>
+        {finding.ruleId && (
+          <span className="bg-slate-100 px-2 py-1 rounded-md font-mono">
+            {finding.ruleId}
+          </span>
+        )}
         {finding.aiValidated && (
-          <span className="flex items-center gap-1 text-emerald-600">
+          <span className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
             <CheckCircleIcon className="h-3 w-3" />
             AI Validated
           </span>
@@ -79,36 +94,49 @@ interface FindingCardProps {
 }
 
 function FindingCard({ finding, isExpanded, onToggle }: FindingCardProps) {
+  const severityColors: Record<string, string> = {
+    CRITICAL: 'border-l-red-500',
+    HIGH: 'border-l-orange-500',
+    MEDIUM: 'border-l-amber-500',
+    LOW: 'border-l-gray-400',
+  };
+
   return (
-    <Card className="border-slate-200 hover:border-slate-300 transition-colors">
+    <Card className={cn(
+      'border-slate-200/60 hover:border-slate-300 transition-all hover:shadow-sm border-l-4',
+      severityColors[finding.severity.toUpperCase()] || 'border-l-gray-400'
+    )}>
       <CardContent className="py-4">
         {/* Header (clickable) */}
-        <button onClick={onToggle} className="w-full text-left">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <button onClick={onToggle} className="w-full text-left group">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3 min-w-0 flex-1">
               <SeverityBadge severity={finding.severity} />
-              <span className="font-medium text-slate-900">{finding.title}</span>
+              <div className="min-w-0 flex-1">
+                <span className="font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors block">
+                  {finding.title}
+                </span>
+                {/* File path */}
+                {finding.filePath && (
+                  <div className="text-sm text-slate-500 mt-1 font-mono truncate">
+                    {finding.filePath}
+                    {finding.lineNumber && (
+                      <span className="text-slate-400">:{finding.lineNumber}</span>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-shrink-0">
               <SourceBadge source={finding.source} />
               <ChevronDownIcon
                 className={cn(
-                  'h-4 w-4 text-slate-400 transition-transform',
+                  'h-5 w-5 text-slate-400 transition-transform',
                   isExpanded && 'rotate-180'
                 )}
               />
             </div>
           </div>
-
-          {/* File path */}
-          {finding.filePath && (
-            <div className="text-sm text-slate-500 mt-2 font-mono">
-              {finding.filePath}
-              {finding.lineNumber && (
-                <span className="text-slate-400">:{finding.lineNumber}</span>
-              )}
-            </div>
-          )}
         </button>
 
         {/* Expandable detail */}
@@ -124,14 +152,14 @@ function FindingCard({ finding, isExpanded, onToggle }: FindingCardProps) {
 
 function NoFindingsState() {
   return (
-    <Card className="border-slate-200">
-      <CardContent className="py-12 text-center">
-        <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-          <CheckCircleIcon className="h-8 w-8 text-emerald-600" />
+    <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-50/30">
+      <CardContent className="py-16 text-center">
+        <div className="h-20 w-20 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-6 shadow-sm">
+          <CheckCircleIcon className="h-10 w-10 text-emerald-600" />
         </div>
-        <h3 className="text-xl font-semibold text-slate-900 mb-2">No Issues Found</h3>
-        <p className="text-slate-500 max-w-sm mx-auto">
-          Great job! No security vulnerabilities were detected in this scan.
+        <h3 className="text-2xl font-bold text-slate-900 mb-2">All Clear!</h3>
+        <p className="text-slate-600 max-w-sm mx-auto">
+          No security vulnerabilities were detected in this scan. Your code is looking secure.
         </p>
       </CardContent>
     </Card>

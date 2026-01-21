@@ -16,33 +16,17 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
-import { ShieldIcon, ChartBarIcon, PlusIcon } from '@/components/icons';
+import { Logo } from '@/components/ui/logo';
+import { ChartBarIcon, PlusIcon, CogIcon } from '@/components/icons';
 import { PageLoading } from '@/components/loading';
 import { cn } from '@/lib/utils';
 
-// ============================================
-// Navigation Configuration
-// ============================================
+
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: ChartBarIcon },
   { href: '/scan/new', label: 'New Scan', icon: PlusIcon },
 ];
-
-// ============================================
-// Logo Component
-// ============================================
-
-function Logo() {
-  return (
-    <Link href="/dashboard" className="flex items-center gap-2.5 group">
-      <div className="h-9 w-9 rounded-xl bg-emerald-600 flex items-center justify-center group-hover:bg-emerald-700 transition-colors">
-        <ShieldIcon className="h-5 w-5 text-white" />
-      </div>
-      <span className="text-xl font-bold text-slate-900">VibeAudit</span>
-    </Link>
-  );
-}
 
 // ============================================
 // Desktop Navigation
@@ -125,7 +109,9 @@ function MobileNav({ pathname, isOpen, onClose, userEmail, onSignOut }: MobileNa
       {/* Sidebar */}
       <div className="fixed inset-y-0 right-0 w-full max-w-xs bg-white shadow-xl">
         <div className="flex items-center justify-between p-4 border-b border-slate-100">
-          <Logo />
+          <Link href="/dashboard" onClick={onClose}>
+            <Logo />
+          </Link>
           <button
             onClick={onClose}
             className="p-2 rounded-lg text-slate-500 hover:bg-slate-100"
@@ -222,7 +208,9 @@ function Header({ pathname, userEmail, onSignOut, onMenuOpen }: HeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Logo />
+          <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
+            <Logo />
+          </Link>
 
           {/* Desktop Navigation */}
           <DesktopNav pathname={pathname} />

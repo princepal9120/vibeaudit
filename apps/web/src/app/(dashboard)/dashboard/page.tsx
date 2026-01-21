@@ -30,9 +30,9 @@ interface PageHeaderProps {
 
 function PageHeader({ onRefresh, isRefreshing }: PageHeaderProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Dashboard</h1>
         <p className="text-slate-500 mt-1">Monitor your security scans and findings</p>
       </div>
       <div className="flex items-center gap-3">
@@ -42,16 +42,16 @@ function PageHeader({ onRefresh, isRefreshing }: PageHeaderProps) {
             size="sm"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="border-slate-200 text-slate-600"
+            className="border-slate-200 text-slate-600 hover:border-slate-300"
           >
-            <RefreshIcon className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            Refresh
+            <RefreshIcon className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline ml-2">Refresh</span>
           </Button>
         )}
         <Link href="/scan/new">
-          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-            <PlusIcon className="h-4 w-4 mr-2" />
-            New Scan
+          <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+            <PlusIcon className="h-4 w-4" />
+            <span className="ml-2">New Scan</span>
           </Button>
         </Link>
       </div>
@@ -90,12 +90,13 @@ export default function DashboardPage() {
 
       {/* Active Scan Indicator */}
       {hasActiveScans && (
-        <div className="flex items-center gap-2 text-sm text-emerald-600 bg-emerald-50 px-4 py-2 rounded-lg">
-          <span className="relative flex h-2 w-2">
+        <div className="flex items-center gap-3 text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 px-4 py-3 rounded-xl">
+          <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
           </span>
-          <span>Scans in progress - auto-refreshing</span>
+          <span className="font-medium">Scans in progress</span>
+          <span className="text-emerald-500">- auto-refreshing every 5s</span>
         </div>
       )}
 

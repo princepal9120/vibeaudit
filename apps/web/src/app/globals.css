@@ -3,11 +3,30 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================
+   VibeAudit Design System
+   ============================================ */
+
 @theme inline {
+  /* Core Theme Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Brand Colors */
+  --color-brand-electric: var(--brand-electric);
+  --color-brand-forest: var(--brand-forest);
+  --color-brand-mint: var(--brand-mint);
+  --color-brand-carbon: var(--brand-carbon);
+
+  /* Severity Colors */
+  --color-severity-critical: var(--severity-critical);
+  --color-severity-high: var(--severity-high);
+  --color-severity-medium: var(--severity-medium);
+  --color-severity-low: var(--severity-low);
+
+  /* Sidebar Colors */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -16,11 +35,15 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+
+  /* Chart Colors */
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
+
+  /* Core UI */
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
@@ -37,6 +60,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Border Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -48,71 +73,98 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* VibeAudit Brand Colors */
+  --brand-electric: #00FF88;      /* Hero Green - CTAs, highlights */
+  --brand-emerald: #10B981;       /* Primary emerald */
+  --brand-forest: #0A2E1F;        /* Deep Forest - dark backgrounds */
+  --brand-forest-light: #064E3B; /* Slightly lighter forest */
+  --brand-mint: #D1FAE5;          /* Mint Fresh - subtle backgrounds */
+  --brand-mint-dark: #A7F3D0;     /* Darker mint */
+  --brand-carbon: #0F1419;        /* Carbon Black - primary dark */
+  --brand-carbon-light: #1F2937;  /* Lighter carbon */
+
+  /* Severity Colors */
+  --severity-critical: #EF4444;   /* Red */
+  --severity-high: #F97316;       /* Orange */
+  --severity-medium: #FB923C;     /* Warning Orange */
+  --severity-low: #9CA3AF;        /* Gray */
+
+  /* Light Theme (Default) */
+  --background: #FFFFFF;
+  --foreground: #0F1419;
+  --card: #FFFFFF;
+  --card-foreground: #0F1419;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F1419;
+  --primary: #10B981;             /* Emerald primary */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F3F4F6;
+  --secondary-foreground: #1F2937;
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
+  --accent: #D1FAE5;              /* Mint accent */
+  --accent-foreground: #064E3B;
+  --destructive: #EF4444;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #10B981;
+
+  /* Chart Colors */
+  --chart-1: #10B981;
+  --chart-2: #00FF88;
+  --chart-3: #064E3B;
+  --chart-4: #F97316;
+  --chart-5: #EF4444;
+
+  /* Sidebar */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0F1419;
+  --sidebar-primary: #10B981;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #D1FAE5;
+  --sidebar-accent-foreground: #064E3B;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #10B981;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark Theme */
+  --background: #0F1419;          /* Carbon Black */
+  --foreground: #FFFFFF;
+  --card: #1F2937;                /* Carbon Light */
+  --card-foreground: #FFFFFF;
+  --popover: #1F2937;
+  --popover-foreground: #FFFFFF;
+  --primary: #00FF88;             /* Electric Green */
+  --primary-foreground: #0F1419;
+  --secondary: #374151;
+  --secondary-foreground: #FFFFFF;
+  --muted: #374151;
+  --muted-foreground: #9CA3AF;
+  --accent: #064E3B;
+  --accent-foreground: #D1FAE5;
+  --destructive: #EF4444;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #00FF88;
+
+  /* Chart Colors for Dark */
+  --chart-1: #00FF88;
+  --chart-2: #10B981;
+  --chart-3: #D1FAE5;
+  --chart-4: #FB923C;
+  --chart-5: #EF4444;
+
+  /* Sidebar Dark */
+  --sidebar: #1F2937;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #00FF88;
+  --sidebar-primary-foreground: #0F1419;
+  --sidebar-accent: #374151;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #00FF88;
 }
 
 @layer base {
@@ -122,4 +174,142 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ============================================
+   Custom Utility Classes
+   ============================================ */
+
+@layer utilities {
+  /* Electric Green Glow Effect */
+  .glow-green {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3),
+                0 0 40px rgba(0, 255, 136, 0.2),
+                0 0 60px rgba(0, 255, 136, 0.1);
+  }
+
+  .glow-green-sm {
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.2),
+                0 0 20px rgba(0, 255, 136, 0.1);
+  }
+
+  /* Gradient Text */
+  .text-gradient-green {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#10B981];
+  }
+
+  /* Security Score Ring Colors */
+  .score-excellent { --score-color: #10B981; }
+  .score-good { --score-color: #10B981; }
+  .score-moderate { --score-color: #FB923C; }
+  .score-poor { --score-color: #F97316; }
+  .score-critical { --score-color: #EF4444; }
+
+  /* Severity Badge Colors */
+  .severity-critical {
+    @apply bg-red-500/10 text-red-500 border-red-500/20;
+  }
+  .severity-high {
+    @apply bg-orange-500/10 text-orange-500 border-orange-500/20;
+  }
+  .severity-medium {
+    @apply bg-amber-500/10 text-amber-500 border-amber-500/20;
+  }
+  .severity-low {
+    @apply bg-gray-500/10 text-gray-500 border-gray-500/20;
+  }
+
+  /* Matrix Grid Pattern */
+  .bg-grid-pattern {
+    background-image: radial-gradient(circle, rgba(0, 255, 136, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Dark Forest Gradient */
+  .bg-forest-gradient {
+    @apply bg-gradient-to-b from-[#0A2E1F] to-[#0F1419];
+  }
+
+  /* Card Hover Effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:border-[#10B981]/30 hover:shadow-lg hover:shadow-[#10B981]/10;
+  }
+
+  /* Animated Pulse for Live Elements */
+  .pulse-green {
+    animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-green {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* Scan Animation */
+  .animate-scan {
+    animation: scan 2s ease-in-out infinite;
+  }
+
+  @keyframes scan {
+    0% { transform: translateY(0); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateY(100%); opacity: 0; }
+  }
+
+  /* Float Animation */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Stagger Animation Delays */
+  .stagger-1 { animation-delay: 100ms; }
+  .stagger-2 { animation-delay: 200ms; }
+  .stagger-3 { animation-delay: 300ms; }
+  .stagger-4 { animation-delay: 400ms; }
+  .stagger-5 { animation-delay: 500ms; }
+}
+
+/* ============================================
+   Typography Overrides
+   ============================================ */
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+
+  code, pre {
+    @apply font-mono;
+  }
+}
+
+/* ============================================
+   Custom Scrollbar for Dark Theme
+   ============================================ */
+
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #4B5563;
 }
