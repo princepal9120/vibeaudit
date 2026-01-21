@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const PREORDERS_FILE = path.join(process.cwd(), "data", "preorders.json");
 
 interface Preorder {
   email: string;
-  plan: "single" | "triple";
+  plan: "single" | "triple" | "waitlist" | "current";
   price: number;
   createdAt: string;
   source: string;
@@ -52,7 +55,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!plan || !["single", "triple"].includes(plan)) {
+    if (!plan || !["single", "triple", "waitlist", "current"].includes(plan)) {
       return NextResponse.json(
         { error: "Please select a valid plan" },
         { status: 400 }
@@ -78,11 +81,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const price = plan === "single" ? 25 : 60;
+    const price = plan === "single" ? 25 : plan === "triple" ? 60 : 0;
 
     const newPreorder: Preorder = {
       email: normalizedEmail,
-      plan,
+      plan: plan as Preorder["plan"],
       price,
       createdAt: new Date().toISOString(),
       source: "landing_page_preorder",
@@ -90,6 +93,29 @@ export async function POST(request: NextRequest) {
 
     preorders.push(newPreorder);
     await savePreorders(preorders);
+
+    // Send confirmation email via Resend
+    if (process.env.RESEND_API_KEY) {
+      try {
+        await resend.emails.send({
+          from: "VibeAudit <notifications@vibeaudit.dev>",
+          to: normalizedEmail,
+          subject: "You're on the VibeAudit waitlist!",
+          html: `
+            <h1>Welcome to the VibeAudit Waitlist!</h1>
+            <p>Thanks for joining the waitlist for the <strong>${plan}</strong> plan.</p>
+            <p>We'll notify you as soon as we're ready for more users.</p>
+            <p>Best,<br/>The VibeAudit Team</p>
+          `,
+        });
+        console.log(`Confirmation email sent to ${normalizedEmail}`);
+      } catch (emailError) {
+        console.error("Failed to send confirmation email:", emailError);
+        // Don't fail the whole request if email fails
+      }
+    } else {
+      console.warn("RESEND_API_KEY not found, skipping email notification");
+    }
 
     console.log(`New preorder: ${normalizedEmail} - ${plan} plan ($${price}) (Total: ${preorders.length})`);
 
@@ -110,6 +136,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
 
 export async function GET() {
   try {

@@ -3,21 +3,14 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-// ============================================
-// Icons
-// ============================================
 
-function ShieldIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-    </svg>
-  );
-}
+
+
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -115,9 +108,7 @@ function XIcon({ className }: { className?: string }) {
   );
 }
 
-// ============================================
-// Animated Background
-// ============================================
+
 
 function GridBackground() {
   return (
@@ -130,9 +121,7 @@ function GridBackground() {
   );
 }
 
-// ============================================
-// Mock UI Components
-// ============================================
+
 
 function ScanResultMock() {
   const [animatedScore, setAnimatedScore] = useState(0);
@@ -255,6 +244,13 @@ export default function Home() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
 
+  // Preorder/Waitlist State
+  const [preorderPlan, setPreorderPlan] = useState<"single" | "triple" | "waitlist" | "current" | null>(null);
+  const [preorderEmail, setPreorderEmail] = useState("");
+  const [isPreorderSubmitting, setIsPreorderSubmitting] = useState(false);
+  const [isPreorderSubmitted, setIsPreorderSubmitted] = useState(false);
+  const [preorderError, setPreorderError] = useState("");
+
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -288,16 +284,71 @@ export default function Home() {
     }
   };
 
+  const handlePreorderSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPreorderError("");
+
+    if (!preorderEmail || !preorderEmail.includes("@")) {
+      setPreorderError("Please enter a valid email address");
+      return;
+    }
+
+    setIsPreorderSubmitting(true);
+
+    try {
+      const res = await fetch("/api/preorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: preorderEmail, plan: preorderPlan }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      setIsPreorderSubmitted(true);
+      setPreorderEmail("");
+    } catch (err) {
+      setPreorderError(err instanceof Error ? err.message : "Failed to join waitlist");
+    } finally {
+      setIsPreorderSubmitting(false);
+    }
+  };
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "VibeAudit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Cloud",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+    },
+    "description": "Security scanning for indie builders. Scan your code and live apps for vulnerabilities.",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "120",
+    },
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ==================== HEADER ==================== */}
       <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
-              <Link href="/" className="flex items-center gap-2">
-                <ShieldIcon className="h-8 w-8 text-emerald-600" />
-                <span className="font-bold text-xl text-slate-900">VibeAudit</span>
+              <Link href="/" className="hover:opacity-90 transition-opacity">
+                <Logo />
               </Link>
               <nav className="hidden md:flex items-center gap-6">
                 <a href="#features" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Features</a>
@@ -803,7 +854,37 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-7xl mx-auto">
+            {/* Waitlist */}
+            <Card className="border-blue-200 bg-white">
+              <CardHeader className="text-center pb-2">
+                <CardTitle className="text-slate-900">Waitlist</CardTitle>
+                <CardDescription>Get early access</CardDescription>
+              </CardHeader>
+              <CardContent className="text-center">
+                <div className="mb-6">
+                  <span className="text-5xl font-bold text-slate-900">$0</span>
+                </div>
+                <ul className="space-y-3 text-sm text-slate-600 mb-8">
+                  <li className="flex items-center gap-2 justify-center">
+                    <CheckIcon className="w-4 h-4 text-blue-500" />
+                    Priority notification
+                  </li>
+                  <li className="flex items-center gap-2 justify-center">
+                    <CheckIcon className="w-4 h-4 text-blue-500" />
+                    Early bird discount
+                  </li>
+                </ul>
+                <Button
+                  onClick={() => setPreorderPlan("waitlist")}
+                  variant="outline"
+                  className="w-full border-blue-200 text-blue-600 hover:bg-blue-50"
+                >
+                  Join Waitlist
+                </Button>
+              </CardContent>
+            </Card>
+
             {/* Free */}
             <Card className="border-slate-200 bg-white">
               <CardHeader className="text-center pb-2">
@@ -821,11 +902,7 @@ export default function Home() {
                   </li>
                   <li className="flex items-center gap-2 justify-center">
                     <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    Full security report
-                  </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    AI explanations
+                    Full report
                   </li>
                 </ul>
                 <Link href="/signup">
@@ -834,10 +911,10 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Single Scan */}
+            {/* Current (Waitlist Plan) */}
             <Card className="border-emerald-200 bg-white relative">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge className="bg-emerald-600 text-white px-4 py-1">Most Popular</Badge>
+                <Badge className="bg-emerald-600 text-white px-4 py-1">Current</Badge>
               </div>
               <CardHeader className="text-center pb-2">
                 <CardTitle className="text-slate-900">Single Scan</CardTitle>
@@ -851,24 +928,19 @@ export default function Home() {
                 <ul className="space-y-3 text-sm text-slate-600 mb-8">
                   <li className="flex items-center gap-2 justify-center">
                     <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    GitHub + Live URL scanning
+                    GitHub + Live Scan
                   </li>
                   <li className="flex items-center gap-2 justify-center">
                     <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    PDF report export
-                  </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    Shareable report link
-                  </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    Fix suggestions
+                    PDF Report
                   </li>
                 </ul>
-                <Link href="/signup">
-                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">Buy Scan</Button>
-                </Link>
+                <Button
+                  onClick={() => setPreorderPlan("current")}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  Join Waitlist
+                </Button>
               </CardContent>
             </Card>
 
@@ -881,20 +953,11 @@ export default function Home() {
               <CardContent className="text-center">
                 <div className="mb-6">
                   <span className="text-5xl font-bold text-slate-900">$60</span>
-                  <span className="text-slate-500 ml-1">for 3</span>
                 </div>
                 <ul className="space-y-3 text-sm text-slate-600 mb-8">
                   <li className="flex items-center gap-2 justify-center">
                     <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    Everything in Single
-                  </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    Save $15 (20% off)
-                  </li>
-                  <li className="flex items-center gap-2 justify-center">
-                    <CheckIcon className="w-4 h-4 text-emerald-500" />
-                    Use anytime
+                    3 full scans
                   </li>
                   <li className="flex items-center gap-2 justify-center">
                     <CheckIcon className="w-4 h-4 text-emerald-500" />
@@ -906,12 +969,96 @@ export default function Home() {
                 </Link>
               </CardContent>
             </Card>
+
+            {/* Enterprise/Advanced (Placeholder for 'Current' if it meant something else) */}
+            <Card className="border-purple-200 bg-white">
+              <CardHeader className="text-center pb-2">
+                <CardTitle className="text-slate-900">Advanced</CardTitle>
+                <CardDescription>For teams</CardDescription>
+              </CardHeader>
+              <CardContent className="text-center">
+                <div className="mb-6">
+                  <span className="text-5xl font-bold text-slate-900">$150</span>
+                  <span className="text-slate-500 ml-1">/mo</span>
+                </div>
+                <ul className="space-y-3 text-sm text-slate-600 mb-8">
+                  <li className="flex items-center gap-2 justify-center">
+                    <CheckIcon className="w-4 h-4 text-purple-500" />
+                    Unlimited scans
+                  </li>
+                  <li className="flex items-center gap-2 justify-center">
+                    <CheckIcon className="w-4 h-4 text-purple-500" />
+                    Team management
+                  </li>
+                </ul>
+                <Button variant="outline" className="w-full border-purple-200 text-purple-600 hover:bg-purple-50">Contact Sales</Button>
+              </CardContent>
+            </Card>
+
           </div>
         </div>
       </section>
 
       {/* ==================== FAQ ==================== */}
+      {/* Preorder Modal/Overlay */}
+      {preorderPlan && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+          <Card className="w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Join the Waitlist</CardTitle>
+                <button onClick={() => { setPreorderPlan(null); setIsPreorderSubmitted(false); }} className="text-slate-400 hover:text-slate-600">
+                  <XIcon className="w-5 h-5" />
+                </button>
+              </div>
+              <CardDescription>
+                You&apos;re signing up for the <span className="font-semibold text-slate-900 capitalize">{preorderPlan}</span> plan.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isPreorderSubmitted ? (
+                <div className="text-center py-6">
+                  <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckIcon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">You&apos;re on the list!</h3>
+                  <p className="text-slate-600">Check your email for confirmation.</p>
+                  <Button onClick={() => setPreorderPlan(null)} className="mt-6 w-full">Close</Button>
+                </div>
+              ) : (
+                <form onSubmit={handlePreorderSubmit} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-700">Email Address</label>
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      value={preorderEmail}
+                      onChange={(e) => setPreorderEmail(e.target.value)}
+                      required
+                      autoFocus
+                    />
+                  </div>
+                  {preorderError && <p className="text-sm text-red-600">{preorderError}</p>}
+                  <Button
+                    type="submit"
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-11"
+                    disabled={isPreorderSubmitting}
+                  >
+                    {isPreorderSubmitting ? "Joining..." : "Join Waitlist"}
+                  </Button>
+                  <p className="text-xs text-center text-slate-500"
+                  >
+                    We&apos;ll notify you as soon as early access is available.
+                  </p>
+                </form>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <section id="faq" className="py-20 sm:py-32">
+
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <Badge variant="outline" className="mb-4 border-emerald-200 bg-emerald-50 text-emerald-700">
@@ -1003,9 +1150,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <ShieldIcon className="h-8 w-8 text-emerald-600" />
-                <span className="font-bold text-xl text-slate-900">VibeAudit</span>
+              <div className="mb-4">
+                <Logo />
               </div>
               <p className="text-sm text-slate-600 mb-4">
                 Security scanning for indie builders. Ship with confidence.
