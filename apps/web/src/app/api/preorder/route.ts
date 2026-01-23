@@ -3,7 +3,10 @@ import { promises as fs } from "fs";
 import path from "path";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => {
+  if (!process.env.RESEND_API_KEY) return null;
+  return new Resend(process.env.RESEND_API_KEY);
+};
 
 const PREORDERS_FILE = path.join(process.cwd(), "data", "preorders.json");
 
@@ -82,7 +85,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Pricing placeholders
-    const price = plan === "starter" ? 0 : plan === "pro" ? 29 : 0; 
+    const price = plan === "starter" ? 0 : plan === "pro" ? 29 : 0;
 
     const newPreorder: Preorder = {
       email: normalizedEmail,
@@ -96,7 +99,8 @@ export async function POST(request: NextRequest) {
     await savePreorders(preorders);
 
     // Send confirmation email via Resend
-    if (process.env.RESEND_API_KEY) {
+    const resend = getResend();
+    if (resend) {
       try {
         await resend.emails.send({
           from: "VibeAudit <notifications@vibeaudit.dev>",

@@ -5,28 +5,28 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98]",
   {
     variants: {
       variant: {
-        // Primary green button - main CTA
+        // Primary emerald button
         default:
-          "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 active:bg-emerald-800",
-        // Electric green for dark backgrounds
+          "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90 hover:shadow-primary/30",
+        // Electric green for dark backgrounds - with shimmer
         electric:
-          "bg-[#00FF88] text-[#0F1419] shadow-sm hover:bg-[#00FF88]/90 active:bg-[#00FF88]/80 font-semibold",
+          "relative overflow-hidden bg-[#00FF88] text-[#0F1419] shadow-lg shadow-[#00FF88]/20 hover:bg-[#00FF88]/90 hover:shadow-[#00FF88]/30 font-bold before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
         // Destructive/danger actions
         destructive:
-          "bg-red-500 text-white shadow-sm hover:bg-red-600 active:bg-red-700",
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         // Outline button
         outline:
-          "border border-border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
-        // Outline green for secondary actions on light backgrounds
+          "border border-border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:border-accent",
+        // Outline green for secondary actions
         "outline-green":
-          "border border-emerald-600 text-emerald-600 bg-transparent hover:bg-emerald-50 active:bg-emerald-100",
+          "border border-primary text-primary bg-transparent hover:bg-primary/10",
         // Outline white for dark backgrounds
         "outline-white":
-          "border border-white/30 text-white bg-transparent hover:bg-white/10 active:bg-white/20",
+          "border border-white/20 text-white bg-transparent hover:bg-white/10 hover:border-white/40",
         // Secondary muted button
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
@@ -35,16 +35,16 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground",
         // Link style
         link:
-          "text-emerald-600 underline-offset-4 hover:underline",
+          "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-5 py-2",
-        sm: "h-8 rounded-md gap-1.5 px-3 text-xs",
-        lg: "h-12 rounded-lg px-8 text-base",
-        xl: "h-14 rounded-xl px-10 text-lg",
-        icon: "size-10",
-        "icon-sm": "size-8",
-        "icon-lg": "size-12",
+        default: "h-auto py-3 px-4 text-sm rounded-lg", // 12px vertical, 16px horizontal, 8px radius
+        sm: "h-9 rounded-md px-3 text-xs",
+        lg: "h-auto py-4 px-8 text-base rounded-xl",
+        xl: "h-auto py-5 px-10 text-lg rounded-2xl",
+        icon: "size-10 rounded-lg",
+        "icon-sm": "size-8 rounded-md",
+        "icon-lg": "size-12 rounded-xl",
       },
     },
     defaultVariants: {

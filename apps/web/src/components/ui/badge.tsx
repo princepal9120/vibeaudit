@@ -5,42 +5,42 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "inline-flex items-center justify-center rounded-full border px-2.5 py-0.5 text-xs font-semibold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-colors",
+  "inline-flex shrink-0 items-center justify-center rounded-full border px-2.5 py-0.5 text-xs font-semibold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1.5 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] transition-all duration-300",
   {
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90",
+          "border-transparent bg-primary text-primary-foreground shadow-sm",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
+          "border-transparent bg-secondary text-secondary-foreground",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90",
+          "border-transparent bg-destructive text-destructive-foreground shadow-xs",
         outline:
-          "text-foreground border-border [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+          "text-foreground border-border [a&]:hover:bg-accent",
         // Severity variants for security findings
         critical:
-          "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400",
+          "border-red-500/20 bg-red-500/10 text-red-500",
         high:
-          "border-orange-500/30 bg-orange-500/10 text-orange-600 dark:text-orange-400",
+          "border-orange-500/20 bg-orange-500/10 text-orange-500",
         medium:
-          "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+          "border-amber-500/20 bg-amber-500/10 text-amber-500",
         low:
-          "border-gray-400/30 bg-gray-400/10 text-gray-600 dark:text-gray-400",
+          "border-gray-500/20 bg-gray-500/10 text-gray-500",
         // Status variants
         success:
-          "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+          "border-emerald-500/20 bg-emerald-500/10 text-emerald-500",
         warning:
-          "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+          "border-amber-500/20 bg-amber-500/10 text-amber-500",
         info:
-          "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400",
+          "border-blue-500/20 bg-blue-500/10 text-blue-500",
         // Electric green for primary brand
         electric:
-          "border-[#00FF88]/30 bg-[#00FF88]/10 text-[#00FF88]",
+          "border-[#00FF88]/30 bg-[#00FF88]/10 text-[#00FF88] shadow-sm shadow-[#00FF88]/10",
       },
       size: {
-        default: "px-2.5 py-0.5 text-xs",
-        sm: "px-2 py-0.5 text-[10px]",
-        lg: "px-3 py-1 text-sm",
+        default: "h-5 px-2.5 py-0.5 text-[11px]",
+        sm: "h-4 px-2 py-0.5 text-[10px]",
+        lg: "h-6 px-3 py-1 text-sm",
       },
     },
     defaultVariants: {
@@ -52,7 +52,7 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.ComponentProps<"span">,
-    VariantProps<typeof badgeVariants> {
+  VariantProps<typeof badgeVariants> {
   asChild?: boolean
 }
 
