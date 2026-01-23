@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn, Stagger, FloatingElement } from "@/components/ui/motion";
+import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 import {
   ShieldCheck,
   Search,
@@ -22,12 +23,14 @@ import {
   Check,
   X,
 } from "lucide-react";
+import TestimonialSection from "@/components/testimonials";
+import FAQSection from "@/components/landing/faqs";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-lg border-b border-border/50 shadow-sm">
+      <nav className="fixed top-0 w-full z-50 bg-background/90 backdrop-blur-lg border-b border-border/50 shadow-sm">
         <div className="container h-16 flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-foreground flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
@@ -47,7 +50,7 @@ export default function Home() {
             <Button
               size="sm"
               asChild
-              className="bg-[#CCFF00] text-foreground hover:bg-[#B8E600] font-semibold border-0 shadow-lg"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold border-0 shadow-lg"
             >
               <Link href="/signup">Get Started Free</Link>
             </Button>
@@ -57,29 +60,40 @@ export default function Home() {
 
       <main className="pt-16">
         {/* HERO SECTION */}
-        <section className="relative py-20 lg:py-28 px-4 sm:px-6 overflow-hidden bg-white">
+        <section className="relative py-20 lg:py-28 px-4 sm:px-6 overflow-hidden bg-background">
           <div className="container relative z-10">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <Stagger className="text-left">
                 <FadeIn>
                   <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground leading-[1.05] tracking-tight">
-                    Cut security risks,
+                    Security scanning for
                     <br />
-                    <span className="text-secondary-foreground">not shipping speed.</span>
+                    <span className="text-primary mt-2 block">
+                      <TypewriterEffect
+                        words={[
+                          { text: "Indie Hackers" },
+                          { text: "Vibe Coders" },
+                          { text: "Solo Devs" },
+                          { text: "Non-Tech Founders" },
+                        ]}
+                        className="text-primary"
+                        cursorClassName="bg-primary h-10 sm:h-16 lg:h-20"
+                      />
+                    </span>
                   </h1>
                 </FadeIn>
                 <FadeIn delay={0.1}>
-                  <p className="text-xl text-secondary-foreground max-w-lg mt-8 leading-relaxed">
-                    AI-generated code often hides security flaws. VibeAudit scans your
-                    GitHub repo and live app in 2 minutes, giving you a plain-English
-                    security report.
+                  <p className="text-xl text-muted-foreground max-w-lg mt-8 leading-relaxed">
+                    AI writes 48% of your code, but it doesn&apos;t check for security.
+                    VibeAudit scans your GitHub & Live App in 2 minutes.
+                    <span className="text-foreground font-medium block mt-2">Zero setup. Plain English reports.</span>
                   </p>
                 </FadeIn>
                 <FadeIn delay={0.2} className="flex flex-col sm:flex-row gap-4 mt-10">
                   <Button
                     size="lg"
                     asChild
-                    className="h-14 px-8 text-lg bg-[#CCFF00] text-foreground hover:bg-[#B8E600] font-bold rounded-xl lime-glow border-0"
+                    className="h-14 px-8 text-lg bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl lime-glow border-0"
                   >
                     <Link href="/signup" className="flex items-center gap-2">
                       Start Free Security Scan
@@ -103,17 +117,17 @@ export default function Home() {
 
               {/* Hero Dashboard Mockup */}
               <FloatingElement delay={0.4} className="relative hidden lg:block">
-                <div className="absolute -inset-4 bg-gradient-to-r from-[#CCFF00]/10 via-primary/10 to-[#CCFF00]/10 rounded-3xl blur-3xl" />
+                <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-3xl blur-3xl" />
                 <div className="relative bg-white border border-border rounded-2xl shadow-2xl overflow-hidden">
                   {/* Browser chrome */}
-                  <div className="bg-gray-50 px-4 py-3 border-b border-border flex items-center gap-2">
+                  <div className="bg-muted/50 px-4 py-3 border-b border-border flex items-center gap-2">
                     <div className="flex gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-red-400" />
                       <div className="w-3 h-3 rounded-full bg-yellow-400" />
                       <div className="w-3 h-3 rounded-full bg-green-400" />
                     </div>
                     <div className="flex-1 ml-4">
-                      <div className="bg-white px-4 py-1.5 rounded-lg border border-border text-xs text-muted-foreground font-mono max-w-xs">
+                      <div className="bg-background px-4 py-1.5 rounded-lg border border-border text-xs text-muted-foreground font-mono max-w-xs">
                         vibeaudit.dev/scan/my-app
                       </div>
                     </div>
@@ -157,7 +171,7 @@ export default function Home() {
                           <CheckCircle2 className="w-4 h-4 text-primary" />
                           <span className="text-sm font-medium">HTTPS Enforced</span>
                         </div>
-                        <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full font-medium">PASSED</span>
+                        <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full font-medium">PASSED</span>
                       </div>
                     </div>
                   </div>
@@ -168,16 +182,16 @@ export default function Home() {
         </section>
 
         {/* SAVINGS/VALUE SECTION */}
-        <section className="py-20 px-4 sm:px-6 bg-gray-50">
+        <section className="py-20 px-4 sm:px-6 bg-muted/30">
           <div className="container">
             <FadeIn>
               <div className="text-center max-w-3xl mx-auto mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-                  Scan your code in <span className="text-[#CCFF00] bg-foreground px-3 py-1 rounded-lg">2 minutes</span>
+                  Scan your code in <span className="bg-primary text-primary-foreground px-3 py-1 rounded-lg">2 minutes</span>
                 </h2>
                 <p className="text-xl text-secondary-foreground">
-                  Most security tools are slow, expensive, and built for enterprises.
-                  VibeAudit is built for indie hackers and small teams.
+                  Most security tools are <span className="text-red-500 font-medium line-through decoration-2">enterprise bloatware</span>.
+                  VibeAudit is built for speed.
                 </p>
               </div>
             </FadeIn>
@@ -185,13 +199,13 @@ export default function Home() {
             {/* Stats Grid */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { stat: "75%", label: "of AI-generated code has security issues", icon: Zap },
+                { stat: "48%", label: "of AI code contains security flaws", icon: Zap },
                 { stat: "2 min", label: "average scan time", icon: Clock },
                 { stat: "$30", label: "per scan, no subscription", icon: TrendingUp },
                 { stat: "100+", label: "security checks performed", icon: Shield },
               ].map((item, i) => (
                 <FadeIn key={i} delay={i * 0.1}>
-                  <div className="bg-white border border-border rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
+                  <div className="bg-background border border-border rounded-2xl p-8 text-center hover:shadow-lg transition-shadow">
                     <item.icon className="w-8 h-8 text-primary mx-auto mb-4" />
                     <p className="text-4xl font-bold text-foreground mb-2">{item.stat}</p>
                     <p className="text-sm text-secondary-foreground">{item.label}</p>
@@ -203,12 +217,12 @@ export default function Home() {
         </section>
 
         {/* HOW IT WORKS SECTION */}
-        <section id="how-it-works" className="py-20 px-4 sm:px-6 bg-white">
+        <section id="how-it-works" className="py-20 px-4 sm:px-6 bg-background">
           <div className="container">
             <FadeIn>
               <div className="text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold mb-4">How it works</h2>
-                <p className="text-xl text-secondary-foreground">Three steps to security clarity</p>
+                <p className="text-xl text-muted-foreground">From &quot;unsure&quot; to &quot;secure&quot; in 3 steps</p>
               </div>
             </FadeIn>
 
@@ -218,13 +232,13 @@ export default function Home() {
                   step: "01",
                   icon: Github,
                   title: "Connect your repo",
-                  desc: "Paste your GitHub URL. Public or private, we handle auth securely."
+                  desc: "Paste your GitHub URL. We'll scan your public repository for vulnerabilities."
                 },
                 {
                   step: "02",
                   icon: Globe,
                   title: "Add your live URL",
-                  desc: "Optional: We'll also scan your deployed app for runtime vulnerabilities."
+                  desc: "Optional: We check your running app for runtime issues (SSL, Headers, Exposed Config)."
                 },
                 {
                   step: "03",
@@ -234,7 +248,7 @@ export default function Home() {
                 },
               ].map((item, i) => (
                 <FadeIn key={i} delay={i * 0.15}>
-                  <div className="relative bg-gray-50 border border-border rounded-2xl p-8 hover:border-primary/30 transition-colors group">
+                  <div className="relative bg-muted/30 border border-border rounded-2xl p-8 hover:border-primary/30 transition-colors group">
                     <div className="absolute -top-4 left-8 bg-foreground text-white text-sm font-bold px-3 py-1 rounded-full">
                       {item.step}
                     </div>
@@ -253,36 +267,15 @@ export default function Home() {
         </section>
 
         {/* TESTIMONIAL / DARK SECTION */}
-        <section className="py-20 px-4 sm:px-6 bg-grid-dark text-white">
-          <div className="container">
-            <FadeIn>
-              <div className="max-w-4xl mx-auto text-center">
-                <blockquote className="text-2xl sm:text-3xl font-medium leading-relaxed mb-8">
-                  &ldquo;I built my entire app with Cursor and Claude. I had no idea my API keys
-                  were visible in the client bundle until VibeAudit caught it. That one scan
-                  probably saved me from a major breach.&rdquo;
-                </blockquote>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#CCFF00] flex items-center justify-center text-foreground font-bold">
-                    JK
-                  </div>
-                  <div className="text-left">
-                    <p className="font-semibold">Jake K.</p>
-                    <p className="text-gray-400 text-sm">Indie Hacker, shipped 3 apps</p>
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-          </div>
-        </section>
+        <TestimonialSection />
 
         {/* FEATURES SECTION */}
-        <section id="features" className="py-20 px-4 sm:px-6 bg-white">
+        <section id="features" className="py-20 px-4 sm:px-6 bg-background">
           <div className="container">
             <FadeIn>
               <div className="text-center mb-16">
-                <h2 className="text-4xl sm:text-5xl font-bold mb-4">We&apos;ve got your back</h2>
-                <p className="text-xl text-secondary-foreground">Everything you need, nothing you don&apos;t</p>
+                <h2 className="text-4xl sm:text-5xl font-bold mb-4">Enterprise Grade. Indie Price.</h2>
+                <p className="text-xl text-muted-foreground">Security without the confusing jargon.</p>
               </div>
             </FadeIn>
 
@@ -296,7 +289,7 @@ export default function Home() {
                 { icon: BarChart3, title: "Shareable PDF", desc: "Professional reports for clients, investors, or your co-founder." },
               ].map((item, i) => (
                 <FadeIn key={i} delay={i * 0.1}>
-                  <div className="bg-gray-50 border border-border rounded-2xl p-8 hover:shadow-lg hover:border-primary/20 transition-all group">
+                  <div className="bg-muted/30 border border-border rounded-2xl p-8 hover:shadow-lg hover:border-primary/20 transition-all group">
                     <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                       <item.icon className="w-6 h-6 text-primary" />
                     </div>
@@ -309,146 +302,79 @@ export default function Home() {
           </div>
         </section>
 
-        {/* DARK DASHBOARD PREVIEW */}
-        <section className="py-20 px-4 sm:px-6 bg-[#0F1419]">
-          <div className="container">
-            <FadeIn>
-              <div className="max-w-4xl mx-auto">
-                <div className="text-center mb-12">
-                  <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">See exactly what needs fixing</h2>
-                  <p className="text-gray-400">Your security report, prioritized by severity</p>
-                </div>
 
-                {/* Dark Dashboard Mockup */}
-                <div className="bg-[#1A1F26] border border-gray-700 rounded-2xl overflow-hidden shadow-2xl">
-                  <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                        <Shield className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-white font-semibold">my-saas-app</p>
-                        <p className="text-gray-500 text-sm">Scanned 2 minutes ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-3xl font-bold text-primary">78</span>
-                      <span className="text-gray-500">/100</span>
-                    </div>
-                  </div>
-
-                  <div className="p-6 space-y-3">
-                    {[
-                      { severity: "critical", title: "Hardcoded Stripe API Key in checkout.js", file: "src/lib/checkout.js:42" },
-                      { severity: "high", title: "JWT verification on client-side only", file: "src/utils/auth.ts:18" },
-                      { severity: "medium", title: "Missing rate limiting on API routes", file: "src/app/api/*" },
-                      { severity: "passed", title: "HTTPS properly enforced", file: "SSL/TLS Configuration" },
-                    ].map((item, i) => (
-                      <div
-                        key={i}
-                        className={`rounded-xl p-4 flex items-center justify-between ${item.severity === "critical" ? "bg-red-500/10 border border-red-500/20" :
-                            item.severity === "high" ? "bg-amber-500/10 border border-amber-500/20" :
-                              item.severity === "medium" ? "bg-yellow-500/10 border border-yellow-500/20" :
-                                "bg-primary/10 border border-primary/20"
-                          }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${item.severity === "critical" ? "bg-red-500" :
-                              item.severity === "high" ? "bg-amber-500" :
-                                item.severity === "medium" ? "bg-yellow-500" :
-                                  "bg-primary"
-                            }`} />
-                          <div>
-                            <p className="text-white font-medium">{item.title}</p>
-                            <p className="text-gray-500 text-sm font-mono">{item.file}</p>
-                          </div>
-                        </div>
-                        <span className={`text-xs px-2 py-1 rounded-full font-medium uppercase ${item.severity === "critical" ? "bg-red-500 text-white" :
-                            item.severity === "high" ? "bg-amber-500 text-white" :
-                              item.severity === "medium" ? "bg-yellow-500 text-foreground" :
-                                "bg-primary text-white"
-                          }`}>
-                          {item.severity}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-          </div>
-        </section>
 
         {/* PRICING SECTION */}
-        <section id="pricing" className="py-20 px-4 sm:px-6 bg-white">
+        <section id="pricing" className="py-20 px-4 sm:px-6 bg-background">
           <div className="container">
             <FadeIn>
               <div className="text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold mb-4">Pricing</h2>
-                <p className="text-xl text-secondary-foreground">No subscriptions. No hidden fees. Pay per scan.</p>
+                <p className="text-xl text-muted-foreground">Pay per scan. No subscriptions. No bullshit.</p>
               </div>
             </FadeIn>
 
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {/* Free Tier */}
               <FadeIn delay={0.1}>
-                <div className="bg-gray-50 border border-border rounded-2xl p-8 h-full">
-                  <div className="mb-8">
+                <div className="bg-muted/30 border border-border rounded-2xl p-8 h-full flex flex-col hover:border-border/80 transition-colors">
+                  <div className="mb-6">
                     <h3 className="text-2xl font-bold mb-2">Free</h3>
-                    <p className="text-secondary-foreground">Try before you buy</p>
+                    <p className="text-muted-foreground text-sm">Perfect for first-time verification</p>
                   </div>
-                  <div className="mb-8">
-                    <span className="text-5xl font-bold">$0</span>
-                    <span className="text-secondary-foreground"> / first scan</span>
+                  <div className="mb-6">
+                    <span className="text-4xl font-bold">$0</span>
+                    <span className="text-muted-foreground"> / first scan</span>
                   </div>
-                  <ul className="space-y-4 mb-8">
+                  <ul className="space-y-4 mb-8 flex-1">
                     {[
                       { included: true, text: "1 free security scan" },
-                      { included: true, text: "Full vulnerability report" },
+                      { included: true, text: "Public & Private repos" },
                       { included: true, text: "Plain English explanations" },
                       { included: false, text: "PDF export" },
                       { included: false, text: "Priority support" },
                     ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3">
+                      <li key={i} className="flex items-center gap-3 text-sm">
                         {item.included ? (
-                          <Check className="w-5 h-5 text-primary" />
+                          <Check className="w-5 h-5 text-primary shrink-0" />
                         ) : (
-                          <X className="w-5 h-5 text-gray-300" />
+                          <X className="w-5 h-5 text-muted-foreground/30 shrink-0" />
                         )}
-                        <span className={item.included ? "" : "text-gray-400"}>{item.text}</span>
+                        <span className={item.included ? "" : "text-muted-foreground/50"}>{item.text}</span>
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" size="lg" asChild className="w-full h-14 text-lg rounded-xl">
+                  <Button variant="outline" size="lg" asChild className="w-full h-12 rounded-xl border-border hover:bg-muted font-medium">
                     <Link href="/signup">Start Free Scan</Link>
                   </Button>
                 </div>
               </FadeIn>
 
-              {/* Pro Tier */}
+              {/* Pro Tier (Emphasized) */}
               <FadeIn delay={0.2}>
-                <div className="bg-foreground text-white rounded-2xl p-8 h-full relative overflow-hidden">
-                  <div className="absolute top-4 right-4 bg-[#CCFF00] text-foreground text-xs font-bold px-3 py-1 rounded-full">
-                    POPULAR
+                <div className="bg-background border border-primary/50 ring-1 ring-primary/20 rounded-2xl p-8 h-full relative overflow-hidden lime-glow transform md:-translate-y-4 flex flex-col shadow-2xl shadow-primary/5">
+                  <div className="absolute top-0 inset-x-0 h-1 bg-primary" />
+                  <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    Popular
                   </div>
-                  <div className="mb-8">
-                    <h3 className="text-2xl font-bold mb-2">Pro</h3>
-                    <p className="text-gray-400">For serious builders</p>
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-bold mb-2 text-primary">Pro</h3>
+                    <p className="text-muted-foreground text-sm">For indie hackers & solo founders</p>
                   </div>
-                  <div className="mb-8">
+                  <div className="mb-6">
                     <span className="text-5xl font-bold">$30</span>
-                    <span className="text-gray-400"> / scan</span>
+                    <span className="text-muted-foreground"> / scan</span>
                   </div>
-                  <ul className="space-y-4 mb-8">
+                  <ul className="space-y-4 mb-8 flex-1">
                     {[
-                      { included: true, text: "Unlimited scans" },
+                      { included: true, text: "Unlimited scans (pay-as-you-go)" },
                       { included: true, text: "Full vulnerability report" },
-                      { included: true, text: "Plain English explanations" },
-                      { included: true, text: "PDF export included" },
-                      { included: true, text: "Priority support" },
+                      { included: true, text: "Deep code analysis" },
+                      { included: true, text: "Professional PDF export" },
+                      { included: true, text: "Priority email support" },
                     ].map((item, i) => (
-                      <li key={i} className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-[#CCFF00]" />
+                      <li key={i} className="flex items-center gap-3 text-sm font-medium">
+                        <Check className="w-5 h-5 text-primary shrink-0" />
                         <span>{item.text}</span>
                       </li>
                     ))}
@@ -456,9 +382,40 @@ export default function Home() {
                   <Button
                     size="lg"
                     asChild
-                    className="w-full h-14 text-lg rounded-xl bg-[#CCFF00] text-foreground hover:bg-[#B8E600] font-bold lime-glow"
+                    className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20"
                   >
                     <Link href="/signup">Get Started</Link>
+                  </Button>
+                </div>
+              </FadeIn>
+
+              {/* Agency Tier */}
+              <FadeIn delay={0.3}>
+                <div className="bg-muted/30 border border-border rounded-2xl p-8 h-full flex flex-col hover:border-border/80 transition-colors">
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-bold mb-2">Agency</h3>
+                    <p className="text-muted-foreground text-sm">For freelancers & dev shops</p>
+                  </div>
+                  <div className="mb-6">
+                    <span className="text-2xl font-bold">Custom</span>
+                    <span className="text-muted-foreground block text-sm mt-1">Volume Discounts</span>
+                  </div>
+                  <ul className="space-y-4 mb-8 flex-1">
+                    {[
+                      { included: true, text: "Bulk scan credits" },
+                      { included: true, text: "Co-branded reports (Coming Soon)" },
+                      { included: true, text: "Team management" },
+                      { included: true, text: "Dedicated account support" },
+                      { included: true, text: "API access" },
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-center gap-3 text-sm">
+                        <Check className="w-5 h-5 text-primary shrink-0" />
+                        <span>{item.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button variant="outline" size="lg" asChild className="w-full h-12 rounded-xl border-border hover:bg-muted font-medium">
+                    <Link href="mailto:sales@vibeaudit.dev">Contact Sales</Link>
                   </Button>
                 </div>
               </FadeIn>
@@ -466,8 +423,17 @@ export default function Home() {
           </div>
         </section>
 
+        {/* PRICING SECTION */}
+        <section id="pricing" className="py-20 px-4 sm:px-6 bg-white">
+          {/* ... existing pricing content ... */}
+          {/* ... (keeping the existing lines until the end of pricing section) */}
+        </section>
+
+        {/* FAQ SECTION */}
+        <FAQSection />
+
         {/* FINAL CTA SECTION */}
-        <section className="py-20 px-4 sm:px-6 bg-gray-50 bg-dots">
+        <section className="py-20 px-4 sm:px-6 bg-muted/30 bg-dots">
           <div className="container">
             <FadeIn>
               <div className="text-center max-w-2xl mx-auto">
@@ -475,12 +441,12 @@ export default function Home() {
                   Analyze your project<br />in two minutes
                 </h2>
                 <p className="text-xl text-secondary-foreground mb-10">
-                  Stop hoping your AI-generated code is secure. Know for sure.
+                  Your reputation is worth more than a 2-minute scan.
                 </p>
                 <Button
                   size="lg"
                   asChild
-                  className="h-16 px-12 text-xl bg-[#CCFF00] text-foreground hover:bg-[#B8E600] font-bold rounded-xl lime-glow"
+                  className="h-16 px-12 text-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl lime-glow"
                 >
                   <Link href="/signup" className="flex items-center gap-3">
                     Get started with VibeAudit for free
@@ -495,7 +461,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-border py-12">
+      <footer className="bg-background border-t border-border py-12">
         <div className="container flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2 text-xl font-bold text-foreground">
             <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">

@@ -32,8 +32,8 @@ function PageHeader({ onRefresh, isRefreshing }: PageHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Dashboard</h1>
-        <p className="text-slate-500 mt-1">Monitor your security scans and findings</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">Monitor your security scans and findings</p>
       </div>
       <div className="flex items-center gap-3">
         {onRefresh && (
@@ -42,14 +42,14 @@ function PageHeader({ onRefresh, isRefreshing }: PageHeaderProps) {
             size="sm"
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="border-slate-200 text-slate-600 hover:border-slate-300"
+            className="border-border text-muted-foreground hover:border-input"
           >
             <RefreshIcon className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline ml-2">Refresh</span>
           </Button>
         )}
         <Link href="/scan/new">
-          <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
             <PlusIcon className="h-4 w-4" />
             <span className="ml-2">New Scan</span>
           </Button>
@@ -90,20 +90,20 @@ export default function DashboardPage() {
 
       {/* Active Scan Indicator */}
       {hasActiveScans && (
-        <div className="flex items-center gap-3 text-sm text-emerald-700 bg-emerald-50 border border-emerald-100 px-4 py-3 rounded-xl">
+        <div className="flex items-center gap-3 text-sm text-primary bg-primary/10 border border-primary/20 px-4 py-3 rounded-xl">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
           </span>
           <span className="font-medium">Scans in progress</span>
-          <span className="text-emerald-500">- auto-refreshing every 5s</span>
+          <span className="text-primary/80">- auto-refreshing every 5s</span>
         </div>
       )}
 
       {/* Scans List */}
       {loading && scans.length === 0 ? (
         <div className="space-y-4">
-          <div className="h-6 w-32 bg-slate-200 rounded animate-pulse" />
+          <div className="h-6 w-32 bg-muted rounded animate-pulse" />
           <ScanListSkeleton count={5} />
         </div>
       ) : (

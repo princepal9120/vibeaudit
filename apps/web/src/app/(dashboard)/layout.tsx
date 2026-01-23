@@ -46,11 +46,11 @@ function NavLink({ href, label, icon: Icon, isActive }: NavLinkProps) {
       className={cn(
         'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
         isActive
-          ? 'bg-emerald-50 text-emerald-700'
-          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          ? 'bg-primary/10 text-primary-foreground'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
       )}
     >
-      <Icon className={cn('h-4 w-4', isActive ? 'text-emerald-600' : 'text-slate-400')} />
+      <Icon className={cn('h-4 w-4', isActive ? 'text-primary' : 'text-muted-foreground')} />
       {label}
     </Link>
   );
@@ -104,17 +104,17 @@ function MobileNav({ pathname, isOpen, onClose, userEmail, onSignOut }: MobileNa
   return (
     <div className="fixed inset-0 z-50 md:hidden">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-slate-900/50" onClick={onClose} />
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
 
       {/* Sidebar */}
-      <div className="fixed inset-y-0 right-0 w-full max-w-xs bg-white shadow-xl">
-        <div className="flex items-center justify-between p-4 border-b border-slate-100">
+      <div className="fixed inset-y-0 right-0 w-full max-w-xs bg-background shadow-xl border-l border-border">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <Link href="/dashboard" onClick={onClose}>
             <Logo />
           </Link>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-slate-500 hover:bg-slate-100"
+            className="p-2 rounded-lg text-muted-foreground hover:bg-muted"
           >
             <CloseIcon className="h-5 w-5" />
           </button>
@@ -131,24 +131,24 @@ function MobileNav({ pathname, isOpen, onClose, userEmail, onSignOut }: MobileNa
                 className={cn(
                   'flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors',
                   isActive
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-slate-600 hover:bg-slate-50'
+                    ? 'bg-primary/10 text-primary-foreground'
+                    : 'text-muted-foreground hover:bg-muted'
                 )}
               >
-                <item.icon className={cn('h-5 w-5', isActive ? 'text-emerald-600' : 'text-slate-400')} />
+                <item.icon className={cn('h-5 w-5', isActive ? 'text-primary' : 'text-muted-foreground')} />
                 {item.label}
               </Link>
             );
           })}
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-100">
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
           {userEmail && (
-            <p className="text-sm text-slate-500 mb-3 truncate">{userEmail}</p>
+            <p className="text-sm text-muted-foreground mb-3 truncate">{userEmail}</p>
           )}
           <Button
             variant="outline"
-            className="w-full border-slate-200"
+            className="w-full border-border"
             onClick={() => {
               onClose();
               onSignOut();
@@ -175,7 +175,7 @@ function UserMenu({ email, onSignOut }: UserMenuProps) {
   return (
     <div className="flex items-center gap-4">
       {email && (
-        <span className="text-sm text-slate-500 hidden lg:block truncate max-w-[200px]">
+        <span className="text-sm text-muted-foreground hidden lg:block truncate max-w-[200px]">
           {email}
         </span>
       )}
@@ -183,7 +183,7 @@ function UserMenu({ email, onSignOut }: UserMenuProps) {
         variant="outline"
         size="sm"
         onClick={onSignOut}
-        className="text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900"
+        className="text-muted-foreground border-border hover:bg-muted hover:text-foreground"
       >
         Sign out
       </Button>
@@ -204,7 +204,7 @@ interface HeaderProps {
 
 function Header({ pathname, userEmail, onSignOut, onMenuOpen }: HeaderProps) {
   return (
-    <header className="border-b border-slate-100 bg-white/80 backdrop-blur-sm sticky top-0 z-40">
+    <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -223,7 +223,7 @@ function Header({ pathname, userEmail, onSignOut, onMenuOpen }: HeaderProps) {
           {/* Mobile Menu Button */}
           <button
             onClick={onMenuOpen}
-            className="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100"
+            className="md:hidden p-2 rounded-lg text-muted-foreground hover:bg-muted"
           >
             <MobileMenuIcon className="h-6 w-6" />
           </button>
@@ -261,7 +261,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <Header
         pathname={pathname}
@@ -285,15 +285,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-100 mt-auto">
+      <footer className="border-t border-border mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between text-sm text-slate-500">
+          <div className="flex items-center justify-between text-sm text-muted-foreground">
             <p>&copy; {new Date().getFullYear()} VibeAudit. All rights reserved.</p>
             <div className="flex items-center gap-6">
-              <Link href="/privacy" className="hover:text-slate-900 transition-colors">
+              <Link href="/privacy" className="hover:text-foreground transition-colors">
                 Privacy
               </Link>
-              <Link href="/terms" className="hover:text-slate-900 transition-colors">
+              <Link href="/terms" className="hover:text-foreground transition-colors">
                 Terms
               </Link>
             </div>
