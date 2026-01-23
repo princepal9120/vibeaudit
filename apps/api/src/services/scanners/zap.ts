@@ -1,9 +1,6 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { safeSpawn } from '../../lib/safe-exec.js';
 import type { RawFinding, Severity, FindingCategory } from './types.js';
 import { SCANNER_TIMEOUTS } from './types.js';
-
-const execAsync = promisify(exec);
 
 interface ZapAlert {
   pluginid: string;
@@ -43,21 +40,31 @@ export async function runZap(liveUrl: string): Promise<RawFinding[]> {
 
     // Run ZAP baseline scan (non-invasive)
     // This uses the ZAP Docker image or CLI
-    const { stdout } = await execAsync(
-      `zap-baseline.py -t "${liveUrl}" -J /tmp/zap-report.json -I --auto 2>/dev/null || true && cat /tmp/zap-report.json`,
+    // Using safeSpawn with args array to prevent command injection
+    const { stdout } = await safeSpawn(
+      'zap-baseline.py',
+      ['-t', liveUrl, '-J', '/tmp/zap-report.json', '-I', '--auto'],
       {
         timeout: SCANNER_TIMEOUTS.ZAP + 10000, // Extra buffer for ZAP
         maxBuffer: 20 * 1024 * 1024,
       }
     );
 
-    if (!stdout.trim()) {
-      // Try alternative ZAP command if baseline not available
-      return await runZapAlternative(liveUrl);
+    // Read the report file if ZAP succeeded
+    if (stdout.trim()) {
+      try {
+        const { stdout: reportContent } = await safeSpawn('cat', ['/tmp/zap-report.json']);
+        if (reportContent.trim()) {
+          const result: ZapResult = JSON.parse(reportContent);
+          return parseZapResult(result, liveUrl);
+        }
+      } catch {
+        // Report file may not exist
+      }
     }
 
-    const result: ZapResult = JSON.parse(stdout);
-    return parseZapResult(result, liveUrl);
+    // Try alternative ZAP command if baseline not available
+    return await runZapAlternative(liveUrl);
   } catch (error) {
     console.error('ZAP scan failed, trying alternative:', error);
     // Try alternative scan methods
@@ -88,8 +95,10 @@ async function checkSecurityHeaders(url: string): Promise<RawFinding[]> {
   const findings: RawFinding[] = [];
 
   try {
-    const { stdout } = await execAsync(
-      `curl -sI -X HEAD --max-time 10 "${url}"`,
+    // Using safeSpawn with args array to prevent command injection
+    const { stdout } = await safeSpawn(
+      'curl',
+      ['-sI', '-X', 'HEAD', '--max-time', '10', url],
       { timeout: 15000 }
     );
 
@@ -200,26 +209,46 @@ async function checkSSL(url: string): Promise<RawFinding[]> {
       return findings;
     }
 
-    // Check SSL certificate
-    const { stdout } = await execAsync(
-      `echo | openssl s_client -servername ${urlObj.hostname} -connect ${urlObj.hostname}:443 2>/dev/null | openssl x509 -noout -dates -checkend 2592000`,
+    // Validate hostname format strictly to prevent injection
+    // Only allow alphanumeric, dots, and hyphens (standard DNS hostname chars)
+    const hostname = urlObj.hostname;
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9.-]*[a-zA-Z0-9]$/.test(hostname) && hostname.length > 1) {
+      console.warn('Invalid hostname format for SSL check:', hostname);
+      return findings;
+    }
+
+    // Check SSL certificate using openssl
+    // Using safeSpawn with validated hostname to prevent command injection
+    const { stdout } = await safeSpawn(
+      'openssl',
+      ['s_client', '-servername', hostname, '-connect', `${hostname}:443`],
       { timeout: 10000 }
     );
 
-    // If the command succeeds but returns "Certificate will expire", it's an issue
-    if (stdout.includes('Certificate will expire')) {
-      findings.push({
-        title: 'SSL Certificate Expiring Soon',
-        severity: 'MEDIUM',
-        category: 'CONFIGURATION',
-        source: 'ZAP',
-        description: 'The SSL certificate will expire within 30 days.',
-        impact: 'Users will see security warnings if the certificate expires.',
-        remediation: 'Renew the SSL certificate before expiration.',
-        confidence: 0.95,
-        ruleId: 'ssl-expiring',
-        rawFinding: { url, output: stdout },
-      });
+    // Parse the certificate from stdout and check expiration
+    if (stdout) {
+      // Run x509 to check certificate expiration (30 days = 2592000 seconds)
+      const { stdout: certOutput, exitCode } = await safeSpawn(
+        'openssl',
+        ['x509', '-noout', '-dates', '-checkend', '2592000'],
+        { timeout: 5000 }
+      );
+
+      // Exit code 1 from checkend means certificate will expire
+      if (exitCode === 1 || certOutput.includes('Certificate will expire')) {
+        findings.push({
+          title: 'SSL Certificate Expiring Soon',
+          severity: 'MEDIUM',
+          category: 'CONFIGURATION',
+          source: 'ZAP',
+          description: 'The SSL certificate will expire within 30 days.',
+          impact: 'Users will see security warnings if the certificate expires.',
+          remediation: 'Renew the SSL certificate before expiration.',
+          confidence: 0.95,
+          ruleId: 'ssl-expiring',
+          rawFinding: { url, output: certOutput },
+        });
+      }
     }
   } catch (error) {
     // Certificate might be expired or invalid

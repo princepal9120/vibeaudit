@@ -6,6 +6,12 @@ import { config } from '../config.js';
 
 const CLONE_TIMEOUT = 60000; // 60 seconds
 
+// Allowlist of supported git hosting providers (GitHub only for MVP)
+const ALLOWED_HOSTS = ['github.com'];
+
+// Pattern for suspicious characters that could indicate injection attempts
+const SUSPICIOUS_CHARS_PATTERN = /[;&|`$\\<>(){}[\]!#*?~]/;
+
 export async function cloneRepository(
   repoUrl: string,
   branch: string = 'main'
@@ -69,30 +75,77 @@ function normalizeGitUrl(url: string): string {
   // Handle various GitHub URL formats
   let normalized = url.trim();
 
-  // Remove trailing slashes
-  normalized = normalized.replace(/\/+$/, '');
+  // Check for suspicious characters that could indicate injection attempts
+  if (SUSPICIOUS_CHARS_PATTERN.test(normalized)) {
+    throw new Error('Invalid characters in repository URL');
+  }
 
-  // Convert HTTPS browse URLs to clone URLs
-  // https://github.com/user/repo -> https://github.com/user/repo.git
-  if (normalized.match(/^https:\/\/github\.com\/[\w-]+\/[\w.-]+$/)) {
-    if (!normalized.endsWith('.git')) {
-      normalized += '.git';
+  // Check for encoded sequences that could be used for injection
+  if (/%[0-9a-fA-F]{2}/.test(normalized)) {
+    // Decode and re-check for suspicious chars
+    try {
+      const decoded = decodeURIComponent(normalized);
+      if (SUSPICIOUS_CHARS_PATTERN.test(decoded)) {
+        throw new Error('Invalid encoded characters in repository URL');
+      }
+    } catch {
+      // If decoding fails, the URL is malformed
+      throw new Error('Invalid URL encoding');
     }
   }
 
+  // Remove trailing slashes
+  normalized = normalized.replace(/\/+$/, '');
+
   // Convert SSH URLs to HTTPS for easier access
   // git@github.com:user/repo.git -> https://github.com/user/repo.git
-  if (normalized.startsWith('git@github.com:')) {
-    normalized = normalized
-      .replace('git@github.com:', 'https://github.com/')
-      .replace(/\.git$/, '') + '.git';
+  const sshMatch = normalized.match(/^git@(github\.com):(.+)$/);
+  if (sshMatch) {
+    const [, host, path] = sshMatch;
+    normalized = `https://${host}/${path.replace(/\.git$/, '')}.git`;
   }
 
   // Validate URL format
+  let parsedUrl: URL;
   try {
-    new URL(normalized);
+    parsedUrl = new URL(normalized);
   } catch {
     throw new Error('Invalid repository URL format');
+  }
+
+  // Validate protocol (only HTTPS allowed)
+  if (parsedUrl.protocol !== 'https:') {
+    throw new Error('Only HTTPS repository URLs are supported');
+  }
+
+  // Validate host against allowlist
+  if (!ALLOWED_HOSTS.includes(parsedUrl.hostname)) {
+    throw new Error(
+      `Unsupported git host: ${parsedUrl.hostname}. ` +
+      `Supported hosts: ${ALLOWED_HOSTS.join(', ')}`
+    );
+  }
+
+  // Validate path structure (should be /owner/repo or /owner/repo.git)
+  const pathParts = parsedUrl.pathname.split('/').filter(Boolean);
+  if (pathParts.length < 2) {
+    throw new Error(
+      'Invalid repository path format. Expected: https://github.com/owner/repo'
+    );
+  }
+
+  // Validate owner and repo names (alphanumeric, hyphens, underscores, dots)
+  const validNamePattern = /^[\w.-]+$/;
+  const [owner, repo] = pathParts;
+  const repoName = repo.replace(/\.git$/, '');
+
+  if (!validNamePattern.test(owner) || !validNamePattern.test(repoName)) {
+    throw new Error('Invalid owner or repository name format');
+  }
+
+  // Convert HTTPS browse URLs to clone URLs
+  if (!normalized.endsWith('.git')) {
+    normalized += '.git';
   }
 
   return normalized;

@@ -1,9 +1,6 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { safeSpawn } from '../../lib/safe-exec.js';
 import type { RawFinding, Severity } from './types.js';
 import { SCANNER_TIMEOUTS } from './types.js';
-
-const execAsync = promisify(exec);
 
 interface TrivyResult {
   Results?: Array<{
@@ -52,11 +49,14 @@ interface TrivyResult {
 
 export async function runTrivy(repoPath: string): Promise<RawFinding[]> {
   const findings: RawFinding[] = [];
+  const trivyTimeout = `${Math.floor(SCANNER_TIMEOUTS.TRIVY / 1000)}s`;
 
   try {
     // Run Trivy for secrets detection
-    const { stdout: secretsOutput } = await execAsync(
-      `trivy fs --scanners secret --format json --timeout ${Math.floor(SCANNER_TIMEOUTS.TRIVY / 1000)}s "${repoPath}"`,
+    // Using safeSpawn with args array to prevent command injection
+    const { stdout: secretsOutput } = await safeSpawn(
+      'trivy',
+      ['fs', '--scanners', 'secret', '--format', 'json', '--timeout', trivyTimeout, repoPath],
       {
         timeout: SCANNER_TIMEOUTS.TRIVY + 5000,
         maxBuffer: 50 * 1024 * 1024,
@@ -73,8 +73,9 @@ export async function runTrivy(repoPath: string): Promise<RawFinding[]> {
 
   try {
     // Run Trivy for vulnerability detection
-    const { stdout: vulnOutput } = await execAsync(
-      `trivy fs --scanners vuln --format json --timeout ${Math.floor(SCANNER_TIMEOUTS.TRIVY / 1000)}s "${repoPath}"`,
+    const { stdout: vulnOutput } = await safeSpawn(
+      'trivy',
+      ['fs', '--scanners', 'vuln', '--format', 'json', '--timeout', trivyTimeout, repoPath],
       {
         timeout: SCANNER_TIMEOUTS.TRIVY + 5000,
         maxBuffer: 50 * 1024 * 1024,
@@ -91,8 +92,9 @@ export async function runTrivy(repoPath: string): Promise<RawFinding[]> {
 
   try {
     // Run Trivy for misconfigurations
-    const { stdout: misconfigOutput } = await execAsync(
-      `trivy fs --scanners misconfig --format json --timeout ${Math.floor(SCANNER_TIMEOUTS.TRIVY / 1000)}s "${repoPath}"`,
+    const { stdout: misconfigOutput } = await safeSpawn(
+      'trivy',
+      ['fs', '--scanners', 'misconfig', '--format', 'json', '--timeout', trivyTimeout, repoPath],
       {
         timeout: SCANNER_TIMEOUTS.TRIVY + 5000,
         maxBuffer: 50 * 1024 * 1024,

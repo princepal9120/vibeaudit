@@ -12,7 +12,7 @@ export const config = {
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
 
   // JWT
-  jwtSecret: process.env.JWT_SECRET || 'dev-secret-change-in-production',
+  jwtSecret: process.env.JWT_SECRET || '',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
 
   // GitHub OAuth
@@ -42,13 +42,21 @@ export const config = {
   tempDir: process.env.TEMP_DIR || '/tmp/vibeaudit-scans',
 } as const;
 
-// Validate required config in production
+// Validate required config
 export function validateConfig() {
+  // JWT_SECRET is always required (security-critical)
+  if (!config.jwtSecret) {
+    throw new Error(
+      'JWT_SECRET environment variable is required. ' +
+      'Generate a secure random secret (e.g., openssl rand -base64 32)'
+    );
+  }
+
+  // Additional required vars in production
   if (config.nodeEnv === 'production') {
     const required = [
       'DATABASE_URL',
       'REDIS_URL',
-      'JWT_SECRET',
       'GITHUB_CLIENT_ID',
       'GITHUB_CLIENT_SECRET',
       'GOOGLE_CLIENT_ID',

@@ -1,9 +1,6 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { safeSpawn } from '../../lib/safe-exec.js';
 import type { RawFinding, Severity } from './types.js';
 import { SCANNER_TIMEOUTS } from './types.js';
-
-const execAsync = promisify(exec);
 
 interface GitleaksResult {
   Description: string;
@@ -29,8 +26,10 @@ interface GitleaksResult {
 export async function runGitleaks(repoPath: string): Promise<RawFinding[]> {
   try {
     // Run gitleaks detect
-    const { stdout } = await execAsync(
-      `gitleaks detect --source "${repoPath}" --report-format json --no-git --exit-code 0`,
+    // Using safeSpawn with args array to prevent command injection
+    const { stdout, exitCode } = await safeSpawn(
+      'gitleaks',
+      ['detect', '--source', repoPath, '--report-format', 'json', '--no-git', '--exit-code', '0'],
       {
         timeout: SCANNER_TIMEOUTS.GITLEAKS,
         maxBuffer: 20 * 1024 * 1024,
