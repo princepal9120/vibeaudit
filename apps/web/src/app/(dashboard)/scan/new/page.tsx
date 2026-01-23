@@ -134,7 +134,7 @@ function FeatureChecklist({ scanType }: FeatureChecklistProps) {
 
   return (
     <div className="border-t border-slate-100 pt-6">
-      <h4 className="text-sm font-semibold text-slate-700 mb-4">What we'll scan for:</h4>
+      <h4 className="text-sm font-semibold text-slate-700 mb-4">What we&apos;ll scan for:</h4>
       <div className="grid grid-cols-2 gap-3 text-sm text-slate-600">
         {features.map((feature) => (
           <div key={feature} className="flex items-center gap-2">

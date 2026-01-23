@@ -1,8 +1,8 @@
-import { Router, type Request, type Response } from 'express';
+import { Router, type Request, type Response, type IRouter } from 'express';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from '../lib/auth.js';
 
-const router = Router();
+const router: IRouter = Router();
 
 // Better-auth handles all auth routes
 // This includes: /signup, /signin, /signout, /session, /oauth/*

@@ -1,4 +1,4 @@
-import { Router, type Request, type Response, type NextFunction } from 'express';
+import { Router, type Request, type Response, type NextFunction, type IRouter } from 'express';
 import { z } from 'zod';
 import { authenticateToken, getUserId, type AuthRequest } from '../middleware/auth.js';
 import { config } from '../config.js';
@@ -14,7 +14,7 @@ import {
 } from '../services/payments.js';
 import type { ProductType } from '@prisma/client';
 
-const router = Router();
+const router: IRouter = Router();
 
 // Validation schemas
 const checkoutSchema = z.object({

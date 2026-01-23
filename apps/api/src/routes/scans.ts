@@ -1,11 +1,11 @@
-import { Router, type Response, type NextFunction } from 'express';
+import { Router, type Response, type NextFunction, type IRouter } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db.js';
 import { authenticateToken, getUserId, type AuthRequest } from '../middleware/auth.js';
 import { addScanJob } from '../workers/queue.js';
 import { hasAvailableCredits, deductCredit, refundCredit } from '../services/payments.js';
 
-const router = Router();
+const router: IRouter = Router();
 
 // All scan routes require authentication
 router.use(authenticateToken);

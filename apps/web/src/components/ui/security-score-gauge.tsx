@@ -51,7 +51,8 @@ export function SecurityScoreGauge({
 
   useEffect(() => {
     if (!animated) {
-      setDisplayScore(score);
+      // Use requestAnimationFrame to avoid synchronous setState in effect
+      requestAnimationFrame(() => setDisplayScore(score));
       return;
     }
 

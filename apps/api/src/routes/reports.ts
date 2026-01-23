@@ -1,10 +1,10 @@
-import { Router, type Request, type Response, type NextFunction } from 'express';
+import { Router, type Request, type Response, type NextFunction, type IRouter } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../db.js';
 import { authenticateToken, optionalAuth, getUserId, type AuthRequest } from '../middleware/auth.js';
 import { generatePdf } from '../services/pdf-generator.js';
 
-const router = Router();
+const router: IRouter = Router();
 
 // GET /api/reports/:id - Get report (requires auth)
 router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {

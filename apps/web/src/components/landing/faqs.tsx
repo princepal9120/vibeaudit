@@ -65,7 +65,7 @@ export default function FAQs() {
                         </Accordion>
 
                         <p className="text-muted-foreground text-center">
-                            Can't find what you're looking for? Contact our{' '}
+                            Can&apos;t find what you&apos;re looking for? Contact our{' '}
                             <Link
                                 href="mailto:support@vibeaudit.dev"
                                 className="text-primary font-medium hover:underline">
