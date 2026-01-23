@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useSession } from '@/lib/auth-client';
+import { api, type Payment } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { UserIcon, ShieldIcon, CheckIcon } from '@/components/icons';
+import { useScanCredits } from '@/components/checkout';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -33,6 +36,24 @@ export default function AccountPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const { credits, loading: creditsLoading } = useScanCredits();
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadPayments() {
+      try {
+        const res = await api.getPaymentHistory(1, 5);
+        setPayments(res.payments);
+      } catch (err) {
+        console.error('Failed to load payment history:', err);
+      } finally {
+        setPaymentsLoading(false);
+      }
+    }
+
+    loadPayments();
+  }, []);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,14 +190,63 @@ export default function AccountPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="p-5 border border-slate-200/60 rounded-xl bg-slate-50/50">
-              <div className="text-3xl font-bold text-emerald-600">1</div>
-              <div className="text-sm text-slate-500 mt-1">Free scan remaining</div>
+              {creditsLoading ? (
+                <div className="h-9 w-12 bg-emerald-200 rounded animate-pulse" />
+              ) : (
+                <div className={`text-3xl font-bold ${
+                  credits && credits.availableCredits <= 1 ? 'text-amber-600' : 'text-emerald-600'
+                }`}>
+                  {credits?.availableCredits ?? 0}
+                </div>
+              )}
+              <div className="text-sm text-slate-500 mt-1">Scans remaining</div>
             </div>
             <div className="p-5 border border-slate-200/60 rounded-xl bg-slate-50/50">
-              <div className="text-3xl font-bold text-slate-900">$30</div>
-              <div className="text-sm text-slate-500 mt-1">Per additional scan</div>
+              {creditsLoading ? (
+                <div className="h-9 w-12 bg-slate-200 rounded animate-pulse" />
+              ) : (
+                <div className="text-3xl font-bold text-slate-900">
+                  {credits?.usedCredits ?? 0}
+                </div>
+              )}
+              <div className="text-sm text-slate-500 mt-1">Scans used</div>
             </div>
           </div>
+
+          <div className="flex gap-3">
+            <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white flex-1">
+              <Link href="/checkout">Buy More Credits</Link>
+            </Button>
+          </div>
+
+          {/* Recent Payments */}
+          {payments.length > 0 && (
+            <div className="pt-5 border-t border-slate-100">
+              <h4 className="font-semibold text-slate-900 mb-3">Recent Payments</h4>
+              <div className="space-y-2">
+                {payments.slice(0, 3).map((payment) => (
+                  <div key={payment.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                    <div>
+                      <div className="text-sm font-medium text-slate-900">
+                        {payment.quantity} credit{payment.quantity > 1 ? 's' : ''}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {new Date(payment.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-slate-900">
+                        ${(payment.amount / 100).toFixed(2)}
+                      </span>
+                      <Badge variant={payment.status === 'COMPLETED' ? 'success' : 'secondary'} size="sm">
+                        {payment.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="pt-5 border-t border-slate-100">
             <h4 className="font-semibold text-slate-900 mb-3">What&apos;s Included</h4>

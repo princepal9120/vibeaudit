@@ -34,6 +34,11 @@ export const config = {
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
   s3Bucket: process.env.S3_BUCKET || 'vibeaudit-reports',
 
+  // Dodo Payments
+  dodoPaymentsApiKey: process.env.DODO_PAYMENTS_API_KEY || '',
+  dodoPaymentsWebhookSecret: process.env.DODO_PAYMENTS_WEBHOOK_SECRET || '',
+  dodoPaymentsEnvironment: (process.env.DODO_PAYMENTS_ENVIRONMENT || 'test_mode') as 'test_mode' | 'live_mode',
+
   // Frontend URL (for CORS)
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
 

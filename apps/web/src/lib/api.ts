@@ -44,6 +44,7 @@ class ApiClient {
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers,
+      credentials: 'include', // Include cookies for better-auth session
     });
 
     if (!response.ok) {
@@ -176,6 +177,48 @@ class ApiClient {
   getPdfUrl(id: number) {
     return `${API_BASE}/reports/${id}/pdf`;
   }
+
+  // Payment endpoints
+  async getProducts() {
+    return this.request<{
+      products: Array<{
+        type: ProductType;
+        id: string;
+        name: string;
+        price: number;
+        credits: number;
+        description: string;
+        priceFormatted: string;
+        perScanPrice: number;
+        perScanFormatted: string;
+      }>;
+    }>('/payments/products');
+  }
+
+  async createCheckoutSession(productType: ProductType) {
+    return this.request<{
+      paymentId: string;
+      paymentLink: string;
+    }>('/payments/checkout', {
+      method: 'POST',
+      body: JSON.stringify({ productType }),
+    });
+  }
+
+  async getScanCredits() {
+    return this.request<{
+      totalCredits: number;
+      usedCredits: number;
+      availableCredits: number;
+    }>('/payments/credits');
+  }
+
+  async getPaymentHistory(page = 1, limit = 10) {
+    return this.request<{
+      payments: Payment[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/payments/history?page=${page}&limit=${limit}`);
+  }
 }
 
 // Types (should match @vibeaudit/shared)
@@ -274,6 +317,21 @@ export interface Finding {
   aiValidated: boolean;
   ruleId: string | null;
   createdAt: string;
+}
+
+export type ProductType = 'SCAN_CREDIT' | 'SCAN_BUNDLE_5' | 'SCAN_BUNDLE_10';
+
+export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+
+export interface Payment {
+  id: string;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  productType: ProductType;
+  quantity: number;
+  createdAt: string;
+  completedAt: string | null;
 }
 
 // Export singleton instance

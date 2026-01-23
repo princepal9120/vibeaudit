@@ -7,7 +7,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ==========================================
@@ -29,6 +28,8 @@ model user {
   // VibeAudit relations
   scans         Scan[]
   reports       Report[]
+  payments      Payment[]
+  scanCredit    ScanCredit?
 
   @@index([email])
 }
@@ -231,20 +232,53 @@ enum ScanSource {
 model Payment {
   id              String    @id @default(cuid())
   userId          String
-  scanId          String?
+  user            user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Dodo Payments fields
+  dodoPaymentId   String?   @unique
+  dodoSessionId   String?   @unique
+  dodoCustomerId  String?
+
+  // Payment details
   amount          Int       // Amount in cents
   currency        String    @default("usd")
   status          PaymentStatus @default(PENDING)
 
-  stripePaymentId String?   @unique
-  stripeSessionId String?
+  // Product info
+  productType     ProductType   @default(SCAN_CREDIT)
+  quantity        Int           @default(1)
+
+  // Metadata
+  metadata        Json?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  completedAt     DateTime?
+
+  @@index([userId])
+  @@index([dodoPaymentId])
+  @@index([status])
+}
+
+// Track user scan credits
+model ScanCredit {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalCredits    Int       @default(1)  // Start with 1 free scan
+  usedCredits     Int       @default(0)
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   @@index([userId])
-  @@index([stripePaymentId])
+}
+
+enum ProductType {
+  SCAN_CREDIT      // Single scan ($30)
+  SCAN_BUNDLE_5    // 5-pack ($125)
+  SCAN_BUNDLE_10   // 10-pack ($200)
 }
 
 enum PaymentStatus {

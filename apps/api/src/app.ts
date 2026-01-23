@@ -9,6 +9,7 @@ import authRoutes from './routes/auth.js';
 import scanRoutes from './routes/scans.js';
 import reportRoutes from './routes/reports.js';
 import healthRoutes from './routes/health.js';
+import paymentRoutes from './routes/payments.js';
 
 export function createApp(): Express {
   const app = express();
@@ -45,6 +46,7 @@ export function createApp(): Express {
   app.use('/api/auth', authRoutes);
   app.use('/api/scans', scanRoutes);
   app.use('/api/reports', reportRoutes);
+  app.use('/api/payments', paymentRoutes);
 
   // 404 handler
   app.use((_req: Request, res: Response) => {

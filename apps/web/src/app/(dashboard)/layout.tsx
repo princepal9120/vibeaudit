@@ -16,6 +16,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Logo } from '@/components/ui/logo';
 import { ChartBarIcon, PlusIcon, CogIcon } from '@/components/icons';
 import { PageLoading } from '@/components/loading';
@@ -94,11 +95,15 @@ interface MobileNavProps {
   pathname: string;
   isOpen: boolean;
   onClose: () => void;
-  userEmail?: string;
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
   onSignOut: () => void;
 }
 
-function MobileNav({ pathname, isOpen, onClose, userEmail, onSignOut }: MobileNavProps) {
+function MobileNav({ pathname, isOpen, onClose, user, onSignOut }: MobileNavProps) {
   if (!isOpen) return null;
 
   return (
@@ -143,8 +148,17 @@ function MobileNav({ pathname, isOpen, onClose, userEmail, onSignOut }: MobileNa
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-border">
-          {userEmail && (
-            <p className="text-sm text-muted-foreground mb-3 truncate">{userEmail}</p>
+          {user && (
+            <div className="flex items-center gap-3 mb-4">
+              <Avatar className="h-9 w-9 border border-border">
+                <AvatarImage src={user.image || ''} alt={user.name || ''} />
+                <AvatarFallback>{user.name?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col overflow-hidden">
+                <span className="text-sm font-medium text-foreground truncate">{user.name}</span>
+                <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+              </div>
+            </div>
           )}
           <Button
             variant="outline"
@@ -167,17 +181,29 @@ function MobileNav({ pathname, isOpen, onClose, userEmail, onSignOut }: MobileNa
 // ============================================
 
 interface UserMenuProps {
-  email?: string;
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
   onSignOut: () => void;
 }
 
-function UserMenu({ email, onSignOut }: UserMenuProps) {
+function UserMenu({ user, onSignOut }: UserMenuProps) {
   return (
     <div className="flex items-center gap-4">
-      {email && (
-        <span className="text-sm text-muted-foreground hidden lg:block truncate max-w-[200px]">
-          {email}
-        </span>
+      {user && (
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-foreground hidden lg:block">
+            {user.name || user.email}
+          </span>
+          <Avatar className="h-8 w-8 border border-border">
+            <AvatarImage src={user.image || ''} alt={user.name || ''} />
+            <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+              {user.name?.charAt(0) || user.email?.charAt(0) || 'U'}
+            </AvatarFallback>
+          </Avatar>
+        </div>
       )}
       <Button
         variant="outline"
@@ -197,12 +223,16 @@ function UserMenu({ email, onSignOut }: UserMenuProps) {
 
 interface HeaderProps {
   pathname: string;
-  userEmail?: string;
+  user?: {
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  };
   onSignOut: () => void;
   onMenuOpen: () => void;
 }
 
-function Header({ pathname, userEmail, onSignOut, onMenuOpen }: HeaderProps) {
+function Header({ pathname, user, onSignOut, onMenuOpen }: HeaderProps) {
   return (
     <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -217,7 +247,7 @@ function Header({ pathname, userEmail, onSignOut, onMenuOpen }: HeaderProps) {
 
           {/* User Menu (Desktop) */}
           <div className="hidden md:flex">
-            <UserMenu email={userEmail} onSignOut={onSignOut} />
+            <UserMenu user={user} onSignOut={onSignOut} />
           </div>
 
           {/* Mobile Menu Button */}
@@ -265,7 +295,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Header */}
       <Header
         pathname={pathname}
-        userEmail={session?.user?.email}
+        user={session?.user}
         onSignOut={handleSignOut}
         onMenuOpen={() => setMobileMenuOpen(true)}
       />
@@ -275,7 +305,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         pathname={pathname}
         isOpen={mobileMenuOpen}
         onClose={() => setMobileMenuOpen(false)}
-        userEmail={session?.user?.email}
+        user={session?.user}
         onSignOut={handleSignOut}
       />
 

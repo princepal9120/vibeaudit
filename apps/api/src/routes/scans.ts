@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../db.js';
 import { authenticateToken, getUserId, type AuthRequest } from '../middleware/auth.js';
 import { addScanJob } from '../workers/queue.js';
+import { hasAvailableCredits, deductCredit, refundCredit } from '../services/payments.js';
 
 const router = Router();
 
@@ -68,6 +69,28 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
     const userId = getUserId(req);
     const body = createScanSchema.parse(req.body);
 
+    // Check if user has available credits
+    const hasCredits = await hasAvailableCredits(userId);
+    if (!hasCredits) {
+      res.status(402).json({
+        error: 'No scan credits available',
+        code: 'INSUFFICIENT_CREDITS',
+        message: 'Please purchase scan credits to continue',
+      });
+      return;
+    }
+
+    // Deduct credit before creating scan
+    const creditDeducted = await deductCredit(userId);
+    if (!creditDeducted) {
+      res.status(402).json({
+        error: 'Failed to deduct credit',
+        code: 'CREDIT_DEDUCTION_FAILED',
+        message: 'Please try again or contact support',
+      });
+      return;
+    }
+
     // Create scan record
     const scan = await prisma.scan.create({
       data: {
@@ -93,6 +116,10 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
     } catch (queueError) {
       // Queue might not be available in development
       console.error('Failed to add scan to queue:', queueError);
+
+      // Refund the credit since scan failed to queue
+      await refundCredit(userId);
+
       // Update scan status to indicate queue issue
       await prisma.scan.update({
         where: { id: scan.id },
@@ -185,6 +212,17 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
     const userId = getUserId(req);
     const scanId = req.params.id as string;
 
+    // Check if user has available credits
+    const hasCredits = await hasAvailableCredits(userId);
+    if (!hasCredits) {
+      res.status(402).json({
+        error: 'No scan credits available',
+        code: 'INSUFFICIENT_CREDITS',
+        message: 'Please purchase scan credits to continue',
+      });
+      return;
+    }
+
     // Get original scan
     const originalScan = await prisma.scan.findFirst({
       where: {
@@ -195,6 +233,17 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
 
     if (!originalScan) {
       res.status(404).json({ error: 'Scan not found' });
+      return;
+    }
+
+    // Deduct credit before creating scan
+    const creditDeducted = await deductCredit(userId);
+    if (!creditDeducted) {
+      res.status(402).json({
+        error: 'Failed to deduct credit',
+        code: 'CREDIT_DEDUCTION_FAILED',
+        message: 'Please try again or contact support',
+      });
       return;
     }
 
@@ -222,6 +271,10 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
       });
     } catch (queueError) {
       console.error('Failed to add rescan to queue:', queueError);
+
+      // Refund the credit since scan failed to queue
+      await refundCredit(userId);
+
       await prisma.scan.update({
         where: { id: newScan.id },
         data: {
