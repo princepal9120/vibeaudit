@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Scan, Settings, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Scan, Settings, Menu, X, FileText } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface SidebarProps {
@@ -17,6 +17,7 @@ interface SidebarProps {
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/scan/new', icon: Scan, label: 'New Scan' },
+  { href: '/prd-review', icon: FileText, label: 'PRD Review' },
   { href: '/account', icon: Settings, label: 'Settings' },
 ];
 

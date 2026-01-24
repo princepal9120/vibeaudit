@@ -1,6 +1,6 @@
 // API client for VibeAudit backend
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 interface ApiError {
   error: string;
@@ -219,6 +219,109 @@ class ApiClient {
       pagination: { page: number; limit: number; total: number; totalPages: number };
     }>(`/payments/history?page=${page}&limit=${limit}`);
   }
+
+  // PRD Review endpoints
+  async getPrdReviews(page = 1, limit = 10) {
+    return this.request<{
+      reviews: PrdReview[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/prd-reviews?page=${page}&limit=${limit}`);
+  }
+
+  async getPrdReview(id: string) {
+    return this.request<PrdReviewDetail>(`/prd-reviews/${id}`);
+  }
+
+  async createPrdReview(data: { title: string; content: string; fileName?: string }) {
+    return this.request<{ id: string; title: string; status: PrdReviewStatus; createdAt: string }>(
+      '/prd-reviews',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }
+    );
+  }
+
+  async deletePrdReview(id: string) {
+    return this.request<{ message: string }>(`/prd-reviews/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  getPrdReviewDownloadUrl(id: string) {
+    return `${API_BASE}/prd-reviews/${id}/download`;
+  }
+
+  async uploadPrdReviewPdf(id: string) {
+    return this.request<{ url: string; fileId: string; size?: number; cached: boolean }>(
+      `/prd-reviews/${id}/pdf/upload`,
+      { method: 'POST' }
+    );
+  }
+
+  getPrdReviewPdfUrl(id: string) {
+    return `${API_BASE}/prd-reviews/${id}/pdf`;
+  }
+
+  async sharePrdReview(id: string, expiresInDays = 30) {
+    return this.request<{ shareToken: string; shareUrl: string; expiresAt: string }>(
+      `/prd-reviews/${id}/share`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ expiresInDays }),
+      }
+    );
+  }
+
+  async revokePrdReviewShare(id: string) {
+    return this.request<{ message: string }>(`/prd-reviews/${id}/share`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getSharedPrdReview(token: string) {
+    return this.request<PrdReviewDetail & { authorName: string; isSharedView: boolean }>(
+      `/prd-reviews/shared/${token}`
+    );
+  }
+
+  // Subscription endpoints
+  async getCurrentSubscription() {
+    return this.request<{
+      subscription: {
+        plan: SubscriptionPlan;
+        planName: string;
+        status: SubscriptionStatus;
+        currentPeriodEnd: string;
+        cancelAtPeriodEnd: boolean;
+      };
+      usage: {
+        reviewsUsed: number;
+        reviewsLimit: number;
+        periodStart: string;
+        periodEnd: string;
+        isUnlimited: boolean;
+      };
+    }>('/subscriptions/current');
+  }
+
+  async getSubscriptionPlans() {
+    return this.request<{
+      plans: SubscriptionPlanDetail[];
+    }>('/subscriptions/plans');
+  }
+
+  async createSubscriptionCheckout() {
+    return this.request<{ checkoutUrl: string }>('/subscriptions/checkout', {
+      method: 'POST',
+    });
+  }
+
+  async cancelSubscription() {
+    return this.request<{ message: string }>('/subscriptions/cancel', {
+      method: 'POST',
+    });
+  }
 }
 
 // Types
@@ -332,6 +435,69 @@ export interface Payment {
   quantity: number;
   createdAt: string;
   completedAt: string | null;
+}
+
+// PRD Review types
+export type PrdReviewStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+
+export interface PrdReview {
+  id: string;
+  title: string;
+  fileName: string | null;
+  status: PrdReviewStatus;
+  securityScore: number | null;
+  processingTimeMs: number | null;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface PrdFinding {
+  id: string;
+  framework: string;
+  frameworkItem: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  title: string;
+  description: string;
+  recommendation: string;
+  section?: string;
+}
+
+export interface FrameworkCoverage {
+  framework: string;
+  frameworkName: string;
+  coveredItems: string[];
+  missingItems: string[];
+  coveragePercent: number;
+}
+
+export interface PrdReviewDetail extends PrdReview {
+  userId: string;
+  originalContent: string;
+  securedContent: string | null;
+  errorMessage: string | null;
+  findings: PrdFinding[] | null;
+  frameworkCoverage: FrameworkCoverage[] | null;
+  // PDF and sharing
+  pdfUrl: string | null;
+  pdfFileId: string | null;
+  shareToken: string | null;
+  shareExpiresAt: string | null;
+}
+
+// Subscription types
+export type SubscriptionPlan = 'FREE' | 'PRO';
+export type SubscriptionStatus = 'ACTIVE' | 'CANCELLED' | 'PAST_DUE' | 'EXPIRED';
+
+export interface SubscriptionPlanDetail {
+  id: string;
+  productId: string;
+  name: string;
+  price: number;
+  priceFormatted: string;
+  reviewsPerMonth: number;
+  reviewsFormatted: string;
+  description: string;
+  features: string[];
 }
 
 // Export singleton instance

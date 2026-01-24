@@ -28,11 +28,10 @@ export const config = {
   // OpenAI
   openaiApiKey: process.env.OPENAI_API_KEY || '',
 
-  // AWS S3
-  awsRegion: process.env.AWS_REGION || 'us-east-1',
-  awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-  awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
-  s3Bucket: process.env.S3_BUCKET || 'vibeaudit-reports',
+  // ImageKit (for PDF/file storage)
+  imagekitPublicKey: process.env.IMAGEKIT_PUBLIC_KEY || '',
+  imagekitPrivateKey: process.env.IMAGEKIT_PRIVATE_KEY || '',
+  imagekitUrlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT || '',
 
   // Dodo Payments
   dodoPaymentsApiKey: process.env.DODO_PAYMENTS_API_KEY || '',

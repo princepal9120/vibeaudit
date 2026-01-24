@@ -27,6 +27,11 @@ model user {
   payments      Payment[]
   scanCredit    ScanCredit?
 
+  // PRD Review feature
+  subscription  Subscription?
+  prdUsage      PrdUsage[]
+  prdReviews    PrdReview[]
+
   @@index([email])
 }
 
@@ -140,7 +145,8 @@ model Report {
 
   // Generated content
   executiveSummary String?  @db.Text
-  pdfUrl          String?   // S3 URL
+  pdfUrl          String?   // ImageKit URL
+  pdfFileId       String?   // ImageKit file ID
 
   // Sharing
   shareToken      String?   @unique
@@ -279,4 +285,86 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+// PRD Review feature
+enum SubscriptionPlan {
+  FREE  // 2 reviews/month
+  PRO   // Unlimited reviews
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  EXPIRED
+}
+
+enum PrdReviewStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  user               user               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan               SubscriptionPlan   @default(FREE)
+  status             SubscriptionStatus @default(ACTIVE)
+  dodoSubscriptionId String?            @unique
+  dodoCustomerId     String?
+  currentPeriodStart DateTime           @default(now())
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([userId])
+}
+
+model PrdUsage {
+  id           String   @id @default(cuid())
+  userId       String
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  periodStart  DateTime
+  periodEnd    DateTime
+  reviewsUsed  Int      @default(0)
+  reviewsLimit Int      @default(2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, periodStart])
+  @@index([userId])
+}
+
+model PrdReview {
+  id               String          @id @default(cuid())
+  userId           String
+  user             user            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String
+  originalContent  String          @db.Text
+  fileName         String?
+  status           PrdReviewStatus @default(PENDING)
+  errorMessage     String?
+  securedContent   String?         @db.Text
+  securityScore    Int?
+  findings         Json?
+  frameworkCoverage Json?
+  processingTimeMs Int?
+  createdAt        DateTime        @default(now())
+  completedAt      DateTime?
+
+  // PDF Storage (ImageKit)
+  pdfUrl           String?
+  pdfFileId        String?
+
+  // Sharing
+  shareToken       String?         @unique
+  shareExpiresAt   DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([shareToken])
 }
