@@ -27,8 +27,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <Sidebar user={session?.user} />
 
       {/* Main Content */}
-      <main className="ml-[72px] min-h-screen">
-        <div className="px-10 py-8">
+      <main className="md:ml-[72px] min-h-screen pt-16 pb-20 md:pt-0 md:pb-0">
+        <div className="px-4 py-6 md:px-10 md:py-8">
           {children}
         </div>
       </main>

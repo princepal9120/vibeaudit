@@ -148,19 +148,19 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-[28px] font-semibold text-[#111827]">Account Settings</h1>
-        <p className="text-sm text-[#9CA3AF] mt-1">Manage your profile and preferences</p>
+        <h1 className="text-2xl md:text-[28px] font-semibold text-[#111827]">Account Settings</h1>
+        <p className="text-sm text-[#9CA3AF] mt-1 hidden sm:block">Manage your profile and preferences</p>
       </div>
 
       {/* Two Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
         {/* Left Column */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Profile Card */}
-          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-6 space-y-5">
+          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<User className="w-5 h-5 text-[#10B981]" />}
               iconBg="bg-[#D1FAE5]"
@@ -208,7 +208,7 @@ export default function AccountPage() {
           </div>
 
           {/* Usage & Plan Card */}
-          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-6 space-y-5">
+          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<CreditCard className="w-5 h-5 text-[#F59E0B]" />}
               iconBg="bg-[#FEF3C7]"
@@ -293,9 +293,9 @@ export default function AccountPage() {
         </div>
 
         {/* Right Column */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Preferences Card */}
-          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-6 space-y-5">
+          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<Bell className="w-5 h-5 text-[#6366F1]" />}
               iconBg="bg-[#E0E7FF]"
@@ -322,7 +322,7 @@ export default function AccountPage() {
           </div>
 
           {/* Security Card */}
-          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-6 space-y-5">
+          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<Shield className="w-5 h-5 text-[#DC2626]" />}
               iconBg="bg-[#FEE2E2]"
@@ -331,17 +331,17 @@ export default function AccountPage() {
             />
 
             <div className="space-y-2">
-              <label className="text-[13px] font-medium text-[#111827]">API Key</label>
+              <label className="text-xs sm:text-[13px] font-medium text-[#111827]">API Key</label>
               <div className="flex gap-2">
                 <input
                   type="password"
                   value={apiKey}
                   readOnly
-                  className="flex-1 px-4 py-3 rounded-lg bg-white border border-[#E5E7EB] text-sm text-[#111827] font-mono"
+                  className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-white border border-[#E5E7EB] text-xs sm:text-sm text-[#111827] font-mono"
                 />
                 <button
                   onClick={handleCopyApiKey}
-                  className="px-4 py-3 rounded-lg border border-[#E5E7EB] bg-white text-[#4B5563] hover:bg-gray-50 transition-colors"
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-[#E5E7EB] bg-white text-[#4B5563] hover:bg-gray-50 transition-colors flex-shrink-0"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
@@ -356,7 +356,7 @@ export default function AccountPage() {
           </div>
 
           {/* Danger Zone */}
-          <div className="bg-red-50 rounded-xl border border-red-200 p-6 space-y-5">
+          <div className="bg-red-50 rounded-xl border border-red-200 p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<AlertTriangle className="w-5 h-5 text-[#DC2626]" />}
               iconBg="bg-[#FEE2E2]"

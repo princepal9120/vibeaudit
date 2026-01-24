@@ -15,18 +15,18 @@ interface MetricCardProps {
 
 function MetricCard({ label, value, change, changeColor = 'text-[#9CA3AF]', icon, iconBg }: MetricCardProps) {
   return (
-    <div className="flex-1 bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-5">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[13px] text-[#9CA3AF]">{label}</span>
-        <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', iconBg)}>
+    <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 md:p-5">
+      <div className="flex items-center justify-between mb-2 md:mb-3">
+        <span className="text-xs md:text-[13px] text-[#9CA3AF]">{label}</span>
+        <div className={cn('w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center', iconBg)}>
           {icon}
         </div>
       </div>
-      <div className="text-[32px] font-semibold text-[#111827] leading-none mb-2">
+      <div className="text-2xl md:text-[32px] font-semibold text-[#111827] leading-none mb-1 md:mb-2">
         {value}
       </div>
       {change && (
-        <span className={cn('text-xs', changeColor)}>{change}</span>
+        <span className={cn('text-[10px] md:text-xs hidden sm:inline', changeColor)}>{change}</span>
       )}
     </div>
   );
@@ -41,7 +41,7 @@ export function DashboardStatsGrid({ stats, className }: DashboardStatsProps) {
   const scoreDisplay = stats.averageScore > 0 ? stats.averageScore : '-';
 
   return (
-    <div className={cn('flex gap-4', className)}>
+    <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4', className)}>
       <MetricCard
         label="Total Scans"
         value={stats.totalScans}
@@ -78,15 +78,15 @@ export function DashboardStatsGrid({ stats, className }: DashboardStatsProps) {
 
 export function DashboardStatsSkeleton() {
   return (
-    <div className="flex gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
       {[...Array(4)].map((_, i) => (
-        <div key={i} className="flex-1 bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
-            <div className="w-8 h-8 bg-gray-200 rounded-lg animate-pulse" />
+        <div key={i} className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 md:p-5">
+          <div className="flex items-center justify-between mb-2 md:mb-3">
+            <div className="h-3 md:h-4 w-16 md:w-20 bg-gray-200 rounded animate-pulse" />
+            <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-200 rounded-lg animate-pulse" />
           </div>
-          <div className="h-8 w-16 bg-gray-200 rounded animate-pulse mb-2" />
-          <div className="h-3 w-24 bg-gray-100 rounded animate-pulse" />
+          <div className="h-6 md:h-8 w-12 md:w-16 bg-gray-200 rounded animate-pulse mb-1 md:mb-2" />
+          <div className="h-2 md:h-3 w-20 md:w-24 bg-gray-100 rounded animate-pulse hidden sm:block" />
         </div>
       ))}
     </div>
