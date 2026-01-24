@@ -52,11 +52,11 @@ export default function TestimonialSection() {
     }, []);
 
     return (
-        <section className="py-20 px-4 sm:px-6 bg-dark-section text-white overflow-hidden">
+        <section className="py-20 px-4 sm:px-6 bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 overflow-hidden">
             <div className="container relative">
                 <FadeIn>
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl sm:text-5xl font-bold mb-4">Trusted by developers</h2>
+                        <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-foreground">Trusted by developers</h2>
                         <p className="text-xl text-muted-foreground">Security that moves as fast as you do</p>
                     </div>
                 </FadeIn>
@@ -86,7 +86,7 @@ export default function TestimonialSection() {
 
                             return (
                                 <div key={index} className={className}>
-                                    <div className="bg-dark-card ring-1 ring-white/10 rounded-2xl p-8 shadow-2xl backdrop-blur-sm mx-auto max-w-2xl">
+                                    <div className="bg-card border border-border rounded-2xl p-8 shadow-xl mx-auto max-w-2xl">
                                         <div className="flex gap-1 mb-6" aria-label={`${t.stars} out of 5 stars`}>
                                             {Array.from({ length: 5 }).map((_, i) => (
                                                 <Star
@@ -95,13 +95,13 @@ export default function TestimonialSection() {
                                                         "size-5",
                                                         i < t.stars
                                                             ? "fill-primary stroke-primary"
-                                                            : "fill-muted stroke-transparent"
+                                                            : "fill-muted stroke-muted"
                                                     )}
                                                 />
                                             ))}
                                         </div>
 
-                                        <blockquote className="text-xl sm:text-2xl font-medium leading-relaxed mb-6">
+                                        <blockquote className="text-xl sm:text-2xl font-medium leading-relaxed mb-6 text-foreground">
                                             &ldquo;{t.content}&rdquo;
                                         </blockquote>
 
@@ -111,7 +111,7 @@ export default function TestimonialSection() {
                                                 <AvatarFallback className="bg-primary text-primary-foreground font-bold">{t.name.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <div className="text-white font-bold">{t.name}</div>
+                                                <div className="text-foreground font-bold">{t.name}</div>
                                                 <div className="text-primary text-sm font-medium">{t.role}</div>
                                             </div>
                                         </div>
@@ -129,7 +129,7 @@ export default function TestimonialSection() {
                                 onClick={() => setCurrentIndex(index)}
                                 className={cn(
                                     "h-1.5 rounded-full transition-all duration-300",
-                                    currentIndex === index ? "w-8 bg-primary" : "w-1.5 bg-muted hover:bg-muted-foreground"
+                                    currentIndex === index ? "w-8 bg-primary" : "w-1.5 bg-border hover:bg-primary/50"
                                 )}
                                 aria-label={`Go to slide ${index + 1}`}
                             />

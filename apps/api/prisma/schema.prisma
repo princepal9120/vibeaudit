@@ -1,5 +1,3 @@
-// Prisma schema for VibeAudit
-// Uses better-auth for authentication
 
 generator client {
   provider = "prisma-client-js"
@@ -9,9 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// ==========================================
-// better-auth models (required field names)
-// ==========================================
+
 
 model user {
   id            String    @id @default(cuid())
@@ -25,7 +21,7 @@ model user {
   sessions      session[]
   accounts      account[]
 
-  // VibeAudit relations
+
   scans         Scan[]
   reports       Report[]
   payments      Payment[]
@@ -82,9 +78,6 @@ model verification {
   @@index([identifier])
 }
 
-// ==========================================
-// VibeAudit models
-// ==========================================
 
 model Scan {
   id              String    @id @default(cuid())
