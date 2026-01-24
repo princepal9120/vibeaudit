@@ -221,7 +221,7 @@ class ApiClient {
   }
 }
 
-// Types (should match @vibeaudit/shared)
+// Types
 export interface User {
   id: number;
   email: string;
