@@ -1,41 +1,36 @@
+'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
-import { ShieldIcon, CheckCircleIcon, ChartBarIcon, AlertTriangleIcon } from '@/components/icons';
-import { cn, getScoreColor } from '@/lib/utils';
+import { Scan, CheckCircle, BarChart2, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { DashboardStats } from '@/lib/types';
 
-
-
-interface StatCardProps {
-  title: string;
+interface MetricCardProps {
+  label: string;
   value: string | number;
+  change?: string;
+  changeColor?: string;
   icon: React.ReactNode;
-  valueClassName?: string;
-  description?: string;
-  iconBgClassName?: string;
+  iconBg: string;
 }
 
-function StatCard({ title, value, icon, valueClassName, description, iconBgClassName = 'bg-slate-100' }: StatCardProps) {
+function MetricCard({ label, value, change, changeColor = 'text-[#9CA3AF]', icon, iconBg }: MetricCardProps) {
   return (
-    <Card className="border-slate-200/60 hover:border-emerald-200 hover:shadow-md transition-all group">
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-500">{title}</p>
-            <div className={cn('text-3xl font-bold mt-1', valueClassName || 'text-slate-900')}>
-              {value}
-            </div>
-            {description && <p className="text-xs text-slate-400 mt-1">{description}</p>}
-          </div>
-          <div className={cn('h-10 w-10 rounded-xl flex items-center justify-center transition-colors', iconBgClassName)}>
-            {icon}
-          </div>
+    <div className="flex-1 bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-5">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-[13px] text-[#9CA3AF]">{label}</span>
+        <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', iconBg)}>
+          {icon}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div className="text-[32px] font-semibold text-[#111827] leading-none mb-2">
+        {value}
+      </div>
+      {change && (
+        <span className={cn('text-xs', changeColor)}>{change}</span>
+      )}
+    </div>
   );
 }
-
 
 interface DashboardStatsProps {
   stats: DashboardStats;
@@ -43,103 +38,79 @@ interface DashboardStatsProps {
 }
 
 export function DashboardStatsGrid({ stats, className }: DashboardStatsProps) {
-  const scoreDisplay = stats.averageScore > 0 ? `${stats.averageScore}` : '-';
-  const scoreColor = stats.averageScore > 0 ? getScoreColor(stats.averageScore) : 'text-slate-400';
+  const scoreDisplay = stats.averageScore > 0 ? stats.averageScore : '-';
 
   return (
-    <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4', className)}>
-      <StatCard
-        title="Total Scans"
+    <div className={cn('flex gap-4', className)}>
+      <MetricCard
+        label="Total Scans"
         value={stats.totalScans}
-        icon={<ShieldIcon className="h-5 w-5 text-emerald-600" />}
-        iconBgClassName="bg-emerald-50 group-hover:bg-emerald-100"
-        description="All time scans"
+        change="+12% from last month"
+        changeColor="text-[#10B981]"
+        icon={<Scan className="w-4 h-4 text-[#10B981]" />}
+        iconBg="bg-[#D1FAE5]"
       />
-      <StatCard
-        title="Completed"
+      <MetricCard
+        label="Completed"
         value={stats.completedScans}
-        valueClassName="text-emerald-600"
-        icon={<CheckCircleIcon className="h-5 w-5 text-emerald-600" />}
-        iconBgClassName="bg-emerald-50 group-hover:bg-emerald-100"
-        description="Successfully analyzed"
+        change="Successfully analyzed"
+        icon={<CheckCircle className="w-4 h-4 text-[#10B981]" />}
+        iconBg="bg-[#D1FAE5]"
       />
-      <StatCard
-        title="Avg Score"
+      <MetricCard
+        label="Avg Score"
         value={scoreDisplay}
-        valueClassName={scoreColor}
-        icon={<ChartBarIcon className="h-5 w-5 text-blue-600" />}
-        iconBgClassName="bg-blue-50 group-hover:bg-blue-100"
-        description="Security score average"
+        change="Security score average"
+        icon={<BarChart2 className="w-4 h-4 text-[#F59E0B]" />}
+        iconBg="bg-[#FEF3C7]"
       />
-      <StatCard
-        title="Total Findings"
+      <MetricCard
+        label="Total Findings"
         value={stats.totalFindings}
-        valueClassName={stats.criticalFindings > 0 ? 'text-red-600' : 'text-amber-600'}
-        icon={<AlertTriangleIcon className={cn('h-5 w-5', stats.criticalFindings > 0 ? 'text-red-600' : 'text-amber-600')} />}
-        iconBgClassName={stats.criticalFindings > 0 ? 'bg-red-50 group-hover:bg-red-100' : 'bg-amber-50 group-hover:bg-amber-100'}
-        description={
-          stats.criticalFindings > 0
-            ? `${stats.criticalFindings} critical`
-            : 'Issues discovered'
-        }
+        change={stats.criticalFindings > 0 ? `${stats.criticalFindings} critical issues` : 'Issues discovered'}
+        changeColor={stats.criticalFindings > 0 ? 'text-[#DC2626]' : 'text-[#9CA3AF]'}
+        icon={<AlertTriangle className="w-4 h-4 text-[#DC2626]" />}
+        iconBg="bg-[#FEE2E2]"
       />
     </div>
   );
 }
-
-
-interface CompactStatsProps {
-  stats: DashboardStats;
-  className?: string;
-}
-
-export function CompactStats({ stats, className }: CompactStatsProps) {
-  return (
-    <div className={cn('flex items-center gap-6 text-sm', className)}>
-      <div className="flex items-center gap-2">
-        <span className="text-slate-500">Scans:</span>
-        <span className="font-semibold text-slate-900">{stats.totalScans}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-slate-500">Completed:</span>
-        <span className="font-semibold text-emerald-600">{stats.completedScans}</span>
-      </div>
-      {stats.averageScore > 0 && (
-        <div className="flex items-center gap-2">
-          <span className="text-slate-500">Avg Score:</span>
-          <span className={cn('font-semibold', getScoreColor(stats.averageScore))}>
-            {stats.averageScore}
-          </span>
-        </div>
-      )}
-      {stats.totalFindings > 0 && (
-        <div className="flex items-center gap-2">
-          <span className="text-slate-500">Findings:</span>
-          <span className="font-semibold text-amber-600">{stats.totalFindings}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
 
 export function DashboardStatsSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="flex gap-4">
       {[...Array(4)].map((_, i) => (
-        <Card key={i} className="border-slate-200/60">
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="space-y-2">
-                <div className="h-4 w-20 bg-slate-200 rounded animate-pulse" />
-                <div className="h-8 w-16 bg-slate-200 rounded animate-pulse" />
-                <div className="h-3 w-24 bg-slate-100 rounded animate-pulse" />
-              </div>
-              <div className="h-10 w-10 rounded-xl bg-slate-100 animate-pulse" />
-            </div>
-          </CardContent>
-        </Card>
+        <div key={i} className="flex-1 bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+            <div className="w-8 h-8 bg-gray-200 rounded-lg animate-pulse" />
+          </div>
+          <div className="h-8 w-16 bg-gray-200 rounded animate-pulse mb-2" />
+          <div className="h-3 w-24 bg-gray-100 rounded animate-pulse" />
+        </div>
       ))}
+    </div>
+  );
+}
+
+// Compact stats for other views
+export function CompactStats({ stats, className }: DashboardStatsProps) {
+  return (
+    <div className={cn('flex items-center gap-6 text-sm', className)}>
+      <div className="flex items-center gap-2">
+        <span className="text-[#9CA3AF]">Scans:</span>
+        <span className="font-semibold text-[#111827]">{stats.totalScans}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-[#9CA3AF]">Completed:</span>
+        <span className="font-semibold text-[#10B981]">{stats.completedScans}</span>
+      </div>
+      {stats.averageScore > 0 && (
+        <div className="flex items-center gap-2">
+          <span className="text-[#9CA3AF]">Avg Score:</span>
+          <span className="font-semibold text-[#111827]">{stats.averageScore}</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,87 +1,49 @@
-/**
- * Dashboard Page
- * Main dashboard displaying scan history and statistics
- *
- * Features:
- * - Overview statistics (total scans, completed, avg score, findings)
- * - List of recent scans with status and scores
- * - Quick action to start new scan
- * - Auto-refresh for in-progress scans
- */
-
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { Plus, RefreshCw } from 'lucide-react';
 import { DashboardStatsGrid, DashboardStatsSkeleton } from '@/components/dashboard-stats';
-import { ScanListWithHeader, ScanListSkeleton } from '@/components/scan-list';
-import { PlusIcon, RefreshIcon } from '@/components/icons';
+import { ScansTable, ScansTableSkeleton } from '@/components/scans-table';
 import { useScans } from '@/hooks';
 import { calculateDashboardStats, isScanInProgress } from '@/lib/utils';
 
-// ============================================
-// Page Header Component
-// ============================================
-
-interface PageHeaderProps {
-  onRefresh?: () => void;
-  isRefreshing?: boolean;
-}
-
-function PageHeader({ onRefresh, isRefreshing }: PageHeaderProps) {
-  return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Monitor your security scans and findings</p>
-      </div>
-      <div className="flex items-center gap-3">
-        {onRefresh && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onRefresh}
-            disabled={isRefreshing}
-            className="border-border text-muted-foreground hover:border-input"
-          >
-            <RefreshIcon className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline ml-2">Refresh</span>
-          </Button>
-        )}
-        <Link href="/scan/new">
-          <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
-            <PlusIcon className="h-4 w-4" />
-            <span className="ml-2">New Scan</span>
-          </Button>
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// Main Dashboard Page Component
-// ============================================
-
 export default function DashboardPage() {
-  // Fetch scans with auto-refresh if any are in progress
   const { scans, loading, error, refetch } = useScans({
     autoRefresh: true,
     refreshInterval: 5000,
   });
 
-  // Check if any scans are in progress
   const hasActiveScans = scans.some((scan) => isScanInProgress(scan.status));
-
-  // Calculate dashboard statistics
   const stats = calculateDashboardStats(scans);
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
-      <PageHeader onRefresh={refetch} isRefreshing={loading && scans.length > 0} />
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[28px] font-semibold text-[#111827]">Dashboard</h1>
+          <p className="text-sm text-[#9CA3AF] mt-1">Monitor your security scans and findings</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => refetch()}
+            disabled={loading}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#E5E7EB] text-[#4B5563] text-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
+          <Link
+            href="/scan/new"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#CCFF00] text-[#111827] text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Scan</span>
+          </Link>
+        </div>
+      </div>
 
-      {/* Statistics Cards */}
+      {/* Stats Grid */}
       {loading && scans.length === 0 ? (
         <DashboardStatsSkeleton />
       ) : (
@@ -90,39 +52,57 @@ export default function DashboardPage() {
 
       {/* Active Scan Indicator */}
       {hasActiveScans && (
-        <div className="flex items-center gap-3 text-sm text-primary bg-primary/10 border border-primary/20 px-4 py-3 rounded-xl">
+        <div className="flex items-center gap-3 text-sm text-[#10B981] bg-[#D1FAE5]/50 border border-[#10B981]/20 px-4 py-3 rounded-xl">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#10B981]" />
           </span>
           <span className="font-medium">Scans in progress</span>
-          <span className="text-primary/80">- auto-refreshing every 5s</span>
+          <span className="text-[#10B981]/70">- auto-refreshing every 5s</span>
         </div>
       )}
 
-      {/* Scans List */}
-      {loading && scans.length === 0 ? (
-        <div className="space-y-4">
-          <div className="h-6 w-32 bg-muted rounded animate-pulse" />
-          <ScanListSkeleton count={5} />
+      {/* Recent Scans Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-[#111827]">Recent Scans</h2>
+          <Link href="/scans" className="text-sm text-[#9CA3AF] hover:text-[#4B5563] transition-colors">
+            View all &rarr;
+          </Link>
         </div>
-      ) : (
-        <ScanListWithHeader
-          scans={scans}
-          loading={false}
-          error={error}
-          onRetry={refetch}
-          title="Recent Scans"
-          showCount
-          emptyStateProps={{
-            title: 'No scans yet',
-            description:
-              'Run your first security scan to identify vulnerabilities in your code or live application.',
-            actionLabel: 'Start Your First Scan',
-            actionHref: '/scan/new',
-          }}
-        />
-      )}
+
+        {loading && scans.length === 0 ? (
+          <ScansTableSkeleton />
+        ) : error ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => refetch()}
+              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : scans.length === 0 ? (
+          <div className="rounded-xl border border-[#E5E7EB] border-dashed p-16 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#D1FAE5] to-[#A7F3D0] flex items-center justify-center mx-auto mb-6">
+              <Plus className="w-8 h-8 text-[#10B981]" />
+            </div>
+            <h3 className="text-xl font-semibold text-[#111827] mb-2">No scans yet</h3>
+            <p className="text-[#9CA3AF] mb-8 max-w-md mx-auto">
+              Run your first security scan to identify vulnerabilities in your code or live application.
+            </p>
+            <Link
+              href="/scan/new"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#CCFF00] text-[#111827] font-medium hover:opacity-90 transition-opacity"
+            >
+              Start Your First Scan
+            </Link>
+          </div>
+        ) : (
+          <ScansTable scans={scans} />
+        )}
+      </div>
     </div>
   );
 }
