@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Sidebar */}
       <Sidebar user={session?.user} />
 

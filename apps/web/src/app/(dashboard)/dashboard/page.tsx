@@ -21,21 +21,21 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-[28px] font-semibold text-[#111827]">Dashboard</h1>
-          <p className="text-sm text-[#9CA3AF] mt-1 hidden sm:block">Monitor your security scans and findings</p>
+          <h1 className="text-2xl md:text-[28px] font-semibold text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1 hidden sm:block">Monitor your security scans and findings</p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={() => refetch()}
             disabled={loading}
-            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-[#E5E7EB] text-[#4B5563] text-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-border text-muted-foreground text-sm hover:bg-muted/50 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh</span>
           </button>
           <Link
             href="/scan/new"
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-[#CCFF00] text-[#111827] text-sm font-medium hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
           >
             <Plus className="w-4 h-4" />
             <span>New Scan</span>
@@ -65,8 +65,8 @@ export default function DashboardPage() {
       {/* Recent Scans Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[#111827]">Recent Scans</h2>
-          <Link href="/scans" className="text-sm text-[#9CA3AF] hover:text-[#4B5563] transition-colors">
+          <h2 className="text-lg font-semibold text-foreground">Recent Scans</h2>
+          <Link href="/scans" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             View all &rarr;
           </Link>
         </div>
@@ -84,17 +84,17 @@ export default function DashboardPage() {
             </button>
           </div>
         ) : scans.length === 0 ? (
-          <div className="rounded-xl border border-[#E5E7EB] border-dashed p-8 sm:p-16 text-center">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#D1FAE5] to-[#A7F3D0] flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-[#10B981]" />
+          <div className="rounded-xl border border-border mt-8 p-8 sm:p-16 text-center border-dashed">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-4 sm:mb-6">
+              <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-[#111827] mb-2">No scans yet</h3>
-            <p className="text-sm sm:text-base text-[#9CA3AF] mb-6 sm:mb-8 max-w-md mx-auto">
+            <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">No scans yet</h3>
+            <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 max-w-md mx-auto">
               Run your first security scan to identify vulnerabilities in your code or live application.
             </p>
             <Link
               href="/scan/new"
-              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-[#CCFF00] text-[#111827] text-sm sm:text-base font-medium hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-primary text-primary-foreground text-sm sm:text-base font-medium hover:opacity-90 transition-opacity"
             >
               Start Your First Scan
             </Link>

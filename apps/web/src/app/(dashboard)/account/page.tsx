@@ -25,8 +25,8 @@ function CardHeader({ icon, iconBg, title, description }: CardHeaderProps) {
         {icon}
       </div>
       <div>
-        <h3 className="text-base font-medium text-[#111827]">{title}</h3>
-        <p className="text-[13px] text-[#9CA3AF]">{description}</p>
+        <h3 className="text-base font-medium text-foreground">{title}</h3>
+        <p className="text-[13px] text-muted-foreground">{description}</p>
       </div>
     </div>
   );
@@ -43,7 +43,7 @@ function Toggle({ enabled, onToggle }: ToggleProps) {
       onClick={onToggle}
       className={cn(
         'w-11 h-6 rounded-full transition-colors relative',
-        enabled ? 'bg-[#CCFF00]' : 'bg-[#E5E7EB]'
+        enabled ? 'bg-primary' : 'bg-secondary'
       )}
     >
       <div
@@ -151,8 +151,8 @@ export default function AccountPage() {
     <div className="space-y-6 md:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl md:text-[28px] font-semibold text-[#111827]">Account Settings</h1>
-        <p className="text-sm text-[#9CA3AF] mt-1 hidden sm:block">Manage your profile and preferences</p>
+        <h1 className="text-2xl md:text-[28px] font-semibold text-foreground">Account Settings</h1>
+        <p className="text-sm text-muted-foreground mt-1 hidden sm:block">Manage your profile and preferences</p>
       </div>
 
       {/* Two Column Grid */}
@@ -160,7 +160,7 @@ export default function AccountPage() {
         {/* Left Column */}
         <div className="space-y-4 sm:space-y-6">
           {/* Profile Card */}
-          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 sm:p-6 space-y-4 sm:space-y-5">
+          <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<User className="w-5 h-5 text-[#10B981]" />}
               iconBg="bg-[#D1FAE5]"
@@ -170,22 +170,22 @@ export default function AccountPage() {
 
             <form onSubmit={handleUpdateProfile} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-[13px] font-medium text-[#111827]">Email</label>
+                <label className="text-[13px] font-medium text-foreground">Email</label>
                 <input
                   type="email"
                   value={session?.user?.email || ''}
                   disabled
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-[#E5E7EB] text-sm text-[#111827] disabled:opacity-60"
+                  className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-sm text-foreground disabled:opacity-60"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[13px] font-medium text-[#111827]">Display Name</label>
+                <label className="text-[13px] font-medium text-foreground">Display Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your name"
-                  className="w-full px-4 py-3 rounded-lg bg-white border border-[#E5E7EB] text-sm text-[#111827] placeholder:text-[#9CA3AF] focus:outline-none focus:ring-2 focus:ring-[#CCFF00] focus:border-transparent"
+                  className="w-full px-4 py-3 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
 
@@ -193,7 +193,7 @@ export default function AccountPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2.5 rounded-lg bg-[#CCFF00] text-[#111827] text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                  className="px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -208,7 +208,7 @@ export default function AccountPage() {
           </div>
 
           {/* Usage & Plan Card */}
-          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 sm:p-6 space-y-4 sm:space-y-5">
+          <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<CreditCard className="w-5 h-5 text-[#F59E0B]" />}
               iconBg="bg-[#FEF3C7]"
@@ -216,10 +216,10 @@ export default function AccountPage() {
               description="Your current plan and usage"
             />
 
-            <div className="flex items-center justify-between py-3 px-4 bg-white rounded-lg border border-[#E5E7EB]">
+            <div className="flex items-center justify-between py-3 px-4 bg-background rounded-lg border border-border">
               <div>
-                <div className="text-sm font-medium text-[#111827]">Pay-as-you-go</div>
-                <div className="text-[13px] text-[#9CA3AF]">$30 per scan</div>
+                <div className="text-sm font-medium text-foreground">Pay-as-you-go</div>
+                <div className="text-[13px] text-muted-foreground">$30 per scan</div>
               </div>
               <span className="px-3 py-1 rounded-full bg-[#D1FAE5] text-[#065F46] text-xs font-medium">
                 Active
@@ -229,52 +229,52 @@ export default function AccountPage() {
             <div className="flex gap-6">
               <div>
                 {creditsLoading ? (
-                  <div className="h-8 w-8 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-8 w-8 bg-secondary rounded animate-pulse" />
                 ) : (
                   <div className={cn('text-2xl font-semibold',
-                    credits && credits.availableCredits <= 1 ? 'text-[#F59E0B]' : 'text-[#111827]'
+                    credits && credits.availableCredits <= 1 ? 'text-yellow-500' : 'text-foreground'
                   )}>
                     {credits?.availableCredits ?? 0}
                   </div>
                 )}
-                <div className="text-[13px] text-[#9CA3AF]">Scans remaining</div>
+                <div className="text-[13px] text-muted-foreground">Scans remaining</div>
               </div>
               <div>
                 {creditsLoading ? (
-                  <div className="h-8 w-8 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-8 w-8 bg-secondary rounded animate-pulse" />
                 ) : (
-                  <div className="text-2xl font-semibold text-[#111827]">
+                  <div className="text-2xl font-semibold text-foreground">
                     {credits?.usedCredits ?? 0}
                   </div>
                 )}
-                <div className="text-[13px] text-[#9CA3AF]">Scans used</div>
+                <div className="text-[13px] text-muted-foreground">Scans used</div>
               </div>
             </div>
 
             <Link
               href="/checkout"
-              className="block w-full text-center px-4 py-2.5 rounded-lg bg-[#CCFF00] text-[#111827] text-sm font-medium hover:opacity-90 transition-opacity"
+              className="block w-full text-center px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
             >
               Buy More Credits
             </Link>
 
             {/* Recent Payments */}
             {payments.length > 0 && (
-              <div className="pt-4 border-t border-[#E5E7EB]">
-                <h4 className="text-sm font-medium text-[#111827] mb-3">Recent Payments</h4>
+              <div className="pt-4 border-t border-border">
+                <h4 className="text-sm font-medium text-foreground mb-3">Recent Payments</h4>
                 <div className="space-y-2">
                   {payments.slice(0, 3).map((payment) => (
-                    <div key={payment.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-[#E5E7EB]">
+                    <div key={payment.id} className="flex items-center justify-between p-3 bg-background rounded-lg border border-border">
                       <div>
-                        <div className="text-sm font-medium text-[#111827]">
+                        <div className="text-sm font-medium text-foreground">
                           {payment.quantity} credit{payment.quantity > 1 ? 's' : ''}
                         </div>
-                        <div className="text-xs text-[#9CA3AF]">
+                        <div className="text-xs text-muted-foreground">
                           {new Date(payment.createdAt).toLocaleDateString()}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-[#111827]">
+                        <span className="text-sm font-medium text-foreground">
                           ${(payment.amount / 100).toFixed(2)}
                         </span>
                         <span className={cn(
@@ -295,7 +295,7 @@ export default function AccountPage() {
         {/* Right Column */}
         <div className="space-y-4 sm:space-y-6">
           {/* Preferences Card */}
-          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 sm:p-6 space-y-4 sm:space-y-5">
+          <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<Bell className="w-5 h-5 text-[#6366F1]" />}
               iconBg="bg-[#E0E7FF]"
@@ -304,17 +304,17 @@ export default function AccountPage() {
             />
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 px-4 bg-white rounded-lg border border-[#E5E7EB]">
+              <div className="flex items-center justify-between py-3 px-4 bg-background rounded-lg border border-border">
                 <div>
-                  <div className="text-sm font-medium text-[#111827]">Email notifications</div>
-                  <div className="text-[13px] text-[#9CA3AF]">Receive scan completion emails</div>
+                  <div className="text-sm font-medium text-foreground">Email notifications</div>
+                  <div className="text-[13px] text-muted-foreground">Receive scan completion emails</div>
                 </div>
                 <Toggle enabled={emailNotifications} onToggle={() => setEmailNotifications(!emailNotifications)} />
               </div>
-              <div className="flex items-center justify-between py-3 px-4 bg-white rounded-lg border border-[#E5E7EB]">
+              <div className="flex items-center justify-between py-3 px-4 bg-background rounded-lg border border-border">
                 <div>
-                  <div className="text-sm font-medium text-[#111827]">Weekly digest</div>
-                  <div className="text-[13px] text-[#9CA3AF]">Weekly summary of your scans</div>
+                  <div className="text-sm font-medium text-foreground">Weekly digest</div>
+                  <div className="text-[13px] text-muted-foreground">Weekly summary of your scans</div>
                 </div>
                 <Toggle enabled={weeklyDigest} onToggle={() => setWeeklyDigest(!weeklyDigest)} />
               </div>
@@ -322,7 +322,7 @@ export default function AccountPage() {
           </div>
 
           {/* Security Card */}
-          <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 sm:p-6 space-y-4 sm:space-y-5">
+          <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5">
             <CardHeader
               icon={<Shield className="w-5 h-5 text-[#DC2626]" />}
               iconBg="bg-[#FEE2E2]"
@@ -331,17 +331,17 @@ export default function AccountPage() {
             />
 
             <div className="space-y-2">
-              <label className="text-xs sm:text-[13px] font-medium text-[#111827]">API Key</label>
+              <label className="text-xs sm:text-[13px] font-medium text-foreground">API Key</label>
               <div className="flex gap-2">
                 <input
                   type="password"
                   value={apiKey}
                   readOnly
-                  className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-white border border-[#E5E7EB] text-xs sm:text-sm text-[#111827] font-mono"
+                  className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border border-border text-xs sm:text-sm text-foreground font-mono"
                 />
                 <button
                   onClick={handleCopyApiKey}
-                  className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-[#E5E7EB] bg-white text-[#4B5563] hover:bg-gray-50 transition-colors flex-shrink-0"
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-border bg-background text-muted-foreground hover:bg-secondary transition-colors flex-shrink-0"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
@@ -349,7 +349,7 @@ export default function AccountPage() {
               {copied && <p className="text-xs text-[#10B981]">Copied to clipboard!</p>}
             </div>
 
-            <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#E5E7EB] bg-white text-[#4B5563] text-sm hover:bg-gray-50 transition-colors">
+            <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-background text-muted-foreground text-sm hover:bg-secondary transition-colors">
               <RefreshCw className="w-4 h-4" />
               <span>Regenerate API Key</span>
             </button>
@@ -400,7 +400,7 @@ export default function AccountPage() {
           {/* Sign Out */}
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#E5E7EB] bg-white text-[#4B5563] text-sm hover:bg-gray-50 transition-colors w-full justify-center"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-border bg-card text-muted-foreground text-sm hover:bg-secondary transition-colors w-full justify-center"
           >
             <LogOut className="w-4 h-4" />
             <span>Sign Out</span>

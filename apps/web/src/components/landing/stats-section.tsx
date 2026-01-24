@@ -2,6 +2,7 @@
 
 import { FadeIn } from "@/components/ui/motion";
 import { Zap, Clock, TrendingUp, Shield } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const stats = [
     { stat: "48%", label: "of AI code contains security flaws", icon: Zap },
@@ -11,6 +12,14 @@ const stats = [
 ];
 
 export default function StatsSection() {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
     return (
         <section className="py-20 px-4 sm:px-6 bg-muted/30">
             <div className="container">
@@ -20,7 +29,7 @@ export default function StatsSection() {
                             Scan your code in <span className="bg-primary text-primary-foreground px-3 py-1 rounded-lg">2 minutes</span>
                         </h2>
                         <p className="text-xl text-secondary-foreground">
-                            Most security tools are <span className="text-red-500 font-medium line-through decoration-2">enterprise bloatware</span>.
+                            Most security tools {isMobile && <br />} are <span className="text-red-500 font-medium line-through decoration-2">enterprise bloatware</span>. <br />
                             VibeAudit is built for speed.
                         </p>
                     </div>

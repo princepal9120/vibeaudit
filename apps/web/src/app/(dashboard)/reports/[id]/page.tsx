@@ -201,17 +201,17 @@ export default function ReportDetailPage() {
   if (error || !report) {
     return (
       <div className="max-w-2xl mx-auto">
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive/20 bg-destructive/5">
           <CardContent className="py-8 text-center">
-            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+              <svg className="h-6 w-6 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">Error</h3>
-            <p className="text-slate-600 mb-4">{error || 'Report not found'}</p>
+            <h3 className="text-xl font-semibold text-foreground mb-2">Error</h3>
+            <p className="text-muted-foreground mb-4">{error || 'Report not found'}</p>
             <Link href="/dashboard">
-              <Button variant="outline" className="border-slate-200">Back to Dashboard</Button>
+              <Button variant="outline" className="border-border">Back to Dashboard</Button>
             </Link>
           </CardContent>
         </Card>
@@ -227,12 +227,12 @@ export default function ReportDetailPage() {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-              <ShieldIcon className="h-5 w-5 text-emerald-600" />
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <ShieldIcon className="h-5 w-5 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">Security Report</h1>
+            <h1 className="text-2xl font-bold text-foreground">Security Report</h1>
           </div>
-          <p className="text-slate-500">
+          <p className="text-muted-foreground">
             {target} - Generated {new Date(report.createdAt).toLocaleDateString()}
           </p>
         </div>
@@ -241,21 +241,21 @@ export default function ReportDetailPage() {
             variant="outline"
             onClick={handleShare}
             disabled={sharing}
-            className="border-slate-200"
+            className="border-border"
           >
             {sharing ? 'Sharing...' : shareUrl ? 'Copy Link' : 'Share Report'}
           </Button>
           <Button
             onClick={handleDownloadPdf}
             disabled={downloading}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             {downloading ? 'Downloading...' : 'Download PDF'}
           </Button>
           <Button
             variant="outline"
             onClick={() => router.push('/dashboard')}
-            className="border-slate-200"
+            className="border-border"
           >
             Back
           </Button>
@@ -285,34 +285,34 @@ export default function ReportDetailPage() {
             <div className={`text-6xl font-bold ${getScoreColor(report.securityScore)}`}>
               {report.securityScore}
             </div>
-            <div className="text-slate-500 mt-2">Security Score</div>
+            <div className="text-muted-foreground mt-2">Security Score</div>
             <div className={`text-sm font-medium mt-1 ${getScoreColor(report.securityScore)}`}>
               {getScoreLabel(report.securityScore)}
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-slate-200 md:col-span-2">
+        <Card className="border-border md:col-span-2">
           <CardHeader>
-            <CardTitle className="text-slate-900">Findings Summary</CardTitle>
+            <CardTitle className="text-foreground">Findings Summary</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-4 gap-4 text-center">
-              <div className="p-3 rounded-lg bg-red-50">
+              <div className="p-3 rounded-lg bg-red-500/10">
                 <div className="text-3xl font-bold text-red-600">{report.criticalCount}</div>
-                <div className="text-sm text-slate-500">Critical</div>
+                <div className="text-sm text-muted-foreground">Critical</div>
               </div>
-              <div className="p-3 rounded-lg bg-amber-50">
+              <div className="p-3 rounded-lg bg-amber-500/10">
                 <div className="text-3xl font-bold text-amber-600">{report.highCount}</div>
-                <div className="text-sm text-slate-500">High</div>
+                <div className="text-sm text-muted-foreground">High</div>
               </div>
-              <div className="p-3 rounded-lg bg-yellow-50">
+              <div className="p-3 rounded-lg bg-yellow-500/10">
                 <div className="text-3xl font-bold text-yellow-600">{report.mediumCount}</div>
-                <div className="text-sm text-slate-500">Medium</div>
+                <div className="text-sm text-muted-foreground">Medium</div>
               </div>
-              <div className="p-3 rounded-lg bg-blue-50">
+              <div className="p-3 rounded-lg bg-blue-500/10">
                 <div className="text-3xl font-bold text-blue-600">{report.lowCount}</div>
-                <div className="text-sm text-slate-500">Low</div>
+                <div className="text-sm text-muted-foreground">Low</div>
               </div>
             </div>
           </CardContent>
@@ -321,37 +321,37 @@ export default function ReportDetailPage() {
 
       {/* Executive Summary */}
       {report.executiveSummary && (
-        <Card className="border-slate-200">
+        <Card className="border-border">
           <CardHeader>
-            <CardTitle className="text-slate-900">Executive Summary</CardTitle>
+            <CardTitle className="text-foreground">Executive Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 whitespace-pre-wrap">{report.executiveSummary}</p>
+            <p className="text-muted-foreground whitespace-pre-wrap">{report.executiveSummary}</p>
           </CardContent>
         </Card>
       )}
 
       {/* Findings List */}
       <div>
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
           Findings ({report.totalFindings})
         </h2>
         {report.findings.length === 0 ? (
-          <Card className="border-slate-200">
+          <Card className="border-border">
             <CardContent className="py-8 text-center">
-              <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">No Issues Found</h3>
-              <p className="text-slate-500">Great job! No security vulnerabilities were detected.</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">No Issues Found</h3>
+              <p className="text-muted-foreground">Great job! No security vulnerabilities were detected.</p>
             </CardContent>
           </Card>
         ) : (
           <div className="space-y-3">
             {report.findings.map((finding) => (
-              <Card key={finding.id} className="border-slate-200">
+              <Card key={finding.id} className="border-border">
                 <CardContent className="py-4">
                   <button
                     onClick={() => setExpandedFinding(expandedFinding === finding.id ? null : finding.id)}
@@ -360,15 +360,15 @@ export default function ReportDetailPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {getSeverityBadge(finding.severity)}
-                        <span className="font-medium text-slate-900">{finding.title}</span>
+                        <span className="font-medium text-foreground">{finding.title}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-slate-500 text-sm">
-                        <span className="px-2 py-0.5 bg-slate-100 rounded text-xs">{finding.source}</span>
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                        <span className="px-2 py-0.5 bg-secondary rounded text-xs">{finding.source}</span>
                         <ChevronIcon className="h-4 w-4" direction={expandedFinding === finding.id ? 'up' : 'down'} />
                       </div>
                     </div>
                     {finding.filePath && (
-                      <div className="text-sm text-slate-500 mt-1 font-mono">
+                      <div className="text-sm text-muted-foreground mt-1 font-mono">
                         {finding.filePath}
                         {finding.lineNumber && `:${finding.lineNumber}`}
                       </div>
@@ -376,23 +376,23 @@ export default function ReportDetailPage() {
                   </button>
 
                   {expandedFinding === finding.id && (
-                    <div className="mt-4 pt-4 border-t border-slate-100 space-y-4">
+                    <div className="mt-4 pt-4 border-t border-border space-y-4">
                       <div>
-                        <h4 className="text-sm font-medium text-slate-500 mb-1">What it is</h4>
-                        <p className="text-slate-700">{finding.description}</p>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-1">What it is</h4>
+                        <p className="text-foreground">{finding.description}</p>
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium text-slate-500 mb-1">Why it matters</h4>
-                        <p className="text-slate-700">{finding.impact}</p>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-1">Why it matters</h4>
+                        <p className="text-foreground">{finding.impact}</p>
                       </div>
                       <div>
-                        <h4 className="text-sm font-medium text-slate-500 mb-1">How to fix</h4>
-                        <p className="text-slate-700 whitespace-pre-wrap">{finding.remediation}</p>
+                        <h4 className="text-sm font-medium text-muted-foreground mb-1">How to fix</h4>
+                        <p className="text-foreground whitespace-pre-wrap">{finding.remediation}</p>
                       </div>
                       {finding.codeSnippet && (
                         <div>
-                          <h4 className="text-sm font-medium text-slate-500 mb-1">Code</h4>
-                          <pre className="bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-slate-700 overflow-x-auto font-mono">
+                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Code</h4>
+                          <pre className="bg-muted border border-border p-3 rounded-lg text-sm text-foreground overflow-x-auto font-mono">
                             {finding.codeSnippet}
                           </pre>
                         </div>

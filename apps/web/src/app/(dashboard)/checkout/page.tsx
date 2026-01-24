@@ -53,16 +53,15 @@ function ProductCard({
   const savings = product.type === 'SCAN_BUNDLE_5'
     ? '17%'
     : product.type === 'SCAN_BUNDLE_10'
-    ? '33%'
-    : null;
+      ? '33%'
+      : null;
 
   return (
-    <Card className={`relative border-slate-200/60 shadow-sm transition-all hover:shadow-md ${
-      isPopular ? 'ring-2 ring-emerald-500 border-emerald-500' : ''
-    } ${isBestValue ? 'ring-2 ring-blue-500 border-blue-500' : ''}`}>
+    <Card className={`relative border-border shadow-sm transition-all hover:shadow-md ${isPopular ? 'ring-2 ring-primary border-primary' : ''
+      } ${isBestValue ? 'ring-2 ring-blue-500 border-blue-500' : ''}`}>
       {isPopular && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <Badge className="bg-emerald-500 text-white px-3 py-1 text-xs font-semibold">
+          <Badge className="bg-primary text-primary-foreground px-3 py-1 text-xs font-semibold">
             POPULAR
           </Badge>
         </div>
@@ -76,8 +75,8 @@ function ProductCard({
       )}
 
       <CardHeader className="text-center pb-2 pt-6">
-        <CardTitle className="text-xl font-bold text-slate-900">{product.name}</CardTitle>
-        <CardDescription className="text-slate-500">
+        <CardTitle className="text-xl font-bold text-foreground">{product.name}</CardTitle>
+        <CardDescription className="text-muted-foreground">
           {product.credits} Scan{product.credits > 1 ? 's' : ''}
         </CardDescription>
       </CardHeader>
@@ -100,11 +99,10 @@ function ProductCard({
         <Button
           onClick={onSelect}
           disabled={isLoading}
-          className={`w-full ${
-            isPopular || isBestValue
-              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-              : 'bg-slate-900 hover:bg-slate-800 text-white'
-          }`}
+          className={`w-full ${isPopular || isBestValue
+              ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+              : 'bg-foreground hover:bg-foreground/90 text-background'
+            }`}
         >
           {isLoading ? 'Processing...' : 'Buy Now'}
         </Button>
@@ -188,24 +186,24 @@ export default function CheckoutPage() {
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Page Header */}
       <div className="text-center">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Buy Scan Credits</h1>
-        <p className="text-slate-500 mt-2">Choose a package that fits your needs</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Buy Scan Credits</h1>
+        <p className="text-muted-foreground mt-2">Choose a package that fits your needs</p>
       </div>
 
       {/* Current Balance */}
       {credits && (
-        <Card className="border-slate-200/60 shadow-sm bg-gradient-to-r from-emerald-50 to-emerald-50/30">
+        <Card className="border-primary/20 shadow-sm bg-primary/5">
           <CardContent className="flex items-center justify-between py-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                <ShieldIcon className="h-5 w-5 text-emerald-600" />
+              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <ShieldIcon className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <div className="font-semibold text-slate-900">Your Balance</div>
-                <div className="text-sm text-slate-500">Available scan credits</div>
+                <div className="font-semibold text-foreground">Your Balance</div>
+                <div className="text-sm text-muted-foreground">Available scan credits</div>
               </div>
             </div>
-            <div className="text-3xl font-bold text-emerald-600">
+            <div className="text-3xl font-bold text-primary">
               {credits.availableCredits}
             </div>
           </CardContent>
@@ -265,7 +263,7 @@ export default function CheckoutPage() {
       </Card>
 
       {/* Secure Payment Badge */}
-      <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
+      <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">
         <CreditCardIcon className="h-4 w-4" />
         <span>Secure checkout powered by Dodo Payments</span>
       </div>

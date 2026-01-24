@@ -51,35 +51,35 @@ export default function CheckoutSuccessPage() {
     <div className="max-w-lg mx-auto space-y-8 text-center">
       {/* Success Icon */}
       <div className="flex justify-center">
-        <div className="h-20 w-20 rounded-full bg-emerald-100 flex items-center justify-center">
-          <CheckCircleIcon className="h-10 w-10 text-emerald-600" />
+        <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
+          <CheckCircleIcon className="h-10 w-10 text-primary" />
         </div>
       </div>
 
       {/* Success Message */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Payment Successful!</h1>
-        <p className="text-slate-500 mt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Payment Successful!</h1>
+        <p className="text-muted-foreground mt-2">
           Your scan credits have been added to your account.
         </p>
       </div>
 
       {/* Credit Balance Card */}
-      <Card className="border-slate-200/60 shadow-sm bg-gradient-to-r from-emerald-50 to-emerald-50/30">
+      <Card className="border-primary/20 shadow-sm bg-primary/5">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-              <ShieldIcon className="h-5 w-5 text-emerald-600" />
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <ShieldIcon className="h-5 w-5 text-primary" />
             </div>
           </div>
           <CardTitle className="text-lg">Your New Balance</CardTitle>
-          <CardDescription className="text-slate-500">Available scan credits</CardDescription>
+          <CardDescription className="text-muted-foreground">Available scan credits</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="h-12 w-16 bg-emerald-200 rounded animate-pulse mx-auto" />
+            <div className="h-12 w-16 bg-primary/20 rounded animate-pulse mx-auto" />
           ) : (
-            <div className="text-4xl font-bold text-emerald-600">
+            <div className="text-4xl font-bold text-primary">
               {credits?.availableCredits ?? '...'}
             </div>
           )}
@@ -88,13 +88,13 @@ export default function CheckoutSuccessPage() {
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <Link href="/scan/new">
             <RocketIcon className="h-4 w-4 mr-2" />
             Start a Scan
           </Link>
         </Button>
-        <Button asChild variant="outline" className="border-slate-200">
+        <Button asChild variant="outline" className="border-border">
           <Link href="/dashboard">
             Go to Dashboard
           </Link>
@@ -102,27 +102,27 @@ export default function CheckoutSuccessPage() {
       </div>
 
       {/* What's Next */}
-      <Card className="border-slate-200/60 shadow-sm text-left">
+      <Card className="border-border shadow-sm text-left">
         <CardHeader className="pb-2">
           <CardTitle className="text-base">What&apos;s Next?</CardTitle>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-3 text-sm text-slate-600">
+          <ul className="space-y-3 text-sm text-muted-foreground">
             <li className="flex items-center gap-3">
-              <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                <CheckIcon className="h-3 w-3 text-emerald-600" />
+              <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CheckIcon className="h-3 w-3 text-primary" />
               </div>
               Create a new scan with your GitHub repo or live URL
             </li>
             <li className="flex items-center gap-3">
-              <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                <CheckIcon className="h-3 w-3 text-emerald-600" />
+              <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CheckIcon className="h-3 w-3 text-primary" />
               </div>
               Get AI-powered security insights in plain English
             </li>
             <li className="flex items-center gap-3">
-              <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                <CheckIcon className="h-3 w-3 text-emerald-600" />
+              <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CheckIcon className="h-3 w-3 text-primary" />
               </div>
               Download or share your professional security report
             </li>
@@ -132,7 +132,7 @@ export default function CheckoutSuccessPage() {
 
       {/* Receipt Info */}
       {paymentId && (
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-muted-foreground">
           Payment ID: {paymentId}
         </p>
       )}

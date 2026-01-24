@@ -35,8 +35,18 @@ const dodo = new DodoPayments({
   environment: config.dodoPaymentsEnvironment === 'live_mode' ? 'live_mode' : 'test_mode',
 });
 
-// Webhook verifier
-const webhookVerifier = new Webhook(config.dodoPaymentsWebhookSecret);
+// Webhook verifier (lazy-initialized to avoid startup errors when secret not set)
+let webhookVerifier: Webhook | null = null;
+
+function getWebhookVerifier(): Webhook {
+  if (!webhookVerifier) {
+    if (!config.dodoPaymentsWebhookSecret) {
+      throw new Error('DODO_PAYMENTS_WEBHOOK_SECRET is required for webhook verification');
+    }
+    webhookVerifier = new Webhook(config.dodoPaymentsWebhookSecret);
+  }
+  return webhookVerifier;
+}
 
 export interface CreateCheckoutOptions {
   userId: string;
@@ -140,7 +150,7 @@ export function verifyWebhookSignature(
   headers: Record<string, string>
 ): boolean {
   try {
-    webhookVerifier.verify(payload, headers);
+    getWebhookVerifier().verify(payload, headers);
     return true;
   } catch {
     return false;

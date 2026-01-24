@@ -23,7 +23,7 @@ export default function CTASection() {
                             className="h-16 px-12 text-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl lime-glow"
                         >
                             <Link href="/signup" className="flex items-center gap-3">
-                                Get started with VibeAudit for free
+                                Get started free
                                 <ArrowRight className="w-6 h-6" />
                             </Link>
                         </Button>

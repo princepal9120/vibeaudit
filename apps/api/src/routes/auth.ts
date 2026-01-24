@@ -6,7 +6,7 @@ const router: IRouter = Router();
 
 // Better-auth handles all auth routes
 // This includes: /signup, /signin, /signout, /session, /oauth/*
-router.all('/*', (req: Request, res: Response) => {
+router.all('/{*splat}', (req: Request, res: Response) => {
   // Convert Express request to better-auth node handler
   return toNodeHandler(auth)(req, res);
 });
