@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Download, Loader2, AlertCircle, RefreshCw, Share2, Link2, Check, FileText, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { api, type PrdReviewDetail } from '@/lib/api';
 import { PrdDiffViewer, PrdFindingsPanel } from '@/components/prd-review';
 import { SecurityScoreGauge } from '@/components/ui/security-score-gauge';
@@ -36,7 +37,9 @@ export default function PrdReviewDetailPage() {
       setReview(data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load review');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load review';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -69,6 +72,7 @@ export default function PrdReviewDetailPage() {
       URL.revokeObjectURL(blobUrl);
     } catch (err) {
       console.error('Failed to download markdown:', err);
+      toast.error('Failed to download markdown');
     }
   };
 
@@ -96,6 +100,7 @@ export default function PrdReviewDetailPage() {
         URL.revokeObjectURL(blobUrl);
       } catch (downloadErr) {
         console.error('Failed to download PDF:', downloadErr);
+        toast.error('Failed to download PDF');
       }
     } finally {
       setPdfLoading(false);
@@ -121,6 +126,7 @@ export default function PrdReviewDetailPage() {
       }
     } catch (err) {
       console.error('Failed to create share link:', err);
+      toast.error('Failed to create share link');
     } finally {
       setShareLoading(false);
     }
@@ -131,9 +137,11 @@ export default function PrdReviewDetailPage() {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
+      toast.success('Link copied to clipboard');
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
+      toast.error('Failed to copy link');
     }
   };
 
@@ -151,6 +159,7 @@ export default function PrdReviewDetailPage() {
       }
     } catch (err) {
       console.error('Failed to revoke share:', err);
+      toast.error('Failed to revoke share link');
     }
   };
 

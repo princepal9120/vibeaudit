@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Check, Zap, Loader2, AlertCircle, Crown } from 'lucide-react';
 import { api, type SubscriptionPlanDetail } from '@/lib/api';
 import { UsageMeter } from '@/components/prd-review';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 export default function SubscriptionPage() {
@@ -44,8 +45,12 @@ export default function SubscriptionPage() {
       setUsage(subRes.usage);
       setPlans(plansRes.plans);
       setError(null);
+      setPlans(plansRes.plans);
+      setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load subscription data');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load subscription data';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -62,8 +67,13 @@ export default function SubscriptionPage() {
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
       }
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start checkout');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start checkout';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setUpgrading(false);
     }
@@ -78,8 +88,13 @@ export default function SubscriptionPage() {
       setCancelling(true);
       await api.cancelSubscription();
       await fetchData();
+      await api.cancelSubscription();
+      await fetchData();
+      toast.success('Subscription cancelled successfully');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to cancel subscription');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to cancel subscription';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setCancelling(false);
     }

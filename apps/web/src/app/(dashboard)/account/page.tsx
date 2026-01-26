@@ -7,6 +7,7 @@ import { User, CreditCard, Bell, Shield, Copy, RefreshCw, LogOut, Check, Trash2,
 import { useSession, signOut } from '@/lib/auth-client';
 import { api, type Payment } from '@/lib/api';
 import { useScanCredits } from '@/components/checkout';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -84,6 +85,7 @@ export default function AccountPage() {
         setPayments(res.payments);
       } catch (err) {
         console.error('Failed to load payment history:', err);
+        toast.error('Failed to load payment history');
       }
     }
     loadPayments();
@@ -92,11 +94,13 @@ export default function AccountPage() {
   const handleCopyApiKey = () => {
     navigator.clipboard.writeText(apiKey);
     setCopied(true);
+    toast.success('API key copied to clipboard');
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleSignOut = () => {
     signOut();
+    toast.success('Signed out successfully');
     router.push('/login');
   };
 
@@ -115,10 +119,14 @@ export default function AccountPage() {
 
       if (response.ok) {
         setSaveSuccess(true);
+        toast.success('Profile updated successfully');
         setTimeout(() => setSaveSuccess(false), 3000);
+      } else {
+        throw new Error('Failed to update profile');
       }
     } catch (error) {
       console.error('Failed to update profile:', error);
+      toast.error('Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -138,10 +146,14 @@ export default function AccountPage() {
       });
 
       if (response.ok) {
+        toast.success('Account deleted successfully');
         window.location.href = '/';
+      } else {
+        throw new Error('Failed to delete account');
       }
     } catch (error) {
       console.error('Failed to delete account:', error);
+      toast.error('Failed to delete account');
     } finally {
       setDeleting(false);
     }

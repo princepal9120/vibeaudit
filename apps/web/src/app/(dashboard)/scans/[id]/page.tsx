@@ -13,6 +13,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GitHubIcon, GlobeIcon, ArrowLeftIcon, DocumentIcon, RefreshIcon } from '@/components/icons';
@@ -297,6 +298,7 @@ export default function ScanDetailsPage() {
 
   // Error state
   if (error || !scan) {
+    // Only verify toast once if needed, but here we just render error state
     return <ErrorPage message={error || 'Scan not found'} onBack={handleBack} />;
   }
 

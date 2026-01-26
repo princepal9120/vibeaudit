@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -151,9 +152,11 @@ export default function ReportDetailPage() {
         const url = `${window.location.origin}/reports/shared/${data.shareToken}`;
         setShareUrl(url);
         await navigator.clipboard.writeText(url);
+        toast.success('Report link copied to clipboard');
       }
     } catch (err) {
       console.error('Failed to share report:', err);
+      toast.error('Failed to share report');
     } finally {
       setSharing(false);
     }
@@ -179,6 +182,7 @@ export default function ReportDetailPage() {
       }
     } catch (err) {
       console.error('Failed to download PDF:', err);
+      toast.error('Failed to download report PDF');
     } finally {
       setDownloading(false);
     }

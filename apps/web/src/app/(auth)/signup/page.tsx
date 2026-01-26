@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { signIn, signUp } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
+import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
@@ -54,9 +55,12 @@ export default function SignUpPage() {
         throw new Error(result.error.message || 'Signup failed');
       }
 
+      toast.success('Account created successfully!');
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed');
+      const errorMessage = err instanceof Error ? err.message : 'Signup failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -72,7 +76,9 @@ export default function SignUpPage() {
         callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'GitHub signup failed');
+      const errorMessage = err instanceof Error ? err.message : 'GitHub signup failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       setLoading(false);
     }
   };
@@ -87,7 +93,9 @@ export default function SignUpPage() {
         callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Google signup failed');
+      const errorMessage = err instanceof Error ? err.message : 'Google signup failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       setLoading(false);
     }
   };
