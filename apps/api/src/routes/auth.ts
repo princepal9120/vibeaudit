@@ -1,18 +1,21 @@
-import type { Router as IRouter } from 'express';
+import type { Router as IRouter, Request, Response } from 'express';
 import { toNodeHandler } from 'better-auth/node';
 import { auth } from '../lib/auth.js';
 import express from 'express';
 
 const router: IRouter = express.Router();
 
-// Better-auth handles all auth routes
-// This includes: /sign-up, /sign-in, /sign-out, /get-session, /oauth/*
-router.all('/:path*', async (req, res) => {
-  return toNodeHandler(auth)(req, res);
+// Debug logging for auth requests
+router.use((req: Request, _res, next) => {
+  console.log(`[AUTH] ${req.method} ${req.url}`);
+  console.log(`[AUTH] Base URL: ${req.baseUrl}`);
+  console.log(`[AUTH] Full path: ${req.path}`);
+  next();
 });
 
-// Handle root path as well
-router.all('/', async (req, res) => {
+// Better-auth handles all auth routes
+// Delegate all requests to better-auth handler
+router.all('/*splat', (req: Request, res: Response) => {
   return toNodeHandler(auth)(req, res);
 });
 

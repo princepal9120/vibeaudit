@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { organization } from 'better-auth/plugins/organization';
-import { twoFactor } from 'better-auth/plugins/two-factor';
+// import { organization } from 'better-auth/plugins/organization';
+// import { twoFactor } from 'better-auth/plugins/two-factor';
 import { prisma } from '../db.js';
 import { config } from '../config.js';
 
@@ -57,18 +57,21 @@ export const auth = betterAuth({
     },
   },
 
-  plugins: [
-    organization({
-      allowUserToCreateOrganization: true,
-    }),
-    twoFactor({
-      issuer: 'ShipSafe',
-      otpOptions: {
-        period: 30,
-        digits: 6,
-      },
-    }),
-  ],
+  // Plugins disabled until database schema is updated
+  // To enable: Add organization and twoFactor tables to schema.prisma
+  // and run: npx prisma db push
+  // plugins: [
+  //   organization({
+  //     allowUserToCreateOrganization: true,
+  //   }),
+  //   twoFactor({
+  //     issuer: 'ShipSafe',
+  //     otpOptions: {
+  //       period: 30,
+  //       digits: 6,
+  //     },
+  //   }),
+  // ],
 });
 
 export type Session = typeof auth.$Infer.Session;

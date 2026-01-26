@@ -12,7 +12,9 @@ import {
   getPaymentHistory,
   PRODUCTS,
 } from '../services/payments.js';
-import type {ProductType  } from '@prisma/client';
+
+// Define ProductType locally to avoid Prisma client issues
+type ProductType = 'SCAN_CREDIT' | 'SCAN_BUNDLE_5' | 'SCAN_BUNDLE_10';
 
 const router: IRouter = Router();
 
