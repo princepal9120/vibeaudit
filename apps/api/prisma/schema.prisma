@@ -18,9 +18,14 @@ model user {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // 2FA fields
+  twoFactorEnabled Boolean @default(false)
+
+  // Organization fields
+  activeOrganizationId String?
+
   sessions      session[]
   accounts      account[]
-
 
   scans         Scan[]
   reports       Report[]
@@ -31,6 +36,11 @@ model user {
   subscription  Subscription?
   prdUsage      PrdUsage[]
   prdReviews    PrdReview[]
+
+  // Organization relations
+  members       member[]
+  invitations   invitation[]
+  twoFactor     twoFactor?
 
   @@index([email])
 }
@@ -44,6 +54,9 @@ model session {
   userAgent String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Organization context
+  activeOrganizationId String?
 
   user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -367,4 +380,74 @@ model PrdReview {
   @@index([userId])
   @@index([status])
   @@index([shareToken])
+}
+
+// ============================================
+// Organization Plugin Models (Better Auth)
+// ============================================
+
+model organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  metadata  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members     member[]
+  invitations invitation[]
+
+  @@index([slug])
+}
+
+model member {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           String   @default("member") // owner, admin, member
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         user         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model invitation {
+  id             String   @id @default(cuid())
+  organizationId String
+  email          String
+  role           String   @default("member")
+  status         String   @default("pending") // pending, accepted, expired
+  inviterId      String
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  inviter      user         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+}
+
+// ============================================
+// Two-Factor Authentication Model (Better Auth)
+// ============================================
+
+model twoFactor {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  secret      String
+  backupCodes String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
