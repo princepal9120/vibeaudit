@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckIcon, ShieldIcon } from '@/components/icons';
+import { toast } from 'sonner';
 
 interface Product {
   type: ProductType;
@@ -100,8 +101,8 @@ function ProductCard({
           onClick={onSelect}
           disabled={isLoading}
           className={`w-full ${isPopular || isBestValue
-              ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
-              : 'bg-foreground hover:bg-foreground/90 text-background'
+            ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+            : 'bg-foreground hover:bg-foreground/90 text-background'
             }`}
         >
           {isLoading ? 'Processing...' : 'Buy Now'}
@@ -121,26 +122,47 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadData() {
+    async function loadProducts() {
       try {
-        const [productsRes, creditsRes] = await Promise.all([
-          api.getProducts(),
-          api.getScanCredits(),
-        ]);
-        setProducts(productsRes.products);
-        setCredits(creditsRes);
+        const { products } = await api.getProducts();
+        setProducts(products);
       } catch (err) {
-        console.error('Failed to load checkout data:', err);
-        setError('Failed to load products. Please try again.');
+        console.error('Failed to load products:', err);
+        setError('Failed to load products. Please refresh the page.');
+        toast.error('Failed to load products');
       } finally {
-        setLoading(false);
+        // If we don't have a session, we stop loading here
+        if (!session && !sessionPending) {
+          setLoading(false);
+        }
       }
     }
 
-    if (session) {
-      loadData();
+    async function loadCredits() {
+      if (!session) return;
+      try {
+        const creditsData = await api.getScanCredits();
+        setCredits(creditsData);
+      } catch (err) {
+        console.error('Failed to load credits:', err);
+        // Don't block page if credits fail
+        toast.error('Could not load your credit balance');
+      }
     }
-  }, [session]);
+
+    async function init() {
+      setLoading(true);
+      await Promise.allSettled([
+        loadProducts(),
+        session ? loadCredits() : Promise.resolve()
+      ]);
+      setLoading(false);
+    }
+
+    if (!sessionPending) {
+      init();
+    }
+  }, [session, sessionPending]);
 
   const handleSelectProduct = async (productType: ProductType) => {
     setProcessingProduct(productType);
@@ -152,7 +174,9 @@ export default function CheckoutPage() {
       window.location.href = paymentLink;
     } catch (err) {
       console.error('Failed to create checkout session:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start checkout';
       setError('Failed to start checkout. Please try again.');
+      toast.error(errorMessage);
       setProcessingProduct(null);
     }
   };

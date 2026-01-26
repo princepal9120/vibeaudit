@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Shield, Check, Zap } from 'lucide-react';
+import { toast } from 'sonner';
 import { api } from '@/lib/api';
 import { PrdUploadForm, UsageMeter } from '@/components/prd-review';
 
@@ -48,9 +49,12 @@ export default function NewPrdReviewPage() {
     async (data: { title: string; content: string; fileName?: string }) => {
       try {
         const review = await api.createPrdReview(data);
+        toast.success('PRD submitted for review');
         router.push(`/prd-review/${review.id}`);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to create review');
+        const errorMessage = err instanceof Error ? err.message : 'Failed to create review';
+        setError(errorMessage);
+        toast.error(errorMessage);
         throw err;
       }
     },

@@ -6,6 +6,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const authClient = createAuthClient({
   baseURL: API_URL,
+  basePath: '/api/auth',
   // Plugins disabled - uncomment when backend schema is updated
   // plugins: [
   //   organizationClient(),

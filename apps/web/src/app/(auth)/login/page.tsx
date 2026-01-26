@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
@@ -70,6 +71,7 @@ export default function LoginPage() {
         throw new Error(result.error.message || 'Login failed');
       }
 
+      toast.success('Welcome back!');
       router.push('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -85,7 +87,7 @@ export default function LoginPage() {
     try {
       await signIn.social({
         provider: 'github',
-        callbackURL: '/dashboard',
+        callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'GitHub login failed');
@@ -100,7 +102,7 @@ export default function LoginPage() {
     try {
       await signIn.social({
         provider: 'google',
-        callbackURL: '/dashboard',
+        callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Google login failed');

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Github, Globe, Shield, Check, Loader2 } from 'lucide-react';
 import { useCreateScan } from '@/hooks';
 import { cn, isValidGithubUrl, isValidUrl } from '@/lib/utils';
+import { toast } from 'sonner';
 import type { ScanType, ScanFormData, ScanFormErrors } from '@/lib/types';
 
 // Scan type configuration
@@ -96,10 +97,13 @@ export default function NewScanPage() {
       });
 
       if (scan?.id) {
+        toast.success('Scan started successfully');
         router.push(`/scans/${scan.id}`);
       }
-    } catch {
-      setErrors({ general: 'Failed to create scan. Please try again.' });
+    } catch (err: any) {
+      const errorMessage = err?.message || 'Failed to create scan. Please try again.';
+      setErrors({ general: errorMessage });
+      toast.error(errorMessage);
     }
   }, [formData, createScan, router]);
 

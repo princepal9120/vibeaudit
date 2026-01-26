@@ -69,7 +69,7 @@ export default function SignUpPage() {
     try {
       await signIn.social({
         provider: 'github',
-        callbackURL: '/dashboard',
+        callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'GitHub signup failed');
@@ -84,7 +84,7 @@ export default function SignUpPage() {
     try {
       await signIn.social({
         provider: 'google',
-        callbackURL: '/dashboard',
+        callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Google signup failed');

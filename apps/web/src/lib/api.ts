@@ -1,7 +1,10 @@
 // API client for ShipSafe backend
 // Authentication is handled by Better Auth via cookies (credentials: 'include')
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
+// API_URL points to the backend server (e.g., http://localhost:8000)
+// We need to append /api for the actual API routes
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_BASE = API_URL ? `${API_URL}/api` : '/api';
 
 interface ApiError {
   error: string;
