@@ -1,5 +1,5 @@
 /**
- * VibeAudit Scanner Module
+ * ShipSafe Scanner Module
  *
  * Main entry point for the security scanning and false positive filtering system.
  * Target: <5% false positive rate through multi-layer validation.

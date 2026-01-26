@@ -33,7 +33,7 @@ async function main() {
 
   app.listen(config.port, () => {
     console.log(`
-🚀 VibeAudit API Server
+🚀 ShipSafe API Server
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Environment: ${config.nodeEnv}
    Port:        ${config.port}

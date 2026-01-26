@@ -307,7 +307,7 @@ router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response
     const pdfBuffer = await generatePrdReviewPdf(reviewId);
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="vibeaudit-prd-review-${reviewId}.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="ShipSafe-prd-review-${reviewId}.pdf"`);
     res.setHeader('Content-Length', pdfBuffer.length);
     res.send(pdfBuffer);
   } catch (error) {
@@ -367,10 +367,10 @@ router.post('/:id/pdf/upload', authenticateToken, async (req: AuthRequest, res: 
 
     // Generate PDF
     const pdfBuffer = await generatePrdReviewPdf(reviewId);
-    const fileName = `vibeaudit-prd-review-${reviewId}.pdf`;
+    const fileName = `ShipSafe-prd-review-${reviewId}.pdf`;
 
     // Upload to ImageKit
-    const uploadResult = await imagekit.upload(pdfBuffer, fileName, '/vibeaudit-prd-reviews');
+    const uploadResult = await imagekit.upload(pdfBuffer, fileName, '/ShipSafe-prd-reviews');
 
     // Save URL to database
     await prisma.prdReview.update({

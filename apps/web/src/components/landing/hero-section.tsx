@@ -33,7 +33,7 @@ export default function HeroSection() {
                         <FadeIn delay={0.1}>
                             <p className="text-xl text-muted-foreground max-w-lg mt-8 leading-relaxed">
                                 AI writes 48% of your code, but it doesn&apos;t check for security.
-                                VibeAudit scans your GitHub & Live App in 2 minutes.
+                                ShipSafe scans your GitHub & Live App in 2 minutes.
                                 <span className="text-foreground font-medium block mt-2">Zero setup. Plain English reports.</span>
                             </p>
                         </FadeIn>
@@ -76,7 +76,7 @@ export default function HeroSection() {
                                 </div>
                                 <div className="flex-1 ml-4">
                                     <div className="bg-background px-4 py-1.5 rounded-lg border border-border text-xs text-muted-foreground font-mono max-w-xs">
-                                        vibeaudit.dev/scan/my-app
+                                        ShipSafe.dev/scan/my-app
                                     </div>
                                 </div>
                             </div>

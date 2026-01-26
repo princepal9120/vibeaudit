@@ -1,4 +1,4 @@
-# Technical Specification: VibeAudit
+# Technical Specification: ShipSafe
 
 **Version:** 1.0 (MVP)  
 **Last Updated:** January 2026  
@@ -12,7 +12,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    VibeAudit System                               │
+│                    ShipSafe System                               │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────┐
@@ -57,11 +57,11 @@
 ## 2. Frontend
 
 ### Tech Stack
-- **Framework:** Next.js 15+ (with App Router)
-- **UI Library:** React 18+
-- **Styling:** Tailwind CSS + shadcn/ui components
+- **Framework:** Next.js 16.1 (App Router, React Compiler support)
+- **UI Library:** React 19.2 (Concurrent features, improved hydration)
+- **Styling:** Tailwind CSS v4.1 + shadcn/ui components
 - **State Management:** TanStack Query (React Query) for server state
-- **Auth:** NextAuth.js with GitHub OAuth + email/password
+- **Auth:** Better Auth v1.4 with GitHub/Google OAuth + email/password (cookie-based, no vendor lock-in)
 
 ### Key Pages
 
@@ -796,7 +796,7 @@ Reduce API calls from 8 to 2
 
 **Frontend (.env.local):**
 ```
-NEXT_PUBLIC_API_URL=https://api.vibeaudit.dev
+NEXT_PUBLIC_API_URL=https://api.ShipSafe.dev
 NEXT_PUBLIC_GA_ID=<analytics>
 ```
 
@@ -810,7 +810,7 @@ GITHUB_CLIENT_SECRET=xxx
 GITHUB_TOKEN=ghp_... (for API access)
 AWS_ACCESS_KEY_ID=xxx
 AWS_SECRET_ACCESS_KEY=xxx
-AWS_S3_BUCKET=vibeaudit-reports
+AWS_S3_BUCKET=ShipSafe-reports
 STRIPE_SECRET_KEY=sk_... (Phase 2)
 NEXTAUTH_SECRET=xxx
 ```
@@ -985,16 +985,16 @@ User requests account deletion
 
 | Layer | Technology | Rationale |
 |-------|-----------|-----------|
-| **Frontend** | Next.js 15, React 18, TailwindCSS | Type-safe, fast build, great DX |
-| **Backend** | Express.js, Node.js | Fast, lightweight, great for APIs |
-| **Database** | PostgreSQL | Reliable, JSONB support for findings |
-| **Cache/Queue** | Redis + Bull | Fast, simple, proven |
-| **LLM** | OpenAI GPT-4 API | Best quality explanations |
-| **Scanning** | Semgrep, OWASP ZAP, Trivy | Best-in-class open-source tools |
-| **Deployment** | Vercel, AWS ECS | Scalable, managed services |
-| **Auth** | NextAuth.js | Minimal setup, GitHub OAuth built-in |
-| **ORM** | Prisma | Type-safe, great DX |
-| **Job Queue** | Bull + Redis | Proven for microservices |
+| **Frontend** | Next.js 16.1, React 19.2, Tailwind CSS v4.1 | App Router, React Compiler, modern CSS |
+| **Backend** | Express.js 5.2, Node.js 24.x LTS | Native async/await, latest LTS |
+| **Database** | PostgreSQL 18 | Reliable, JSONB support for findings |
+| **Cache/Queue** | Redis 8.4 + BullMQ 5.66 | Fast, modern Bull replacement |
+| **LLM** | OpenAI GPT-4o | Best quality, multimodal support |
+| **Scanning** | Semgrep 1.148, OWASP ZAP 2.17, Trivy 0.68 | Best-in-class open-source tools |
+| **Deployment** | Vercel, AWS ECS Fargate | Scalable, serverless containers |
+| **Auth** | Better Auth v1.4 | No vendor lock-in, Prisma adapter, cookie sessions |
+| **ORM** | Prisma 7.2 | Type-safe, new migrations engine |
+| **Job Queue** | BullMQ + Redis | Modern, better DX |
 
 ---
 

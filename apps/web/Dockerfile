@@ -1,4 +1,4 @@
-# VibeAudit Web Frontend Dockerfile
+# ShipSafe Web Frontend Dockerfile
 FROM node:24-alpine AS base
 
 WORKDIR /app

@@ -14,12 +14,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return <PageLoading />;
   }
 
-  // Note: Authentication redirect is commented out for development
-  // Uncomment in production:
-  // if (!session) {
-  //   router.push('/login');
-  //   return null;
-  // }
+  // Redirect to login if not authenticated
+  if (!session) {
+    router.push('/login');
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">

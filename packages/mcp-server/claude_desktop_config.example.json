@@ -1,11 +1,13 @@
 {
   "mcpServers": {
-    "vibeaudit": {
+    "ShipSafe": {
       "command": "node",
-      "args": ["/path/to/vibeaudit/packages/mcp-server/dist/index.js"],
+      "args": [
+        "/path/to/ShipSafe/packages/mcp-server/dist/index.js"
+      ],
       "env": {
-        "VIBEAUDIT_API_URL": "https://api.vibeaudit.dev",
-        "VIBEAUDIT_API_KEY": "your-api-key-here"
+        "ShipSafe_API_URL": "https://api.ShipSafe.dev",
+        "ShipSafe_API_KEY": "your-api-key-here"
       }
     }
   }

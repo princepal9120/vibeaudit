@@ -54,29 +54,21 @@ export default function PrdReviewDetailPage() {
     return () => clearInterval(interval);
   }, [review, fetchReview]);
 
-  const handleDownloadMarkdown = () => {
-    const token = api.getToken();
+  const handleDownloadMarkdown = async () => {
     const url = api.getPrdReviewDownloadUrl(reviewId);
 
-    // Create a temporary link and trigger download
-    const link = document.createElement('a');
-    link.href = url;
-    if (token) {
-      // For authenticated requests, we need to fetch and trigger download
-      fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-        credentials: 'include',
-      })
-        .then((res) => res.blob())
-        .then((blob) => {
-          const blobUrl = URL.createObjectURL(blob);
-          link.href = blobUrl;
-          link.download = `${review?.title || 'prd'}_secured.md`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(blobUrl);
-        });
+    try {
+      const blob = await api.fetchWithAuth(url);
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `${review?.title || 'prd'}_secured.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error('Failed to download markdown:', err);
     }
   };
 
@@ -91,25 +83,19 @@ export default function PrdReviewDetailPage() {
       window.open(result.url, '_blank');
     } catch (err) {
       // Fallback to on-the-fly PDF generation
-      const token = api.getToken();
-      const url = api.getPrdReviewPdfUrl(reviewId);
-
-      if (token) {
-        fetch(url, {
-          headers: { Authorization: `Bearer ${token}` },
-          credentials: 'include',
-        })
-          .then((res) => res.blob())
-          .then((blob) => {
-            const blobUrl = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = `${review?.title || 'prd'}_security_review.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(blobUrl);
-          });
+      try {
+        const url = api.getPrdReviewPdfUrl(reviewId);
+        const blob = await api.fetchWithAuth(url);
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `${review?.title || 'prd'}_security_review.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+      } catch (downloadErr) {
+        console.error('Failed to download PDF:', downloadErr);
       }
     } finally {
       setPdfLoading(false);

@@ -13,7 +13,7 @@ export default function FAQs() {
         },
         {
             id: 'item-2',
-            question: 'Does VibeAudit store my code?',
+            question: 'Does ShipSafe store my code?',
             answer: 'No. Check our privacy policy - we operate with a "clone, scan, delete" policy. We access your repo to perform the security analysis and satisfy the audit, but your intellectual property is deleted from our servers immediately after the report generation.',
         },
         {
@@ -29,7 +29,7 @@ export default function FAQs() {
         {
             id: 'item-5',
             question: 'Can I share the report with my client?',
-            answer: 'Absolutely. VibeAudit is designed for freelancers and agencies. You can generate a professional, unbranded or co-branded PDF report to prove to your clients that the code you are delivering has been professionally audited for security vulnerabilities.',
+            answer: 'Absolutely. ShipSafe is designed for freelancers and agencies. You can generate a professional, unbranded or co-branded PDF report to prove to your clients that the code you are delivering has been professionally audited for security vulnerabilities.',
         },
     ]
 
@@ -40,7 +40,7 @@ export default function FAQs() {
                     <div className="space-y-12">
                         <div className="text-center">
                             <h2 className="text-4xl sm:text-5xl font-bold mb-4">Your questions answered</h2>
-                            <p className="text-xl text-secondary-foreground">common questions about VibeAudit</p>
+                            <p className="text-xl text-secondary-foreground">common questions about ShipSafe</p>
                         </div>
 
                         <Accordion
@@ -67,7 +67,7 @@ export default function FAQs() {
                         <p className="text-muted-foreground text-center">
                             Can&apos;t find what you&apos;re looking for? Contact our{' '}
                             <Link
-                                href="mailto:support@vibeaudit.dev"
+                                href="mailto:support@ShipSafe.dev"
                                 className="text-primary font-medium hover:underline">
                                 customer support team
                             </Link>

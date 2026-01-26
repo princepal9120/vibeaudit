@@ -118,7 +118,7 @@ export function Sidebar({ user }: SidebarProps) {
           <div className="w-9 h-9 bg-primary rounded-lg flex items-center justify-center">
             <span className="text-primary-foreground text-lg font-semibold">V</span>
           </div>
-          <span className="text-foreground font-semibold">VibeAudit</span>
+          <span className="text-foreground font-semibold">ShipSafe</span>
         </Link>
 
         {/* Menu Button */}

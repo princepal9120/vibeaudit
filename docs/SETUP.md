@@ -1,10 +1,10 @@
 # Developer Setup Guide
 
-Follow these instructions to get VibeAudit running on your local machine.
+Follow these instructions to get ShipSafe running on your local machine.
 
 ## Prerequisites
 
--   **Node.js**: v20 or higher (recommended).
+-   **Node.js**: v24.x LTS (required for Next.js 16 compatibility).
 -   **Docker**: For running the local PostgreSQL database.
 -   **npm**: Included with Node.js.
 
@@ -12,8 +12,8 @@ Follow these instructions to get VibeAudit running on your local machine.
 
 1.  **Clone the repository**:
     ```bash
-    git clone <repo-url>
-    cd vibeaudit
+    git clone https://github.com/your-org/ShipSafe.git
+    cd ShipSafe
     ```
 
 2.  **Install dependencies**:
@@ -37,7 +37,7 @@ Follow these instructions to get VibeAudit running on your local machine.
     Create a `.env` file in `apps/api`:
     ```env
     # Database Connection
-    DATABASE_URL="postgresql://user:password@localhost:5432/vibeaudit?schema=public"
+    DATABASE_URL="postgresql://user:password@localhost:5432/ShipSafe?schema=public"
     ```
 
 ## Database Setup

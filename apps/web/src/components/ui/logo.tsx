@@ -27,7 +27,7 @@ export function LogoMark({ className, variant = 'default' }: LogoMarkProps) {
             viewBox="0 0 32 32"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            aria-label="VibeAudit Logo Mark"
+            aria-label="ShipSafe Logo Mark"
         >
             {/* Primary Shape: Abstract Shield / V / Check */}
             <path
@@ -67,7 +67,7 @@ export function Logo({
             <LogoMark className={iconClassName} variant={variant} />
             {showText && (
                 <span className={`font-bold tracking-tight ${textClass} ${textClassName}`}>
-                    VibeAudit
+                    ShipSafe
                 </span>
             )}
         </div>

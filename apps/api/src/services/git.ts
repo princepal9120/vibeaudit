@@ -17,7 +17,7 @@ export async function cloneRepository(
   branch: string = 'main'
 ): Promise<string> {
   // Create temp directory
-  const tempDir = await mkdtemp(join(config.tempDir || tmpdir(), 'vibeaudit-'));
+  const tempDir = await mkdtemp(join(config.tempDir || tmpdir(), 'ShipSafe-'));
 
   const git: SimpleGit = simpleGit({
     timeout: {
@@ -40,7 +40,7 @@ export async function cloneRepository(
     return tempDir;
   } catch (error) {
     // Clean up on failure
-    await rm(tempDir, { recursive: true, force: true }).catch(() => {});
+    await rm(tempDir, { recursive: true, force: true }).catch(() => { });
 
     if (error instanceof Error) {
       // Handle common errors

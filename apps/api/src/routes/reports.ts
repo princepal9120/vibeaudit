@@ -74,7 +74,7 @@ router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response
     const pdfBuffer = await generatePdf(reportId);
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="vibeaudit-report-${reportId}.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="ShipSafe-report-${reportId}.pdf"`);
     res.setHeader('Content-Length', pdfBuffer.length);
     res.send(pdfBuffer);
   } catch (error) {
@@ -127,10 +127,10 @@ router.post('/:id/pdf/upload', authenticateToken, async (req: AuthRequest, res: 
 
     // Generate PDF
     const pdfBuffer = await generatePdf(reportId);
-    const fileName = `vibeaudit-report-${reportId}.pdf`;
+    const fileName = `ShipSafe-report-${reportId}.pdf`;
 
     // Upload to ImageKit
-    const uploadResult = await imagekit.upload(pdfBuffer, fileName, '/vibeaudit-reports');
+    const uploadResult = await imagekit.upload(pdfBuffer, fileName, '/ShipSafe-reports');
 
     // Save URL to database
     await prisma.report.update({

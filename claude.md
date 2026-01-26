@@ -1,4 +1,4 @@
-# VibeAudit: Unified Product Requirements Document
+# ShipSafe: Unified Product Requirements Document
 
 **Version:** 1.0 (MVP)  
 **Last Updated:** January 2026  
@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-**VibeAudit** is a security scanning platform built for indie builders, vibe coders, freelancers, and early-stage teams who ship code fast using AI tools. It validates code and live apps for security vulnerabilities, translates findings into plain English, and generates client-friendly reports—without the complexity, cost, or setup friction of enterprise security tools.
+**ShipSafe** is a security scanning platform built for indie builders, vibe coders, freelancers, and early-stage teams who ship code fast using AI tools. It validates code and live apps for security vulnerabilities, translates findings into plain English, and generates client-friendly reports—without the complexity, cost, or setup friction of enterprise security tools.
 
 | Attribute           | Value                                                                        |
 | ------------------- | ---------------------------------------------------------------------------- |
@@ -32,7 +32,7 @@
 
 ### Solution
 
-**VibeAudit** scans code and live apps, flags vulnerabilities, explains findings in plain English, suggests AI-powered fixes, and generates reports for stakeholders—all in 2-3 minutes, no setup required.
+**ShipSafe** scans code and live apps, flags vulnerabilities, explains findings in plain English, suggests AI-powered fixes, and generates reports for stakeholders—all in 2-3 minutes, no setup required.
 
 ---
 
@@ -165,7 +165,7 @@ Pattern: Once per project, need visual/simple scoring
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    VibeAudit System                             │
+│                    ShipSafe System                             │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────┐
@@ -215,7 +215,7 @@ Pattern: Once per project, need visual/simple scoring
 | **Scanning**   | Trivy              | 0.68.x   | Secrets, containers, IaC                   |
 | **Deployment** | Vercel             | -        | Next.js native, edge functions             |
 | **Deployment** | AWS ECS Fargate    | -        | Serverless containers                      |
-| **Auth**       | Auth.js (NextAuth) | 5.x      | Unified auth for Next.js & Express         |
+| **Auth**       | Better Auth        | 1.4.x    | No vendor lock-in, Prisma adapter, cookie sessions |
 
 ### Backend Framework Comparison
 
@@ -234,7 +234,7 @@ Pattern: Once per project, need visual/simple scoring
 | **Worker Processes**    | Bull/BullMQ            | Bull/BullMQ                         | Celery/ARQ                   |
 | **Team Familiarity**    | Common                 | Less common                         | Python teams                 |
 
-#### Recommendation for VibeAudit
+#### Recommendation for ShipSafe
 
 | Framework      | Pros                                         | Cons                                                         | Verdict                                   |
 | -------------- | -------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------- |
@@ -617,7 +617,7 @@ const importantFindings = findings.filter((f) =>
 **Frontend:**
 
 ```
-NEXT_PUBLIC_API_URL=https://api.vibeaudit.dev
+NEXT_PUBLIC_API_URL=https://api.ShipSafe.dev
 NEXT_PUBLIC_GA_ID=<analytics>
 ```
 
@@ -629,7 +629,7 @@ REDIS_URL=redis://host:6379
 OPENAI_API_KEY=sk-...
 GITHUB_CLIENT_ID=xxx
 GITHUB_CLIENT_SECRET=xxx
-AWS_S3_BUCKET=vibeaudit-reports
+AWS_S3_BUCKET=ShipSafe-reports
 NEXTAUTH_SECRET=xxx
 ```
 

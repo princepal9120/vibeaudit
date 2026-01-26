@@ -1,12 +1,12 @@
 {
-  "name": "@vibeaudit/mcp-server",
+  "name": "@ShipSafe/mcp-server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "MCP server for VibeAudit security scanning",
+  "description": "MCP server for ShipSafe security scanning",
   "main": "dist/index.js",
   "bin": {
-    "vibeaudit-mcp": "dist/index.js"
+    "ShipSafe-mcp": "dist/index.js"
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",

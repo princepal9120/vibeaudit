@@ -13,7 +13,7 @@ const testimonials = [
         stars: 5,
         avatar: "https://avatars.githubusercontent.com/u/47919550?v=4",
         content:
-            "Using VibeAudit has been like unlocking a secret security superpower. It's the perfect fusion of simplicity and depth.",
+            "Using ShipSafe has been like unlocking a secret security superpower. It's the perfect fusion of simplicity and depth.",
     },
     {
         name: "Théo Balick",
@@ -21,7 +21,7 @@ const testimonials = [
         stars: 4,
         avatar: "https://avatars.githubusercontent.com/u/68236786?v=4",
         content:
-            "VibeAudit has transformed how I ship web apps. I no longer worry about leaking API keys in client bundles.",
+            "ShipSafe has transformed how I ship web apps. I no longer worry about leaking API keys in client bundles.",
     },
     {
         name: "Glodie Lukose",

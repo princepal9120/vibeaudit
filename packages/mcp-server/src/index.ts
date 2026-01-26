@@ -11,7 +11,7 @@ import { config } from './config.js';
 
 const server = new Server(
   {
-    name: 'vibeaudit',
+    name: 'ShipSafe',
     version: '0.1.0',
   },
   {
@@ -63,7 +63,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
   // Validate configuration
   if (!config.apiUrl) {
-    console.error('VIBEAUDIT_API_URL environment variable is required');
+    console.error('ShipSafe_API_URL environment variable is required');
     process.exit(1);
   }
 
@@ -71,7 +71,7 @@ async function main() {
   await server.connect(transport);
 
   // Log to stderr so it doesn't interfere with stdio transport
-  console.error('VibeAudit MCP server started');
+  console.error('ShipSafe MCP server started');
 }
 
 main().catch((error) => {

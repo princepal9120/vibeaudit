@@ -1,8 +1,8 @@
-# VibeAudit
+# ShipSafe
 
 <div align="center">
 
-![VibeAudit](https://img.shields.io/badge/VibeAudit-v1.0-blue)
+![ShipSafe](https://img.shields.io/badge/ShipSafe-v1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-MVP-yellow)
 
@@ -14,11 +14,11 @@
 
 ---
 
-## 🎯 About VibeAudit
+## 🎯 About ShipSafe
 
-VibeAudit is a security scanning platform built for developers who ship code fast using AI tools. It validates code and live apps for security vulnerabilities, translates findings into plain English, and generates client-friendly reports—without the complexity, cost, or setup friction of enterprise security tools.
+ShipSafe is a security scanning platform built for developers who ship code fast using AI tools. It validates code and live apps for security vulnerabilities, translates findings into plain English, and generates client-friendly reports—without the complexity, cost, or setup friction of enterprise security tools.
 
-### Why VibeAudit?
+### Why ShipSafe?
 
 - **Built for speed:** 2-3 minute scans, zero setup required
 - **Plain-English explanations:** No security expertise needed
@@ -79,7 +79,7 @@ VibeAudit is a security scanning platform built for developers who ship code fas
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    VibeAudit System                             │
+│                    ShipSafe System                             │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────┐
@@ -152,8 +152,8 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) for detailed system design.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourorg/vibeaudit.git
-cd vibeaudit
+git clone https://github.com/yourorg/ShipSafe.git
+cd ShipSafe
 
 # Install dependencies
 npm install
@@ -186,7 +186,7 @@ Access the application at:
 
 ```env
 # Database
-DATABASE_URL=postgresql://vibeaudit:password@localhost:5432/vibeaudit
+DATABASE_URL=postgresql://ShipSafe:password@localhost:5432/ShipSafe
 
 # Redis
 REDIS_URL=redis://localhost:6379
@@ -203,7 +203,7 @@ NEXTAUTH_SECRET=your_nextauth_secret
 NEXTAUTH_URL=http://localhost:3000
 
 # AWS (Optional - for S3 reports)
-AWS_S3_BUCKET=vibeaudit-reports
+AWS_S3_BUCKET=ShipSafe-reports
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
 
@@ -219,7 +219,7 @@ See [`SETUP.md`](SETUP.md) for detailed setup instructions.
 ## 📁 Project Structure
 
 ```
-vibeaudit/
+ShipSafe/
 ├── apps/
 │   ├── web/                 # Next.js frontend application
 │   │   ├── app/             # App Router pages
@@ -353,8 +353,8 @@ vercel --prod
 
 ```bash
 npm run build:api
-docker build -t vibeaudit-api .
-docker push your-registry/vibeaudit-api:latest
+docker build -t ShipSafe-api .
+docker push your-registry/ShipSafe-api:latest
 # Deploy via AWS Console or Terraform
 ```
 
@@ -421,7 +421,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Documentation:** Check the [`docs/`](docs/) folder
 - **Issues:** Open a GitHub issue
 - **Discussions:** Join our GitHub Discussions
-- **Email:** support@vibeaudit.dev
+- **Email:** support@ShipSafe.dev
 
 ---
 
@@ -461,6 +461,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ for indie developers everywhere**
 
-[⬆ Back to top](#vibeaudit)
+[⬆ Back to top](#ShipSafe)
 
 </div>

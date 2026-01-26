@@ -54,7 +54,7 @@ const pricingTiers = [
         ],
         buttonText: "Contact Sales",
         buttonVariant: "outline" as const,
-        buttonHref: "mailto:sales@vibeaudit.dev",
+        buttonHref: "mailto:sales@ShipSafe.dev",
         highlighted: false,
     },
 ];
@@ -75,8 +75,8 @@ export default function PricingSection() {
                         <FadeIn key={tier.name} delay={0.1 * (index + 1)}>
                             <div
                                 className={`${tier.highlighted
-                                        ? "bg-background border border-primary/50 ring-1 ring-primary/20 rounded-2xl p-8 h-full relative overflow-hidden lime-glow transform md:-translate-y-4 flex flex-col shadow-2xl shadow-primary/5"
-                                        : "bg-muted/30 border border-border rounded-2xl p-8 h-full flex flex-col hover:border-border/80 transition-colors"
+                                    ? "bg-background border border-primary/50 ring-1 ring-primary/20 rounded-2xl p-8 h-full relative overflow-hidden lime-glow transform md:-translate-y-4 flex flex-col shadow-2xl shadow-primary/5"
+                                    : "bg-muted/30 border border-border rounded-2xl p-8 h-full flex flex-col hover:border-border/80 transition-colors"
                                     }`}
                             >
                                 {tier.highlighted && (

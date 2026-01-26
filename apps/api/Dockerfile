@@ -1,4 +1,4 @@
-# VibeAudit API Dockerfile
+# ShipSafe API Dockerfile
 FROM node:24-alpine AS base
 
 # Install security scanning tools

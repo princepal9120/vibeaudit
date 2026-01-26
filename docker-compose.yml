@@ -1,4 +1,4 @@
-# VibeAudit Docker Compose
+# ShipSafe Docker Compose
 # For local development and testing
 
 version: '3.8'
@@ -7,17 +7,17 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
-    container_name: vibeaudit-postgres
+    container_name: ShipSafe-postgres
     environment:
-      POSTGRES_USER: vibeaudit
-      POSTGRES_PASSWORD: vibeaudit_dev
-      POSTGRES_DB: vibeaudit
+      POSTGRES_USER: ShipSafe
+      POSTGRES_PASSWORD: ShipSafe_dev
+      POSTGRES_DB: ShipSafe
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vibeaudit"]
+      test: ["CMD-SHELL", "pg_isready -U ShipSafe"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,7 +25,7 @@ services:
   # Redis for job queue
   redis:
     image: redis:7-alpine
-    container_name: vibeaudit-redis
+    container_name: ShipSafe-redis
     ports:
       - "6379:6379"
     volumes:
@@ -41,11 +41,11 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: vibeaudit-api
+    container_name: ShipSafe-api
     environment:
       NODE_ENV: development
       PORT: 3001
-      DATABASE_URL: postgresql://vibeaudit:vibeaudit_dev@postgres:5432/vibeaudit
+      DATABASE_URL: postgresql://ShipSafe:ShipSafe_dev@postgres:5432/ShipSafe
       REDIS_URL: redis://redis:6379
       JWT_SECRET: dev-secret-change-in-production
       FRONTEND_URL: http://localhost:3000
@@ -60,7 +60,7 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - /tmp/vibeaudit-scans:/tmp/vibeaudit-scans
+      - /tmp/ShipSafe-scans:/tmp/ShipSafe-scans
 
   # Web Frontend
   web:
@@ -69,7 +69,7 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         NEXT_PUBLIC_API_URL: http://localhost:3001
-    container_name: vibeaudit-web
+    container_name: ShipSafe-web
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:3001
     ports:

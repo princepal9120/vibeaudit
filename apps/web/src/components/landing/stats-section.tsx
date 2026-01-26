@@ -30,7 +30,7 @@ export default function StatsSection() {
                         </h2>
                         <p className="text-xl text-secondary-foreground">
                             Most security tools {isMobile && <br />} are <span className="text-red-500 font-medium line-through decoration-2">enterprise bloatware</span>. <br />
-                            VibeAudit is built for speed.
+                            ShipSafe is built for speed.
                         </p>
                     </div>
                 </FadeIn>

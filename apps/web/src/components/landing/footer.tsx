@@ -11,15 +11,15 @@ export default function Footer() {
                     <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
                         <ShieldCheck className="w-5 h-5 text-white" />
                     </div>
-                    VibeAudit
+                    ShipSafe
                 </div>
                 <div className="flex gap-8">
                     <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
                     <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
-                    <Link href="mailto:hello@vibeaudit.dev" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
+                    <Link href="mailto:hello@ShipSafe.dev" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                    © {new Date().getFullYear()} VibeAudit. All rights reserved.
+                    © {new Date().getFullYear()} ShipSafe. All rights reserved.
                 </div>
             </div>
         </footer>

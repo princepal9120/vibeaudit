@@ -103,15 +103,15 @@ export async function POST(request: NextRequest) {
     if (resend) {
       try {
         await resend.emails.send({
-          from: "VibeAudit <notifications@vibeaudit.dev>",
+          from: "ShipSafe <notifications@ShipSafe.dev>",
           to: normalizedEmail,
-          subject: "You're on the list! VibeAudit Feature Coming Soon",
+          subject: "You're on the list! ShipSafe Feature Coming Soon",
           html: `
             <h1>We're building something great!</h1>
             <p>Thanks for your interest in the <strong>${plan.charAt(0).toUpperCase() + plan.slice(1)}</strong> plan.</p>
             <p>We are releasing this feature soon! You have been added to our priority list and will be one of the first to know when it goes live.</p>
             <p>Stay tuned,</p>
-            <p>The VibeAudit Team</p>
+            <p>The ShipSafe Team</p>
           `,
         });
         console.log(`Confirmation email sent to ${normalizedEmail}`);

@@ -66,7 +66,7 @@ export default function CheckoutCancelPage() {
       {/* Why Buy Section */}
       <Card className="border-border shadow-sm text-left">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Why VibeAudit?</CardTitle>
+          <CardTitle className="text-base">Why ShipSafe?</CardTitle>
           <CardDescription className="text-muted-foreground">
             Security scanning made simple for indie builders
           </CardDescription>
@@ -103,7 +103,7 @@ export default function CheckoutCancelPage() {
 
       {/* Support Link */}
       <p className="text-sm text-muted-foreground">
-        Having trouble? <Link href="mailto:support@vibeaudit.dev" className="text-primary hover:underline">Contact support</Link>
+        Having trouble? <Link href="mailto:support@ShipSafe.dev" className="text-primary hover:underline">Contact support</Link>
       </p>
     </div>
   );

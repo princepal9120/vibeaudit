@@ -1,6 +1,6 @@
 # Architecture Overview
 
-VibeAudit is a monorepo application designed to be a lightweight, developer-focused security scanning tool.
+ShipSafe is a monorepo application designed to be a lightweight, developer-focused security scanning tool.
 
 ## High-Level Structure
 
@@ -13,22 +13,25 @@ The project is structured as a monorepo using npm workspaces:
 ## Technology Stack
 
 ### Frontend (`apps/web`)
--   **Framework**: Next.js 16 (React 19)
--   **Styling**: Tailwind CSS v4
+-   **Framework**: Next.js 16.1 (App Router)
+-   **UI Library**: React 19.2
+-   **Styling**: Tailwind CSS v4.1
 -   **Icons**: Lucide React
--   **UI Components**: Radix UI primitives
+-   **UI Components**: Radix UI primitives + shadcn/ui
 -   **Email**: Resend
--   **Authentication**: Better Auth (in progress/planned)
+-   **Authentication**: Better Auth v1.4 (cookie-based sessions, no vendor lock-in)
 
 ### Backend (`apps/api`)
--   **Runtime**: Node.js
--   **Framework**: Express v5
--   **Database ORM**: Prisma
--   **Main Database**: PostgreSQL
--   **Queue System**: BullMQ
+-   **Runtime**: Node.js 24.x LTS
+-   **Framework**: Express v5.2
+-   **Database ORM**: Prisma 7.2
+-   **Main Database**: PostgreSQL 18
+-   **Queue System**: BullMQ 5.66
+-   **Cache**: Redis 8.4
 -   **PDF Generation**: PDFKit
--   **AI Integration**: OpenAI SDK
+-   **AI Integration**: OpenAI SDK (GPT-4o)
 -   **Git Operations**: simple-git
+-   **Scanning Tools**: Semgrep, OWASP ZAP, Trivy
 -   **Language**: TypeScript
 
 ## Key Components

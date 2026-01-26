@@ -8,7 +8,7 @@ router.get('/', (_req: Request, res: Response) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    service: 'vibeaudit-api',
+    service: 'ShipSafe-api',
   });
 });
 

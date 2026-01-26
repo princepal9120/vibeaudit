@@ -13,10 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vibeaudit.dev"),
+  metadataBase: new URL("https://ShipSafe.dev"),
   title: {
-    default: "VibeAudit - Security Scanning for Indie Builders",
-    template: "%s | VibeAudit",
+    default: "ShipSafe - Security Scanning for Indie Builders",
+    template: "%s | ShipSafe",
   },
   description:
     "Scan your code and live apps for security vulnerabilities. Get plain-English explanations and fix suggestions in under 3 minutes. No security expertise required.",
@@ -31,33 +31,33 @@ export const metadata: Metadata = {
     "secrets detection",
     "automated security audit",
   ],
-  authors: [{ name: "VibeAudit Team" }],
-  creator: "VibeAudit",
-  publisher: "VibeAudit",
+  authors: [{ name: "ShipSafe Team" }],
+  creator: "ShipSafe",
+  publisher: "ShipSafe",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://vibeaudit.dev",
-    title: "VibeAudit - Security Scanning for Indie Builders",
+    url: "https://ShipSafe.dev",
+    title: "ShipSafe - Security Scanning for Indie Builders",
     description:
       "Scan your code and live apps for security vulnerabilities. Get plain-English explanations in under 3 minutes.",
-    siteName: "VibeAudit",
+    siteName: "ShipSafe",
     images: [
       {
         url: "/og-image.png", // Assuming we might want a static file fallback or dynamic gen later, but logo serves as icon
         width: 1200,
         height: 630,
-        alt: "VibeAudit - Security for Indie Builders",
+        alt: "ShipSafe - Security for Indie Builders",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VibeAudit - Security Scanning for Indie Builders",
+    title: "ShipSafe - Security Scanning for Indie Builders",
     description:
       "Scan your code and live apps for security vulnerabilities. Get plain-English explanations in under 3 minutes.",
     images: ["/og-image.png"],
-    creator: "@vibeaudit",
+    creator: "@ShipSafe",
   },
   icons: {
     icon: "/favicon.ico",

@@ -171,7 +171,7 @@ export default function ReportDetailPage() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `vibeaudit-report-${reportId}.pdf`;
+        a.download = `ShipSafe-report-${reportId}.pdf`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);

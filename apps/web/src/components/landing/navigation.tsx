@@ -15,7 +15,7 @@ export default function Navigation() {
                     <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
                         <ShieldCheck className="w-5 h-5 text-white" />
                     </div>
-                    VibeAudit
+                    ShipSafe
                 </Link>
 
                 {/* Desktop Navigation */}

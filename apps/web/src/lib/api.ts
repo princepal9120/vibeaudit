@@ -1,4 +1,5 @@
-// API client for VibeAudit backend
+// API client for ShipSafe backend
+// Authentication is handled by Better Auth via cookies (credentials: 'include')
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
 
@@ -7,44 +8,19 @@ interface ApiError {
 }
 
 class ApiClient {
-  private token: string | null = null;
-
-  setToken(token: string | null) {
-    this.token = token;
-    if (token) {
-      localStorage.setItem('vibeaudit_token', token);
-    } else {
-      localStorage.removeItem('vibeaudit_token');
-    }
-  }
-
-  getToken(): string | null {
-    if (this.token) return this.token;
-    if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('vibeaudit_token');
-    }
-    return this.token;
-  }
-
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const token = this.getToken();
-
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       ...options.headers,
     };
 
-    if (token) {
-      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
-    }
-
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers,
-      credentials: 'include', // Include cookies for better-auth session
+      credentials: 'include', // Include cookies for Better Auth session
     });
 
     if (!response.ok) {
@@ -57,32 +33,15 @@ class ApiClient {
     return response.json();
   }
 
-  // Auth endpoints
-  async signup(email: string, password: string, name?: string) {
-    return this.request<{ user: User; token: string }>('/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, name }),
+  // Helper for authenticated file downloads
+  async fetchWithAuth(url: string): Promise<Blob> {
+    const response = await fetch(url, {
+      credentials: 'include',
     });
-  }
-
-  async login(email: string, password: string) {
-    return this.request<{ user: User; token: string }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-  }
-
-  async logout() {
-    await this.request('/auth/logout', { method: 'POST' });
-    this.setToken(null);
-  }
-
-  async getCurrentUser() {
-    return this.request<User & { scanCount: number }>('/auth/me');
-  }
-
-  getGitHubAuthUrl() {
-    return `${API_BASE}/auth/github`;
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.blob();
   }
 
   // Scans endpoints
