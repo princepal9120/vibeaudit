@@ -177,12 +177,15 @@ export default function NewScanPage() {
           {/* GitHub URL Input */}
           {(formData.scanType === 'github' || formData.scanType === 'both') && (
             <div className="space-y-2">
-              <label className="text-xs sm:text-[13px] font-medium text-foreground">GitHub Repository URL</label>
+              <label htmlFor="github-url" className="text-xs sm:text-[13px] font-medium text-foreground">GitHub Repository URL</label>
               <input
+                id="github-url"
+                name="githubUrl"
                 type="url"
                 value={formData.githubUrl}
                 onChange={(e) => setFormData((prev) => ({ ...prev, githubUrl: e.target.value }))}
                 placeholder="https://github.com/username/repo"
+                autoComplete="url"
                 className={cn(
                   'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
                   errors.githubUrl ? 'border-destructive' : 'border-border'
@@ -195,12 +198,15 @@ export default function NewScanPage() {
           {/* Live URL Input */}
           {(formData.scanType === 'url' || formData.scanType === 'both') && (
             <div className="space-y-2">
-              <label className="text-xs sm:text-[13px] font-medium text-foreground">Live URL</label>
+              <label htmlFor="live-url" className="text-xs sm:text-[13px] font-medium text-foreground">Live URL</label>
               <input
+                id="live-url"
+                name="liveUrl"
                 type="url"
                 value={formData.liveUrl}
                 onChange={(e) => setFormData((prev) => ({ ...prev, liveUrl: e.target.value }))}
                 placeholder="https://your-app.com"
+                autoComplete="url"
                 className={cn(
                   'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
                   errors.liveUrl ? 'border-destructive' : 'border-border'
@@ -213,12 +219,15 @@ export default function NewScanPage() {
           {/* Branch Input */}
           {(formData.scanType === 'github' || formData.scanType === 'both') && (
             <div className="space-y-2">
-              <label className="text-xs sm:text-[13px] font-medium text-foreground">Branch</label>
+              <label htmlFor="branch" className="text-xs sm:text-[13px] font-medium text-foreground">Branch</label>
               <input
+                id="branch"
+                name="branch"
                 type="text"
                 value={formData.branch}
                 onChange={(e) => setFormData((prev) => ({ ...prev, branch: e.target.value }))}
                 placeholder="main"
+                autoComplete="off"
                 className="w-full sm:w-[200px] px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
@@ -257,12 +266,12 @@ export default function NewScanPage() {
         >
           {loading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Starting Scan...</span>
+              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+              <span>Starting Scan…</span>
             </>
           ) : (
             <>
-              <Shield className="w-4 h-4" />
+              <Shield className="w-4 h-4" aria-hidden="true" />
               <span>Start Security Scan</span>
             </>
           )}

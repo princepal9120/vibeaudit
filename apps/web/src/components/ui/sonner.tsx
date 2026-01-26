@@ -6,13 +6,14 @@ type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ ...props }: ToasterProps) => {
     return (
-        <Sonner
-            className="toaster group"
-            position="top-right"
-            expand={true}
-            richColors
-            closeButton
-            toastOptions={{
+        <div aria-live="polite" aria-atomic="true">
+            <Sonner
+                className="toaster group"
+                position="top-right"
+                expand={true}
+                richColors
+                closeButton
+                toastOptions={{
                 classNames: {
                     toast:
                         "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border group-[.toaster]:shadow-xl group-[.toaster]:backdrop-blur-sm group-[.toaster]:rounded-xl group-[.toaster]:p-4",
@@ -32,7 +33,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
                 },
             }}
             {...props}
-        />
+            />
+        </div>
     )
 }
 

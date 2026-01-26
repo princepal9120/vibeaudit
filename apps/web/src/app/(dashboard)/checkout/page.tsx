@@ -24,7 +24,7 @@ interface Product {
 
 function CreditCardIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
     </svg>
   );
@@ -32,7 +32,7 @@ function CreditCardIcon({ className }: { className?: string }) {
 
 function SparklesIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
     </svg>
   );
@@ -84,9 +84,9 @@ function ProductCard({
 
       <CardContent className="text-center space-y-4">
         <div>
-          <div className="text-4xl font-bold text-slate-900">{product.priceFormatted}</div>
+          <div className="text-4xl font-bold text-foreground">{product.priceFormatted}</div>
           {product.credits > 1 && (
-            <div className="text-sm text-slate-500 mt-1">
+            <div className="text-sm text-muted-foreground mt-1">
               {product.perScanFormatted}/scan
             </div>
           )}
@@ -105,7 +105,7 @@ function ProductCard({
             : 'bg-foreground hover:bg-foreground/90 text-background'
             }`}
         >
-          {isLoading ? 'Processing...' : 'Buy Now'}
+          {isLoading ? 'Processing…' : 'Buy Now'}
         </Button>
       </CardContent>
     </Card>
@@ -279,7 +279,7 @@ export default function CheckoutPage() {
                 <div className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
                   <CheckIcon className="h-3 w-3 text-emerald-600" />
                 </div>
-                <span className="text-sm text-slate-600">{feature}</span>
+                <span className="text-sm text-muted-foreground">{feature}</span>
               </div>
             ))}
           </div>

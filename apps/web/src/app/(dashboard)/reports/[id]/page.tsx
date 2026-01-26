@@ -80,7 +80,7 @@ function getScoreLabel(score: number): string {
 
 function ShieldIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
     </svg>
   );
@@ -94,6 +94,7 @@ function ChevronIcon({ className, direction = 'down' }: { className?: string; di
       viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth={2}
+      aria-hidden="true"
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
     </svg>
@@ -192,11 +193,11 @@ export default function ReportDetailPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-2 text-slate-500">
-          <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+          <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
-          Loading report...
+          Loading report…
         </div>
       </div>
     );
@@ -208,7 +209,7 @@ export default function ReportDetailPage() {
         <Card className="border-destructive/20 bg-destructive/5">
           <CardContent className="py-8 text-center">
             <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
-              <svg className="h-6 w-6 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-6 w-6 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
@@ -247,14 +248,14 @@ export default function ReportDetailPage() {
             disabled={sharing}
             className="border-border"
           >
-            {sharing ? 'Sharing...' : shareUrl ? 'Copy Link' : 'Share Report'}
+            {sharing ? 'Sharing…' : shareUrl ? 'Copy Link' : 'Share Report'}
           </Button>
           <Button
             onClick={handleDownloadPdf}
             disabled={downloading}
             className="bg-primary hover:bg-primary/90 text-primary-foreground"
           >
-            {downloading ? 'Downloading...' : 'Download PDF'}
+            {downloading ? 'Downloading…' : 'Download PDF'}
           </Button>
           <Button
             variant="outline"
@@ -270,7 +271,7 @@ export default function ReportDetailPage() {
         <Card className="border-emerald-200 bg-emerald-50">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
               <div className="flex-1">
@@ -344,7 +345,7 @@ export default function ReportDetailPage() {
           <Card className="border-border">
             <CardContent className="py-8 text-center">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>

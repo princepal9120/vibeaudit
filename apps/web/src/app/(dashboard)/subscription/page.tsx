@@ -45,8 +45,6 @@ export default function SubscriptionPage() {
       setUsage(subRes.usage);
       setPlans(plansRes.plans);
       setError(null);
-      setPlans(plansRes.plans);
-      setError(null);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load subscription data';
       setError(errorMessage);
@@ -67,9 +65,6 @@ export default function SubscriptionPage() {
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
       }
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
-      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to start checkout';
       setError(errorMessage);
@@ -86,8 +81,6 @@ export default function SubscriptionPage() {
 
     try {
       setCancelling(true);
-      await api.cancelSubscription();
-      await fetchData();
       await api.cancelSubscription();
       await fetchData();
       toast.success('Subscription cancelled successfully');
@@ -186,7 +179,7 @@ export default function SubscriptionPage() {
               disabled={cancelling}
               className="text-sm text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
             >
-              {cancelling ? 'Cancelling...' : 'Cancel Plan'}
+              {cancelling ? 'Cancelling…' : 'Cancel Plan'}
             </button>
           )}
         </div>
@@ -274,7 +267,7 @@ export default function SubscriptionPage() {
                     {upgrading ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Redirecting...</span>
+                        <span>Redirecting…</span>
                       </>
                     ) : (
                       <>

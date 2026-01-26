@@ -244,9 +244,10 @@ export default function PrdReviewDetailPage() {
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button
               onClick={() => fetchReview()}
+              aria-label="Refresh"
               className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-muted-foreground text-sm hover:bg-muted/50 transition-colors"
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Refresh</span>
             </button>
 
@@ -255,12 +256,13 @@ export default function PrdReviewDetailPage() {
               <button
                 onClick={() => (review?.shareToken ? setShowShareMenu(!showShareMenu) : handleShare())}
                 disabled={shareLoading}
+                aria-label={review?.shareToken ? 'Shared' : 'Share'}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-muted-foreground text-sm hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
                 {shareLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
                 ) : (
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="w-4 h-4" aria-hidden="true" />
                 )}
                 <span className="hidden sm:inline">{review?.shareToken ? 'Shared' : 'Share'}</span>
               </button>
@@ -270,8 +272,8 @@ export default function PrdReviewDetailPage() {
                 <div className="absolute right-0 top-full mt-2 w-72 bg-card rounded-lg border border-border shadow-lg p-4 z-10">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-medium text-foreground">Share Link</span>
-                    <button onClick={() => setShowShareMenu(false)} className="text-muted-foreground hover:text-foreground">
-                      <X className="w-4 h-4" />
+                    <button onClick={() => setShowShareMenu(false)} aria-label="Close share menu" className="text-muted-foreground hover:text-foreground">
+                      <X className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </div>
                   <div className="flex items-center gap-2 mb-3">
@@ -279,13 +281,15 @@ export default function PrdReviewDetailPage() {
                       type="text"
                       value={shareUrl}
                       readOnly
+                      aria-label="Share URL"
                       className="flex-1 text-xs bg-muted rounded px-2 py-1.5 text-muted-foreground truncate"
                     />
                     <button
                       onClick={handleCopyLink}
+                      aria-label="Copy share link"
                       className="p-1.5 rounded bg-primary text-primary-foreground hover:opacity-90"
                     >
-                      {copied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
+                      {copied ? <Check className="w-4 h-4" aria-hidden="true" /> : <Link2 className="w-4 h-4" aria-hidden="true" />}
                     </button>
                   </div>
                   {review?.shareExpiresAt && (
@@ -307,12 +311,13 @@ export default function PrdReviewDetailPage() {
             <button
               onClick={handleDownloadPdf}
               disabled={pdfLoading}
+              aria-label="Download PDF"
               className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border text-muted-foreground text-sm hover:bg-muted/50 transition-colors disabled:opacity-50"
             >
               {pdfLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
               ) : (
-                <FileText className="w-4 h-4" />
+                <FileText className="w-4 h-4" aria-hidden="true" />
               )}
               <span className="hidden sm:inline">PDF</span>
             </button>
@@ -322,7 +327,7 @@ export default function PrdReviewDetailPage() {
               onClick={handleDownloadMarkdown}
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-4 h-4" aria-hidden="true" />
               <span className="hidden sm:inline">Download Secured PRD</span>
               <span className="sm:hidden">Download</span>
             </button>
@@ -336,8 +341,7 @@ export default function PrdReviewDetailPage() {
           <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">Analyzing your PRD</h3>
           <p className="text-sm text-muted-foreground text-center max-w-md">
-            We&apos;re analyzing your PRD against multiple security frameworks. This usually takes about 30-60
-            seconds.
+            We&apos;re analyzing your PRD against multiple security frameworks. This usually takes about 30–60&nbsp;seconds.
           </p>
         </div>
       )}
