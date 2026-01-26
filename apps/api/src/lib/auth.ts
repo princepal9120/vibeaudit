@@ -10,8 +10,12 @@ export const auth = betterAuth({
     provider: 'postgresql',
   }),
 
-  baseURL: config.frontendUrl,
+  // baseURL should be the API URL where auth endpoints are served
+  baseURL: config.betterAuthUrl,
   basePath: '/api/auth',
+
+  // trustedOrigins allows the frontend to make requests
+  trustedOrigins: [config.frontendUrl],
 
   secret: config.jwtSecret,
 

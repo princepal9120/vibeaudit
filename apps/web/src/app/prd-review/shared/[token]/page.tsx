@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 interface PrdFinding {
   id: string;
@@ -252,7 +252,7 @@ export default function SharedPrdReviewPage() {
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium text-slate-700">{fw.frameworkName}</span>
                       <span className={`text-sm font-medium ${fw.coveragePercent >= 75 ? 'text-emerald-600' :
-                          fw.coveragePercent >= 50 ? 'text-amber-600' : 'text-red-600'
+                        fw.coveragePercent >= 50 ? 'text-amber-600' : 'text-red-600'
                         }`}>
                         {fw.coveragePercent}%
                       </span>
@@ -260,7 +260,7 @@ export default function SharedPrdReviewPage() {
                     <div className="w-full bg-slate-100 rounded-full h-2">
                       <div
                         className={`h-2 rounded-full ${fw.coveragePercent >= 75 ? 'bg-emerald-500' :
-                            fw.coveragePercent >= 50 ? 'bg-amber-500' : 'bg-red-500'
+                          fw.coveragePercent >= 50 ? 'bg-amber-500' : 'bg-red-500'
                           }`}
                         style={{ width: `${fw.coveragePercent}%` }}
                       />

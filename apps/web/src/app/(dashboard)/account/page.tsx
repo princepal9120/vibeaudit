@@ -9,7 +9,7 @@ import { api, type Payment } from '@/lib/api';
 import { useScanCredits } from '@/components/checkout';
 import { cn } from '@/lib/utils';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 interface CardHeaderProps {
   icon: React.ReactNode;

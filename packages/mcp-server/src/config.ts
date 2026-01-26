@@ -1,6 +1,6 @@
 export const config = {
   // API URL for the ShipSafe backend
-  apiUrl: process.env.ShipSafe_API_URL || 'http://localhost:3001',
+  apiUrl: process.env.ShipSafe_API_URL || 'http://localhost:8000',
 
   // API key for authentication (optional - uses session if not provided)
   apiKey: process.env.ShipSafe_API_KEY,

@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export const config = {
   // Server
-  port: parseInt(process.env.PORT || '3001', 10),
+  port: parseInt(process.env.PORT || '8000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
 
   // Database
@@ -11,19 +11,20 @@ export const config = {
   // Redis
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
 
-  // JWT
-  jwtSecret: process.env.JWT_SECRET || '',
+  // Better Auth
+  jwtSecret: process.env.BETTER_AUTH_SECRET || process.env.JWT_SECRET || '',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  betterAuthUrl: process.env.BETTER_AUTH_URL || 'http://localhost:8000',
 
   // GitHub OAuth
   githubClientId: process.env.GITHUB_CLIENT_ID || '',
   githubClientSecret: process.env.GITHUB_CLIENT_SECRET || '',
-  githubCallbackUrl: process.env.GITHUB_CALLBACK_URL || 'http://localhost:3001/api/auth/github/callback',
+  githubCallbackUrl: process.env.GITHUB_CALLBACK_URL || 'http://localhost:8000/api/auth/github/callback',
 
   // Google OAuth
   googleClientId: process.env.GOOGLE_CLIENT_ID || '',
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-  googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3001/api/auth/google/callback',
+  googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8000/api/auth/google/callback',
 
   // OpenAI
   openaiApiKey: process.env.OPENAI_API_KEY || '',
@@ -48,10 +49,10 @@ export const config = {
 
 // Validate required config
 export function validateConfig() {
-  // JWT_SECRET is always required (security-critical)
+  // JWT_SECRET/BETTER_AUTH_SECRET is always required (security-critical)
   if (!config.jwtSecret) {
     throw new Error(
-      'JWT_SECRET environment variable is required. ' +
+      'BETTER_AUTH_SECRET environment variable is required. ' +
       'Generate a secure random secret (e.g., openssl rand -base64 32)'
     );
   }

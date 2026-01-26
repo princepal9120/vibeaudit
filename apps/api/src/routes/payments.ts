@@ -12,7 +12,7 @@ import {
   getPaymentHistory,
   PRODUCTS,
 } from '../services/payments.js';
-import type { ProductType } from '@prisma/client';
+import type {ProductType  } from '@prisma/client';
 
 const router: IRouter = Router();
 
