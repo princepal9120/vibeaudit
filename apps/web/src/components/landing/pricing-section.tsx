@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/ui/motion";
-import { Check, X } from "lucide-react";
+import { Check, X, Sparkles, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 
 const pricingTiers = [
     {
@@ -36,7 +37,7 @@ const pricingTiers = [
             { included: true, text: "Priority email support" },
         ],
         buttonText: "Get Started",
-        buttonVariant: "default" as const,
+        buttonVariant: "glow" as const,
         buttonHref: "/signup",
         highlighted: true,
     },
@@ -61,74 +62,123 @@ const pricingTiers = [
 
 export default function PricingSection() {
     return (
-        <section id="pricing" className="py-20 px-4 sm:px-6 bg-background">
-            <div className="container">
+        <section id="pricing" className="py-24 px-4 sm:px-6 bg-background relative overflow-hidden">
+            {/* Background decoration */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px]" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[120px]" />
+
+            <div className="container relative z-10">
                 <FadeIn>
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl sm:text-5xl font-bold mb-4">Pricing</h2>
-                        <p className="text-xl text-muted-foreground">Pay per scan. No subscriptions. No bullshit.</p>
+                        <p className="text-primary font-semibold text-sm uppercase tracking-wider mb-3">
+                            Pricing
+                        </p>
+                        <h2
+                            className="text-3xl sm:text-4xl lg:text-5xl mb-4"
+                            style={{ fontFamily: "var(--font-display)" }}
+                        >
+                            Simple, transparent pricing
+                        </h2>
+                        <p className="text-lg sm:text-xl text-muted-foreground">
+                            Pay per scan. No subscriptions. No bullshit.
+                        </p>
                     </div>
                 </FadeIn>
 
-                <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
                     {pricingTiers.map((tier, index) => (
                         <FadeIn key={tier.name} delay={0.1 * (index + 1)}>
-                            <div
-                                className={`${tier.highlighted
-                                    ? "bg-background border border-primary/50 ring-1 ring-primary/20 rounded-2xl p-8 h-full relative overflow-hidden lime-glow transform md:-translate-y-4 flex flex-col shadow-2xl shadow-primary/5"
-                                    : "bg-muted/30 border border-border rounded-2xl p-8 h-full flex flex-col hover:border-border/80 transition-colors"
-                                    }`}
+                            <motion.div
+                                className={`relative h-full ${tier.highlighted ? "md:-translate-y-4" : ""}`}
+                                whileHover={{ y: tier.highlighted ? -20 : -4 }}
+                                transition={{ duration: 0.3 }}
                             >
-                                {tier.highlighted && (
-                                    <>
-                                        <div className="absolute top-0 inset-x-0 h-1 bg-primary" />
-                                        <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                            Popular
+                                <div
+                                    className={`relative h-full rounded-2xl p-8 flex flex-col overflow-hidden transition-all duration-300 ${tier.highlighted
+                                            ? "bg-card border-2 border-primary/50 shadow-2xl"
+                                            : "bg-card border border-border hover:border-primary/30"
+                                        }`}
+                                >
+                                    {/* Highlighted tier decorations */}
+                                    {tier.highlighted && (
+                                        <>
+                                            {/* Top gradient line */}
+                                            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-primary to-accent" />
+
+                                            {/* Popular badge */}
+                                            <div className="absolute -top-px -right-px">
+                                                <div className="flex items-center gap-1 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-bl-xl rounded-tr-xl">
+                                                    <Sparkles className="w-3 h-3" />
+                                                    Popular
+                                                </div>
+                                            </div>
+
+                                            {/* Glow effect */}
+                                            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+                                        </>
+                                    )}
+
+                                    {/* Content */}
+                                    <div className="relative">
+                                        {/* Header */}
+                                        <div className="mb-6">
+                                            <h3
+                                                className={`text-2xl font-bold mb-2 ${tier.highlighted ? "text-primary" : ""}`}
+                                                style={{ fontFamily: "var(--font-display)" }}
+                                            >
+                                                {tier.name}
+                                            </h3>
+                                            <p className="text-muted-foreground text-sm">{tier.description}</p>
                                         </div>
-                                    </>
-                                )}
-                                <div className="mb-6">
-                                    <h3 className={`text-2xl font-bold mb-2 ${tier.highlighted ? "text-primary" : ""}`}>
-                                        {tier.name}
-                                    </h3>
-                                    <p className="text-muted-foreground text-sm">{tier.description}</p>
-                                </div>
-                                <div className="mb-6">
-                                    <span className={tier.highlighted ? "text-5xl font-bold" : "text-4xl font-bold"}>
-                                        {tier.price}
-                                    </span>
-                                    <span className={tier.name === "Agency" ? "block text-sm mt-1 text-muted-foreground" : "text-muted-foreground"}>
-                                        {" "}{tier.period}
-                                    </span>
-                                </div>
-                                <ul className="space-y-4 mb-8 flex-1">
-                                    {tier.features.map((feature, i) => (
-                                        <li key={i} className={`flex items-center gap-3 text-sm ${tier.highlighted ? "font-medium" : ""}`}>
-                                            {feature.included ? (
-                                                <Check className="w-5 h-5 text-primary shrink-0" />
-                                            ) : (
-                                                <X className="w-5 h-5 text-muted-foreground/30 shrink-0" />
-                                            )}
-                                            <span className={feature.included ? "" : "text-muted-foreground/50"}>
-                                                {feature.text}
+
+                                        {/* Price */}
+                                        <div className="mb-8">
+                                            <span
+                                                className={`text-5xl font-bold ${tier.highlighted ? "text-foreground" : ""}`}
+                                                style={{ fontFamily: "var(--font-display)" }}
+                                            >
+                                                {tier.price}
                                             </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                                {tier.buttonVariant === "outline" ? (
-                                    <Button variant="outline" size="lg" asChild className="w-full h-12 rounded-xl border-border hover:bg-muted font-medium">
-                                        <Link href={tier.buttonHref}>{tier.buttonText}</Link>
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        size="lg"
-                                        asChild
-                                        className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20"
-                                    >
-                                        <Link href={tier.buttonHref}>{tier.buttonText}</Link>
-                                    </Button>
-                                )}
-                            </div>
+                                            <span className={`text-muted-foreground ${tier.name === "Agency" ? "block text-sm mt-1" : "ml-1"}`}>
+                                                {tier.period}
+                                            </span>
+                                        </div>
+
+                                        {/* Features */}
+                                        <ul className="space-y-4 mb-8 flex-1">
+                                            {tier.features.map((feature, i) => (
+                                                <li key={i} className="flex items-start gap-3 text-sm">
+                                                    {feature.included ? (
+                                                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                            <Check className="w-3 h-3 text-primary" />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                            <X className="w-3 h-3 text-muted-foreground/50" />
+                                                        </div>
+                                                    )}
+                                                    <span className={feature.included ? "text-foreground" : "text-muted-foreground/50"}>
+                                                        {feature.text}
+                                                    </span>
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                        {/* CTA Button */}
+                                        <Button
+                                            variant={tier.buttonVariant}
+                                            size="lg"
+                                            asChild
+                                            className={`w-full ${tier.highlighted ? "gap-2" : ""}`}
+                                        >
+                                            <Link href={tier.buttonHref}>
+                                                {tier.highlighted && <Zap className="w-4 h-4" />}
+                                                {tier.buttonText}
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </div>
+                            </motion.div>
                         </FadeIn>
                     ))}
                 </div>

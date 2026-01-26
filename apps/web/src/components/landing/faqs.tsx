@@ -3,6 +3,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import Link from 'next/link'
 import { FadeIn } from "@/components/ui/motion"
+import { HelpCircle, ArrowRight } from "lucide-react"
 
 export default function FAQs() {
     const faqItems = [
@@ -34,44 +35,69 @@ export default function FAQs() {
     ]
 
     return (
-        <section className="py-20 px-4 sm:px-6 bg-background">
-            <div className="container max-w-4xl">
+        <section className="py-24 px-4 sm:px-6 bg-muted/20 relative overflow-hidden">
+            {/* Background pattern */}
+            <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+
+            <div className="container max-w-4xl relative z-10">
                 <FadeIn>
                     <div className="space-y-12">
                         <div className="text-center">
-                            <h2 className="text-4xl sm:text-5xl font-bold mb-4">Your questions answered</h2>
-                            <p className="text-xl text-secondary-foreground">common questions about ShipSafe</p>
+                            <p className="text-primary font-semibold text-sm uppercase tracking-wider mb-3">
+                                FAQ
+                            </p>
+                            <h2
+                                className="text-3xl sm:text-4xl lg:text-5xl mb-4"
+                                style={{ fontFamily: "var(--font-display)" }}
+                            >
+                                Your questions answered
+                            </h2>
+                            <p className="text-lg sm:text-xl text-muted-foreground">
+                                Common questions about ShipSafe
+                            </p>
                         </div>
 
                         <Accordion
                             type="single"
                             collapsible
-                            className="-mx-2 sm:mx-0">
-                            {faqItems.map((item) => (
-                                <div
-                                    className="group"
-                                    key={item.id}>
+                            className="space-y-3"
+                        >
+                            {faqItems.map((item, index) => (
+                                <FadeIn key={item.id} delay={index * 0.05}>
                                     <AccordionItem
                                         value={item.id}
-                                        className="data-[state=open]:bg-muted peer rounded-xl border-none px-5 py-1 data-[state=open]:border-none md:px-7">
-                                        <AccordionTrigger className="cursor-pointer text-lg font-medium hover:no-underline">{item.question}</AccordionTrigger>
-                                        <AccordionContent>
-                                            <p className="text-base text-secondary-foreground leading-relaxed py-2">{item.answer}</p>
+                                        className="bg-card border border-border rounded-xl px-6 py-1 data-[state=open]:border-primary/30 data-[state=open]:shadow-lg transition-all duration-300 overflow-hidden"
+                                    >
+                                        <AccordionTrigger className="cursor-pointer text-base sm:text-lg font-semibold hover:no-underline py-5 [&[data-state=open]>svg]:rotate-45 [&>svg]:transition-transform">
+                                            <div className="flex items-center gap-3 text-left">
+                                                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                                    <HelpCircle className="w-4 h-4 text-primary" />
+                                                </div>
+                                                {item.question}
+                                            </div>
+                                        </AccordionTrigger>
+                                        <AccordionContent className="pb-5">
+                                            <p className="text-muted-foreground leading-relaxed pl-11">
+                                                {item.answer}
+                                            </p>
                                         </AccordionContent>
                                     </AccordionItem>
-                                    <hr className="mx-5 -mb-px group-last:hidden peer-data-[state=open]:opacity-0 md:mx-7 border-border" />
-                                </div>
+                                </FadeIn>
                             ))}
                         </Accordion>
 
-                        <p className="text-muted-foreground text-center">
-                            Can&apos;t find what you&apos;re looking for? Contact our{' '}
-                            <Link
-                                href="mailto:support@ShipSafe.dev"
-                                className="text-primary font-medium hover:underline">
-                                customer support team
-                            </Link>
-                        </p>
+                        <div className="text-center pt-4">
+                            <p className="text-muted-foreground">
+                                Can&apos;t find what you&apos;re looking for?{' '}
+                                <Link
+                                    href="mailto:support@ShipSafe.dev"
+                                    className="inline-flex items-center gap-1 text-primary font-semibold hover:underline group"
+                                >
+                                    Contact support
+                                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                </Link>
+                            </p>
+                        </div>
                     </div>
                 </FadeIn>
             </div>
