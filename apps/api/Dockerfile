@@ -20,21 +20,24 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
-COPY apps/api/package*.json ./apps/api/
-COPY packages/shared/package*.json ./packages/shared/
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+COPY apps/api/package.json ./apps/api/
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Install dependencies
-RUN npm ci --workspace=apps/api --workspace=packages/shared
+RUN pnpm install --frozen-lockfile --filter @ShipSafe/api
 
 # Copy source code
 COPY apps/api ./apps/api
-COPY packages/shared ./packages/shared
 
 # Generate Prisma client
-RUN npm run db:generate -w apps/api
+RUN pnpm --filter @ShipSafe/api exec prisma generate
 
 # Build
-RUN npm run build -w apps/api
+RUN pnpm --filter @ShipSafe/api build
 
 WORKDIR /app/apps/api
 

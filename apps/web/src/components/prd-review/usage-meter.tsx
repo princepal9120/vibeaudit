@@ -4,6 +4,11 @@ import { cn } from '@/lib/utils';
 import { Zap } from 'lucide-react';
 import Link from 'next/link';
 
+// Calculate days until reset from a period end date
+function calculateDaysUntilReset(periodEnd: string, now: number): number {
+  return Math.ceil((new Date(periodEnd).getTime() - now) / (1000 * 60 * 60 * 24));
+}
+
 interface UsageMeterProps {
   reviewsUsed: number;
   reviewsLimit: number;
@@ -24,9 +29,9 @@ export function UsageMeter({
   const isAtLimit = !isUnlimited && reviewsUsed >= reviewsLimit;
   const percentUsed = isUnlimited ? 0 : Math.min((reviewsUsed / reviewsLimit) * 100, 100);
 
-  const daysUntilReset = Math.ceil(
-    (new Date(periodEnd).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-  );
+  // Calculate days until reset based on period end
+  // Note: Date.now() is called on each render, which is intentional for freshness
+  const daysUntilReset = calculateDaysUntilReset(periodEnd, Date.now());
 
   if (isUnlimited) {
     return (

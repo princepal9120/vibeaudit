@@ -223,7 +223,7 @@ export async function createSubscriptionCheckout(
   const { userId, userEmail, plan, successUrl, cancelUrl } = options;
 
   const planConfig = SUBSCRIPTION_PLANS[plan];
-  if (!planConfig || plan === 'FREE') {
+  if (!planConfig) {
     throw new Error('Invalid subscription plan');
   }
 

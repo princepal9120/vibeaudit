@@ -12,13 +12,13 @@ const stats = [
 ];
 
 export default function StatsSection() {
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
     useEffect(() => {
-        setIsMobile(window.innerWidth < 768);
-        const handleResize = () => setIsMobile(window.innerWidth < 768);
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
     }, []);
     return (
         <section className="py-20 px-4 sm:px-6 bg-muted/30">
@@ -29,7 +29,7 @@ export default function StatsSection() {
                             Scan your code in <span className="bg-primary text-primary-foreground px-3 py-1 rounded-lg">2 minutes</span>
                         </h2>
                         <p className="text-xl text-secondary-foreground">
-                            Most security tools {isMobile && <br />} are <span className="text-red-500 font-medium line-through decoration-2">enterprise bloatware</span>. <br />
+                            Most security tools {isMobile === true && <br />} are <span className="text-red-500 font-medium line-through decoration-2">enterprise bloatware</span>. <br />
                             ShipSafe is built for speed.
                         </p>
                     </div>

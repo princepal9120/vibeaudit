@@ -76,18 +76,16 @@ class ApiClient {
   }
 
   // SSE for scan progress
+  // Note: EventSource doesn't support credentials/cookies natively
+  // The backend should validate session via other means or use polling instead
   subscribeScanProgress(
     id: number,
     onProgress: (progress: ScanProgress) => void,
     onError?: (error: Error) => void
   ): () => void {
-    const token = this.getToken();
     const url = `${API_BASE}/scans/${id}/progress`;
 
-    const eventSource = new EventSource(url, {
-      // Note: EventSource doesn't support custom headers, so we use query params in dev
-      // In production, use cookies or a different approach
-    });
+    const eventSource = new EventSource(url);
 
     eventSource.onmessage = (event) => {
       try {
