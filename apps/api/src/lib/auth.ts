@@ -44,6 +44,19 @@ export const auth = betterAuth({
     },
   },
 
+  advanced: {
+    // Cross-origin cookie settings for development
+    crossSubDomainCookies: {
+      enabled: false, // Not needed for localhost
+    },
+    defaultCookieAttributes: {
+      sameSite: 'lax', // Allow OAuth redirects
+      secure: config.nodeEnv === 'production', // Only secure in production
+      httpOnly: true,
+      path: '/',
+    },
+  },
+
   user: {
     additionalFields: {
       // No additional fields needed - using standard better-auth fields

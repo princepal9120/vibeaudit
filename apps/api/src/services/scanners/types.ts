@@ -1,6 +1,6 @@
 export type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
 
-export type ScanSource = 'SEMGREP' | 'ZAP' | 'NPM_AUDIT' | 'TRIVY' | 'GITLEAKS';
+export type ScanSource = 'SEMGREP' | 'ZAP' | 'NPM_AUDIT' | 'TRIVY' | 'GITLEAKS' | 'ADVANCED';
 
 export type FindingCategory =
   | 'INJECTION'
@@ -12,6 +12,11 @@ export type FindingCategory =
   | 'DEPENDENCIES'
   | 'CRYPTOGRAPHY'
   | 'CONFIGURATION'
+  | 'RACE_CONDITION'
+  | 'IDOR'
+  | 'SSRF'
+  | 'MASS_ASSIGNMENT'
+  | 'DESERIALIZATION'
   | 'OTHER';
 
 export interface RawFinding {

@@ -108,20 +108,29 @@ export async function analyzePrd(
   title: string
 ): Promise<PrdAnalysisResult> {
   const startTime = Date.now();
+  console.log(`[PRD-Analyzer] Starting analysis for "${title}"`);
 
   if (!config.openaiApiKey) {
+    console.error('[PRD-Analyzer] OpenAI API key not configured');
     throw new Error('OpenAI API key not configured');
   }
+  console.log('[PRD-Analyzer] OpenAI API key is configured');
 
   // Step 1: Analyze the PRD for security gaps
+  console.log('[PRD-Analyzer] Step 1: Analyzing security gaps...');
   const analysisResult = await analyzeSecurityGaps(content);
+  console.log(`[PRD-Analyzer] Found ${analysisResult.findings.length} findings`);
 
   // Step 2: Generate secured PRD content
+  console.log('[PRD-Analyzer] Step 2: Generating secured PRD...');
   const securedContent = await generateSecuredPrd(content, analysisResult.findings);
+  console.log('[PRD-Analyzer] Secured PRD generated');
 
   // Step 3: Calculate security score and framework coverage
+  console.log('[PRD-Analyzer] Step 3: Calculating scores...');
   const frameworkCoverage = calculateFrameworkCoverage(analysisResult.findings, content);
   const securityScore = calculateSecurityScore(analysisResult.findings, frameworkCoverage);
+  console.log(`[PRD-Analyzer] Security score: ${securityScore}`);
 
   return {
     securedContent,

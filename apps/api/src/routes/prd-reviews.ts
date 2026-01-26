@@ -489,15 +489,20 @@ async function processReviewAsync(
   content: string,
   title: string
 ): Promise<void> {
+  console.log(`[PRD] Starting review processing for ${reviewId}`);
+
   try {
     // Update status to processing
     await prisma.prdReview.update({
       where: { id: reviewId },
       data: { status: 'PROCESSING' },
     });
+    console.log(`[PRD] Status updated to PROCESSING for ${reviewId}`);
 
     // Analyze the PRD
+    console.log(`[PRD] Calling analyzePrd for ${reviewId}...`);
     const result = await analyzePrd(content, title);
+    console.log(`[PRD] Analysis complete for ${reviewId}, score: ${result.securityScore}`);
 
     // Update review with results
     await prisma.prdReview.update({
@@ -512,8 +517,9 @@ async function processReviewAsync(
         completedAt: new Date(),
       },
     });
+    console.log(`[PRD] Review ${reviewId} completed successfully`);
   } catch (error) {
-    console.error(`PRD review ${reviewId} failed:`, error);
+    console.error(`[PRD] Review ${reviewId} failed:`, error);
 
     // Update status to failed
     await prisma.prdReview.update({

@@ -6,6 +6,10 @@ import { runNpmAudit } from '../services/scanners/npm-audit.js';
 import { runTrivy } from '../services/scanners/trivy.js';
 import { runZap } from '../services/scanners/zap.js';
 import { runGitleaks } from '../services/scanners/gitleaks.js';
+import { runAdvancedSecurityScan } from '../services/scanners/advanced-security.js';
+import { runConfigSecurityScan } from '../services/scanners/config-security.js';
+import { runFrameworkSecurityScan } from '../services/scanners/framework-security.js';
+import { runAIDeepAnalysis } from '../services/scanners/ai-deep-analysis.js';
 import { cloneRepository, cleanupRepository } from '../services/git.js';
 import { generateAIExplanations } from '../services/ai-explanations.js';
 import { calculateSecurityScore } from '../services/scoring.js';
@@ -33,6 +37,7 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
       await updateScanStatus(scanId, 'SCANNING', 'Running static analysis...', 20);
       await job.updateProgress(20);
 
+      // Phase 1: Run traditional SAST tools in parallel
       const [semgrepFindings, npmAuditFindings, trivyFindings, gitleaksFindings] = await Promise.all([
         runSemgrep(repoPath).catch(err => {
           console.error('Semgrep error:', err);
@@ -53,6 +58,38 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
       ]);
 
       allFindings.push(...semgrepFindings, ...npmAuditFindings, ...trivyFindings, ...gitleaksFindings);
+      await job.updateProgress(35);
+
+      // Phase 2: Run advanced security scanners in parallel
+      await updateScanStatus(scanId, 'SCANNING', 'Running advanced security analysis...', 40);
+
+      const [advancedFindings, configFindings, frameworkFindings] = await Promise.all([
+        runAdvancedSecurityScan(repoPath).catch(err => {
+          console.error('Advanced security scan error:', err);
+          return [] as RawFinding[];
+        }),
+        runConfigSecurityScan(repoPath).catch(err => {
+          console.error('Config security scan error:', err);
+          return [] as RawFinding[];
+        }),
+        runFrameworkSecurityScan(repoPath).catch(err => {
+          console.error('Framework security scan error:', err);
+          return [] as RawFinding[];
+        }),
+      ]);
+
+      allFindings.push(...advancedFindings, ...configFindings, ...frameworkFindings);
+      await job.updateProgress(45);
+
+      // Phase 3: Run AI-powered deep analysis (separate phase for better progress tracking)
+      await updateScanStatus(scanId, 'SCANNING', 'Running AI-powered deep analysis...', 48);
+
+      const aiFindings = await runAIDeepAnalysis(repoPath).catch(err => {
+        console.error('AI deep analysis error:', err);
+        return [] as RawFinding[];
+      });
+
+      allFindings.push(...aiFindings);
       await job.updateProgress(50);
     }
 
