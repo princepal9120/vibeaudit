@@ -182,21 +182,27 @@ export default function AccountPage() {
 
             <form onSubmit={handleUpdateProfile} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-[13px] font-medium text-foreground">Email</label>
+                <label htmlFor="account-email" className="text-[13px] font-medium text-foreground">Email</label>
                 <input
+                  id="account-email"
+                  name="email"
                   type="email"
                   value={session?.user?.email || ''}
                   disabled
+                  autoComplete="email"
                   className="w-full px-4 py-3 rounded-lg bg-secondary border border-border text-sm text-foreground disabled:opacity-60"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[13px] font-medium text-foreground">Display Name</label>
+                <label htmlFor="account-name" className="text-[13px] font-medium text-foreground">Display Name</label>
                 <input
+                  id="account-name"
+                  name="name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your name"
+                  autoComplete="name"
                   className="w-full px-4 py-3 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
@@ -207,7 +213,7 @@ export default function AccountPage() {
                   disabled={saving}
                   className="px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
-                  {saving ? 'Saving...' : 'Save Changes'}
+                  {saving ? 'Saving…' : 'Save Changes'}
                 </button>
                 {saveSuccess && (
                   <span className="text-sm text-[#10B981] flex items-center gap-1">
@@ -343,19 +349,22 @@ export default function AccountPage() {
             />
 
             <div className="space-y-2">
-              <label className="text-xs sm:text-[13px] font-medium text-foreground">API Key</label>
+              <label htmlFor="api-key" className="text-xs sm:text-[13px] font-medium text-foreground">API Key</label>
               <div className="flex gap-2">
                 <input
+                  id="api-key"
                   type="password"
                   value={apiKey}
                   readOnly
+                  aria-label="API Key"
                   className="flex-1 min-w-0 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border border-border text-xs sm:text-sm text-foreground font-mono"
                 />
                 <button
                   onClick={handleCopyApiKey}
+                  aria-label="Copy API key"
                   className="px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-border bg-background text-muted-foreground hover:bg-secondary transition-colors flex-shrink-0"
                 >
-                  <Copy className="w-4 h-4" />
+                  <Copy className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
               {copied && <p className="text-xs text-[#10B981]">Copied to clipboard!</p>}
@@ -388,7 +397,7 @@ export default function AccountPage() {
                     className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors disabled:opacity-50"
                   >
                     <Trash2 className="w-4 h-4" />
-                    <span>{deleting ? 'Deleting...' : 'Yes, Delete'}</span>
+                    <span>{deleting ? 'Deleting…' : 'Yes, Delete'}</span>
                   </button>
                   <button
                     onClick={() => setDeleteConfirm(false)}

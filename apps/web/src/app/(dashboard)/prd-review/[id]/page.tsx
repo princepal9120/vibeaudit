@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Download, Loader2, AlertCircle, RefreshCw, Share2, Link2, Check, FileText, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { api, type PrdReviewDetail } from '@/lib/api';
-import { PrdDiffViewer, PrdFindingsPanel } from '@/components/prd-review';
+import { PrdDiffViewer, PrdFindingsPanel, MarkdownPreview, SplitView } from '@/components/prd-review';
 import { SecurityScoreGauge } from '@/components/ui/security-score-gauge';
 import { cn, formatDate } from '@/lib/utils';
 
@@ -29,6 +29,7 @@ export default function PrdReviewDetailPage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState<'original' | 'secured' | 'split' | 'diff'>('split');
 
   const fetchReview = useCallback(async () => {
     try {
@@ -381,10 +382,98 @@ export default function PrdReviewDetailPage() {
             </div>
           </div>
 
-          {/* Diff Viewer */}
-          <div className="p-6 rounded-xl bg-card border border-border">
-            <h3 className="text-sm font-medium text-muted-foreground mb-4">PRD Comparison</h3>
-            <PrdDiffViewer originalContent={review.originalContent} securedContent={review.securedContent} />
+          {/* Tabbed PRD Viewer */}
+          <div className="space-y-4">
+            {/* Tab Navigation */}
+            <div className="flex items-center gap-2 p-1 bg-muted/50 rounded-lg border border-border w-fit">
+              <button
+                onClick={() => setActiveTab('split')}
+                className={cn(
+                  'px-4 py-2 rounded-md text-sm font-medium transition-all',
+                  activeTab === 'split'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Split View
+              </button>
+              <button
+                onClick={() => setActiveTab('original')}
+                className={cn(
+                  'px-4 py-2 rounded-md text-sm font-medium transition-all',
+                  activeTab === 'original'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Original
+              </button>
+              <button
+                onClick={() => setActiveTab('secured')}
+                className={cn(
+                  'px-4 py-2 rounded-md text-sm font-medium transition-all',
+                  activeTab === 'secured'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Secured
+              </button>
+              <button
+                onClick={() => setActiveTab('diff')}
+                className={cn(
+                  'px-4 py-2 rounded-md text-sm font-medium transition-all',
+                  activeTab === 'diff'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                Diff
+              </button>
+            </div>
+
+            {/* Tab Content */}
+            <div className="rounded-xl border border-border bg-background overflow-hidden">
+              {activeTab === 'split' && (
+                <div className="p-6">
+                  <SplitView
+                    originalContent={review.originalContent}
+                    securedContent={review.securedContent}
+                  />
+                </div>
+              )}
+
+              {activeTab === 'original' && (
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-4 px-4 py-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span className="text-sm font-medium text-blue-900">Original PRD</span>
+                  </div>
+                  <div className="max-h-[800px] overflow-y-auto">
+                    <MarkdownPreview content={review.originalContent} />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'secured' && (
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-4 px-4 py-2 bg-emerald-50 rounded-lg border border-emerald-200">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="text-sm font-medium text-emerald-900">Security-Enhanced PRD</span>
+                  </div>
+                  <div className="max-h-[800px] overflow-y-auto">
+                    <MarkdownPreview content={review.securedContent} />
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'diff' && (
+                <div className="p-6">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-4">PRD Comparison (Diff View)</h3>
+                  <PrdDiffViewer originalContent={review.originalContent} securedContent={review.securedContent} />
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
