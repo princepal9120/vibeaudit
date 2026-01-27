@@ -1,13 +1,17 @@
 'use client';
 
-import Link from 'next/link';
-import { Plus, RefreshCw } from 'lucide-react';
-import { DashboardStatsGrid, DashboardStatsSkeleton } from '@/components/dashboard-stats';
-import { ScansTable, ScansTableSkeleton } from '@/components/scans-table';
+import { useRouter } from 'next/navigation';
+import { Plus, RefreshCw, Activity, CheckCircle, AlertTriangle, TrendingUp } from 'lucide-react';
+import { PageHeader } from '@/components/dashboard/page-header';
+import { StatsCard } from '@/components/dashboard/stats-card';
+import { Button } from '@/components/ui/button';
 import { useScans } from '@/hooks';
 import { calculateDashboardStats, isScanInProgress } from '@/lib/utils';
+import { ScansTable, ScansTableSkeleton } from '@/components/scans-table';
+import { OverviewChart } from '@/components/dashboard/overview-chart';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { scans, loading, error, refetch } = useScans({
     autoRefresh: true,
     refreshInterval: 5000,
@@ -17,90 +21,124 @@ export default function DashboardPage() {
   const stats = calculateDashboardStats(scans);
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-[28px] font-semibold text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1 hidden sm:block">Monitor your security scans and findings</p>
-        </div>
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => refetch()}
-            disabled={loading}
-            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg border border-border text-muted-foreground text-sm hover:bg-muted/50 transition-colors disabled:opacity-50"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">Refresh</span>
-          </button>
-          <Link
-            href="/scan/new"
-            className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            <Plus className="w-4 h-4" />
-            <span>New Scan</span>
-          </Link>
+    <div className="space-y-8">
+      {/* Page Header */}
+      <PageHeader
+        title="Dashboard"
+        description="Monitor your security scans and findings"
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={loading}
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button size="sm" onClick={() => router.push('/scan/new')}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Scan
+            </Button>
+          </div>
+        }
+      />
+
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          title="Total Scans"
+          value={stats.totalScans}
+          description="All time"
+          icon={Activity}
+          trend={{
+            value: 12.5,
+            label: "from last month",
+          }}
+        />
+        <StatsCard
+          title="Completed"
+          value={stats.completedScans}
+          description="Successfully analyzed"
+          icon={CheckCircle}
+        />
+        <StatsCard
+          title="Average Score"
+          value={stats.averageScore > 0 ? stats.averageScore : '-'}
+          description="Security score"
+          icon={TrendingUp}
+          trend={{
+            value: 5.2,
+            label: "improvement",
+          }}
+        />
+        <StatsCard
+          title="Total Findings"
+          value={stats.totalFindings}
+          description={`${stats.criticalFindings} critical`}
+          icon={AlertTriangle}
+        />
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid gap-4 md:grid-cols-7">
+        <OverviewChart scans={scans} className="md:col-span-4 lg:col-span-4" />
+        {/* Placeholder for future Recent Activity Feed or breakdown chart */}
+        <div className="md:col-span-3 lg:col-span-3 rounded-xl border bg-card text-card-foreground shadow-sm p-6 flex items-center justify-center text-muted-foreground text-sm">
+          Recent Activity Feed (Coming Soon)
         </div>
       </div>
 
-      {/* Stats Grid */}
-      {loading && scans.length === 0 ? (
-        <DashboardStatsSkeleton />
-      ) : (
-        <DashboardStatsGrid stats={stats} />
-      )}
-
       {/* Active Scan Indicator */}
       {hasActiveScans && (
-        <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-[#10B981] bg-[#D1FAE5]/50 border border-[#10B981]/20 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl">
-          <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 flex-shrink-0">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75" />
-            <span className="relative inline-flex rounded-full h-full w-full bg-[#10B981]" />
+        <div className="flex items-center gap-3 text-sm text-green-600 bg-green-50 border border-green-200 px-4 py-3 rounded-lg">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
           </span>
           <span className="font-medium">Scans in progress</span>
-          <span className="text-[#10B981]/70 hidden sm:inline">- auto-refreshing every 5s</span>
+          <span className="text-green-600/70">- auto-refreshing every 5s</span>
         </div>
       )}
 
       {/* Recent Scans Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Recent Scans</h2>
-          <Link href="/scans" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            View all &rarr;
-          </Link>
+          <h2 className="text-lg font-semibold">Recent Scans</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/scans')}
+          >
+            View all →
+          </Button>
         </div>
 
         {loading && scans.length === 0 ? (
           <ScansTableSkeleton />
         ) : error ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button
-              onClick={() => refetch()}
-              className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
-            >
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-8 text-center">
+            <p className="text-destructive mb-4">{error}</p>
+            <Button variant="outline" onClick={() => refetch()}>
               Try Again
-            </button>
+            </Button>
           </div>
         ) : scans.length === 0 ? (
-          <div className="rounded-xl border border-border mt-8 p-8 sm:p-16 text-center border-dashed">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-4 sm:mb-6">
-              <Plus className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+          <div className="rounded-lg border border-dashed p-16 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+              <Plus className="h-6 w-6 text-muted-foreground" />
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-2">No scans yet</h3>
-            <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 max-w-md mx-auto">
+            <h3 className="mt-4 text-lg font-semibold">No scans yet</h3>
+            <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">
               Run your first security scan to identify vulnerabilities in your code or live application.
             </p>
-            <Link
-              href="/scan/new"
-              className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-primary text-primary-foreground text-sm sm:text-base font-medium hover:opacity-90 transition-opacity"
-            >
+            <Button className="mt-6" onClick={() => router.push('/scan/new')}>
               Start Your First Scan
-            </Link>
+            </Button>
           </div>
         ) : (
-          <ScansTable scans={scans} />
+          <ScansTable scans={scans.slice(0, 5)} />
         )}
       </div>
     </div>

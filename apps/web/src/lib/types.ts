@@ -46,6 +46,7 @@ export interface ReportSummary {
   totalFindings: number;
   criticalCount: number;
   highCount: number;
+  pdfUrl?: string | null;
 }
 
 
@@ -79,6 +80,7 @@ export interface CreateScanRequest {
   githubRepoUrl?: string;
   liveUrl?: string;
   branch?: string;
+  file?: File;
 }
 
 
@@ -130,7 +132,7 @@ export interface SortConfig {
 
 
 
-export type ScanType = 'github' | 'url' | 'both';
+export type ScanType = 'github' | 'url' | 'both' | 'file';
 
 export interface ScanFormData {
   scanType: ScanType;
