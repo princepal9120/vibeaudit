@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function CTASection() {
     return (
-        <section className="max-w-3xl mx-auto px-6 text-center py-20">
+        <section className="max-w-xl mx-auto px-6 text-center py-20">
             <FadeIn>
                 <div className="border border-[#27272A] rounded-lg p-12 bg-[#111113] relative overflow-hidden">
                     {/* Subtle bg glow */}

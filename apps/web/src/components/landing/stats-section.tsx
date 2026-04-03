@@ -38,8 +38,8 @@ export default function StatsSection() {
                             <div className="w-10 h-10 rounded bg-[#111113] border border-[#27272A] flex items-center justify-center mb-3">
                                 <TrendingUp className="w-4 h-4 text-white" />
                             </div>
-                            <p className="text-2xl font-mono text-white font-bold mb-1">$30</p>
-                            <p className="text-xs text-[#71717A] max-w-[120px]">per scan, no subscription</p>
+                            <p className="text-2xl font-mono text-white font-bold mb-1">$29</p>
+                            <p className="text-xs text-[#71717A] max-w-[120px]">per year, unlimited scans</p>
                         </div>
                         <div className="flex flex-col items-center text-center">
                             <div className="w-10 h-10 rounded bg-[#111113] border border-[#27272A] flex items-center justify-center mb-3">

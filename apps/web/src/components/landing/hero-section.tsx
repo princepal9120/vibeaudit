@@ -22,18 +22,17 @@ export default function HeroSection() {
                     style={{ fontFamily: "var(--font-display)" }}
                 >
                     <FadeIn delay={0.1}>
-                        <span className="text-white">Security scanning</span><br />
-                        <span className="text-white block mt-2">for</span>
+                        <span className="text-white">Security scanning for </span>
                     </FadeIn>
                     <FadeIn delay={0.2} className="block mt-2">
                         <TypewriterEffect
                             words={[
-                                { text: "Indie Hackers", className: "text-[#71717A]" },
-                                { text: "Vibe Coders", className: "text-[#71717A]" },
-                                { text: "Solo Devs", className: "text-[#71717A]" },
-                                { text: "Non-Tech Founders", className: "text-[#71717A]" },
+                                { text: "Indie Hackers", className: "bg-gradient-to-r from-[#4ade80] to-[#22c55e] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]" },
+                                { text: "Vibe Coders", className: "bg-gradient-to-r from-[#4ade80] to-[#22c55e] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]" },
+                                { text: "Solo Devs", className: "bg-gradient-to-r from-[#4ade80] to-[#22c55e] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]" },
+                                { text: "Non-Tech Founders", className: "bg-gradient-to-r from-[#4ade80] to-[#22c55e] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]" },
                             ]}
-                            className="bg-clip-text text-transparent"
+                            className=""
                             cursorClassName="bg-white h-8 sm:h-12 lg:h-14"
                         />
                     </FadeIn>
@@ -57,50 +56,19 @@ export default function HeroSection() {
                 </FadeIn>
             </section>
 
-            {/* Terminal UI Element */}
+            {/* Dashboard Screenshot Placeholder */}
             <FadeIn delay={0.6}>
                 <section className="mt-20 px-6">
-                    <div className="max-w-[900px] mx-auto bg-[#111113] border border-[#27272A] rounded-lg overflow-hidden shadow-2xl">
-                        <div className="h-10 bg-[#18181B] border-b border-[#27272A] flex items-center px-4 gap-1.5">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#27272A]"></div>
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#27272A]"></div>
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#27272A]"></div>
-                            <div className="ml-4 font-mono text-[11px] text-[#52525B]">shipsafe-cli — scan — v1.0.4</div>
-                        </div>
-                        <div className="p-6 font-mono text-[13px] leading-relaxed overflow-x-auto text-left">
-                            <div className="flex gap-4 mb-2">
-                                <span className="text-[#52525B]">14:02:11</span>
-                                <span className="text-white">Analyzing <span className="text-[#3B82F6]">auth-middleware.ts</span>...</span>
-                            </div>
-                            <div className="flex gap-4 mb-4 items-start">
-                                <span className="text-[#52525B]">14:02:13</span>
-                                <span className="text-[#EF4444] font-bold">CRITICAL</span>
-                                <span className="text-white">Broken Access Control detected in route /api/admin/*</span>
-                            </div>
-                            <div className="pl-20 mb-6 text-[#52525B]">
-                                &gt; Severity: 9.8 (High Impact)<br />
-                                &gt; Found in: line 42<br />
-                                &gt; Recommendation: Implement JWT verification before logic.
-                            </div>
-                            <div className="flex gap-4 mb-2">
-                                <span className="text-[#52525B]">14:02:14</span>
-                                <span className="text-[#F97316] font-bold">HIGH</span>
-                                <span className="text-white">Exposed AWS Secret Access Key in .env.production</span>
-                            </div>
-                            <div className="flex gap-4 mb-2">
-                                <span className="text-[#52525B]">14:02:15</span>
-                                <span className="text-[#EAB308] font-bold">MEDIUM</span>
-                                <span className="text-white">Outdated package: "jsonwebtoken" (v8.5.1) — Vulnerable to CVE-2022-23529</span>
-                            </div>
-                            <div className="flex gap-4 mb-4 pt-2">
-                                <span className="text-[#52525B]">14:02:16</span>
-                                <span className="text-[#22C55E] font-bold">SUCCESS</span>
-                                <span className="text-white">Scan complete. 14 vulnerabilities identified.</span>
-                            </div>
-                            <div className="mt-4 pt-4 border-t border-[#18181B] text-left">
-                                <span className="text-white inline-block border-r-2 border-white pr-1 animate-pulse">$ shipsafe fix --auto</span>
-                            </div>
-                        </div>
+                    <div className="max-w-[1000px] mx-auto bg-[#111113] border border-[#27272A] rounded-lg overflow-hidden shadow-2xl aspect-[16/9] relative flex items-center justify-center">
+                        {/* Replace src with the actual path to your dashboard screenshot */}
+                        <img
+                            src="/dashboard.png"
+                            alt="ShipSafe Dashboard"
+                            className="w-full h-full object-contain relative z-10 opacity-90 transition-opacity hover:opacity-100"
+                            onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                            }}
+                        />
                     </div>
                 </section>
             </FadeIn>

@@ -16,11 +16,7 @@ export const TypewriterEffect = ({
     className?: string;
     cursorClassName?: string;
 }) => {
-    // Simple state machine for typewriter
-    // words array -> flatten to letters -> render
-    // BUT user wants a cycling effect: "for [Indie Hackers]", then delete, then "for [Vibe Coders]"
-    // The provided code snippet below creates a static typewriter or one-time effect.
-    // I will implement a cycling effect which is better for this use case.
+
 
     const [currentWordIndex, setCurrentWordIndex] = useState(0);
     const [currentText, setCurrentText] = useState("");
@@ -59,6 +55,7 @@ export const TypewriterEffect = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.1 }}
+                className={cn(words[currentWordIndex].className)}
             >
                 {currentText}
             </motion.span>

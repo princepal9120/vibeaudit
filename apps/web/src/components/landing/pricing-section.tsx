@@ -5,11 +5,12 @@ import { FadeIn } from "@/components/ui/motion";
 import { Check, X, Shield } from "lucide-react";
 
 const pricingTiers = [
+
     {
         name: "Free",
-        description: "Perfect for first-time verification",
+        description: "For testing a repo for the first time.",
         price: "$0",
-        period: "/ first scan",
+        period: "one-time",
         features: [
             { included: true, text: "1 free security scan" },
             { included: true, text: "Public & Private repos" },
@@ -21,12 +22,12 @@ const pricingTiers = [
         buttonHref: "/signup",
     },
     {
-        name: "Pro",
-        description: "For indie hackers & solo founders",
-        price: "$30",
-        period: "/ scan",
+        name: "ShipSafe Pro",
+        description: "One simple plan for everyone.",
+        price: "$29",
+        period: "/ year",
         features: [
-            { included: true, text: "Unlimited scans (pay-as-you-go)" },
+            { included: true, text: "Unlimited scans" },
             { included: true, text: "Full vulnerability report" },
             { included: true, text: "Deep code analysis" },
             { included: true, text: "Professional PDF export" },
@@ -35,32 +36,18 @@ const pricingTiers = [
         buttonText: "Get Started",
         buttonHref: "/signup",
     },
-    {
-        name: "Agency",
-        description: "For freelancers & dev shops",
-        price: "Custom",
-        period: "Volume Discounts",
-        features: [
-            { included: true, text: "Bulk scan credits" },
-            { included: true, text: "Co-branded reports (Coming Soon)" },
-            { included: true, text: "Team management" },
-            { included: true, text: "Dedicated account support" },
-            { included: true, text: "API access" },
-        ],
-        buttonText: "Contact Sales",
-        buttonHref: "mailto:sales@ShipSafe.dev",
-    },
+
 ];
 
 export default function PricingSection() {
     return (
         <section id="pricing" className="max-w-7xl mx-auto px-6 mt-40 text-center pb-20">
             <h2 className="text-3xl font-bold mb-12 text-white">Pay as you ship</h2>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
                 {pricingTiers.map((tier, index) => (
                     <FadeIn key={tier.name} delay={0.1 * index}>
-                        <div className={`bg-[#111113] border ${tier.name === "Pro" ? "border-white" : "border-[#27272A]"} rounded-lg p-10 text-left relative overflow-hidden flex flex-col h-full`}>
-                            {tier.name === "Pro" && (
+                        <div className={`bg-[#111113] border ${tier.name === "ShipSafe Pro" ? "border-white" : "border-[#27272A]"} rounded-lg p-10 text-left relative overflow-hidden flex flex-col h-full`}>
+                            {tier.name === "ShipSafe Pro" && (
                                 <div className="absolute top-0 right-0 p-6 opacity-5">
                                     <Shield className="w-32 h-32 text-white" />
                                 </div>
@@ -87,7 +74,7 @@ export default function PricingSection() {
                                     </li>
                                 ))}
                             </ul>
-                            <Link href={tier.buttonHref} className={`w-full py-4 font-bold text-sm tracking-tight active:scale-95 transition-transform text-center rounded-sm ${tier.name === "Pro" ? "bg-white text-black" : "bg-transparent border border-[#27272A] text-white hover:bg-[#1A1A1A]"}`}>
+                            <Link href={tier.buttonHref} className={`w-full py-4 font-bold text-sm tracking-tight active:scale-95 transition-transform text-center rounded-sm ${tier.name === "ShipSafe Pro" ? "bg-white text-black" : "bg-transparent border border-[#27272A] text-white hover:bg-[#1A1A1A]"}`}>
                                 {tier.buttonText}
                             </Link>
                         </div>

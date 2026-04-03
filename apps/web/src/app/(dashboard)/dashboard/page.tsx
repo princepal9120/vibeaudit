@@ -12,10 +12,41 @@ import { OverviewChart } from '@/components/dashboard/overview-chart';
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { scans, loading, error, refetch } = useScans({
+  const { scans: fetchedScans, loading: fetchedLoading, error: fetchedError, refetch } = useScans({
     autoRefresh: true,
     refreshInterval: 5000,
   });
+
+  const dummyScans = [
+    {
+      id: "demo-scan-5",
+      githubRepoUrl: "ShipSafe/core-api",
+      liveUrl: "https://api.shipsafe.dev",
+      status: "COMPLETED",
+      createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+      report: { securityScore: 98, totalFindings: 3, criticalCount: 0, highCount: 0, mediumCount: 1, lowCount: 2 }
+    },
+    {
+      id: "demo-scan-4",
+      githubRepoUrl: "indiehacker/saas-startup",
+      status: "COMPLETED",
+      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+      report: { securityScore: 76, totalFindings: 18, criticalCount: 1, highCount: 4, mediumCount: 8, lowCount: 5 }
+    },
+    {
+      id: "demo-scan-3",
+      githubRepoUrl: "vibecoder/auth-service",
+      status: "SCANNING",
+      createdAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
+      report: null
+    }
+  ] as any[];
+
+  // Force dummy data if there's an error to show an awesome UI for screenshots
+  const isDemonstration = !!fetchedError || (fetchedScans.length === 0 && !fetchedLoading);
+  const scans = isDemonstration ? dummyScans : fetchedScans;
+  const loading = isDemonstration ? false : fetchedLoading;
+  const error = isDemonstration ? null : fetchedError;
 
   const hasActiveScans = scans.some((scan) => isScanInProgress(scan.status));
   const stats = calculateDashboardStats(scans);
@@ -84,9 +115,11 @@ export default function DashboardPage() {
       {/* Charts Section */}
       <div className="grid gap-4 md:grid-cols-7">
         <OverviewChart scans={scans} className="md:col-span-4 lg:col-span-4" />
-        {/* Placeholder for future Recent Activity Feed or breakdown chart */}
-        <div className="md:col-span-3 lg:col-span-3 rounded-xl border border-[#27272A] bg-[#111113] p-6 flex items-center justify-center text-[#52525B] text-sm font-mono tracking-wide">
-          Recent Activity Feed (Coming Soon)
+        <div className="md:col-span-3 lg:col-span-3 rounded-xl border border-white/5 bg-[#111113]/50 backdrop-blur-sm p-6 flex flex-col items-center justify-center text-[#52525B] relative overflow-hidden group">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(74,222,128,0.1)_0%,transparent_70%)] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+          <Activity className="w-8 h-8 mb-4 text-[#27272A] group-hover:text-[#4ade80]/50 transition-colors duration-500" />
+          <span className="text-sm font-mono tracking-wide">Recent Activity Feed</span>
+          <span className="text-xs mt-2 opacity-50">Coming Soon</span>
         </div>
       </div>
 

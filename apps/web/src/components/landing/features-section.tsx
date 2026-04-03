@@ -98,7 +98,7 @@ export default function FeaturesSection() {
                                 <circle cx="128" cy="128" fill="transparent" r="120" stroke="#EF4444" strokeDasharray="753.6" strokeDashoffset="444.6" strokeWidth="8"></circle>
                             </svg>
                             <div className="text-center">
-                                <span className="text-6xl font-bold block text-white">41</span>
+                                <span className="text-6xl font-bold block text-white">24</span>
                                 <span className="text-[#71717A] text-sm font-mono tracking-wider">CRITICAL RISK</span>
                             </div>
                         </div>

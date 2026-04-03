@@ -26,13 +26,16 @@ export function StatsCard({
     const isNegative = trend && trend.value < 0;
 
     return (
-        <Card className={cn("", className)}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <p className="text-sm font-medium text-muted-foreground">{title}</p>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+        <Card className={cn("relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_20px_rgba(74,222,128,0.1)] hover:border-[#4ade80]/30 group bg-[#111113]/80 backdrop-blur-xl", className)}>
+            {/* Ambient hover glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#4ade80]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                <p className="text-sm font-medium text-muted-foreground group-hover:text-white transition-colors duration-300">{title}</p>
+                <Icon className="h-4 w-4 text-muted-foreground group-hover:text-[#4ade80] transition-colors duration-300" />
             </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{value}</div>
+            <CardContent className="relative z-10">
+                <div className="text-2xl font-bold tracking-tight text-white group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] transition-all duration-300">{value}</div>
                 {description && (
                     <p className="text-xs text-muted-foreground mt-1">{description}</p>
                 )}

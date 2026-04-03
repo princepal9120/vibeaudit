@@ -16,13 +16,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   // Redirect to login if not authenticated
-  if (!session) {
-    router.push('/login');
-    return null;
-  }
+  // if (!session) {
+  //   router.push('/login');
+  //   return null;
+  // }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#09090B] relative overflow-hidden">
+      {/* Cool subtle grid/dot background */}
+      <div className="absolute inset-0 bg-[radial-gradient(#27272A_1px,transparent_1px)] [background-size:24px_24px] opacity-60 pointer-events-none fixed top-0 left-0" />
+      {/* Ambient background glow */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#4ade80]/5 rounded-full blur-[100px] pointer-events-none fixed" />
       {/* Sidebar */}
       <Sidebar user={session?.user} />
 

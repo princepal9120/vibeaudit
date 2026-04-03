@@ -22,7 +22,7 @@ const footerLinks = {
 const socialLinks = [
     { name: "GitHub", href: "https://github.com/shipsafe", icon: Github },
     { name: "Twitter", href: "https://twitter.com/shipsafe", icon: Twitter },
-    { name: "Email", href: "mailto:hello@shipsafe.dev", icon: Mail },
+    { name: "Email", href: "mailto:support@shipsafe.dev", icon: Mail },
 ];
 
 export default function Footer() {

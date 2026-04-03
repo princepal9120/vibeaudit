@@ -25,7 +25,7 @@ export default function FAQs() {
         {
             id: 'item-4',
             question: 'How much does it cost?',
-            answer: "Simple pay-as-you-go model. Your first scan is free. Subsequent scans are $30 each. No monthly subscriptions, no hidden fees, no long-term contracts.",
+            answer: "One simple plan. Your first scan is free. After that, ShipSafe Pro is just $29 per year for unlimited scans, full PDF reports, and priority support.",
         },
         {
             id: 'item-5',
@@ -35,7 +35,7 @@ export default function FAQs() {
     ]
 
     return (
-        <section id="faq" className="max-w-4xl mx-auto px-6 mt-32 pb-20">
+        <section id="faq" className="max-w-5xl mx-auto px-6 mt-32 pb-20">
             <FadeIn>
                 <div className="text-center mb-16">
                     <div className="font-mono text-[11px] text-[#52525B] uppercase tracking-widest mb-3">FAQ</div>
@@ -43,23 +43,22 @@ export default function FAQs() {
                     <p className="text-[#71717A]">Common questions about ShipSafe</p>
                 </div>
 
-                <Accordion type="single" collapsible className="space-y-3">
-                    {faqItems.map((item, index) => (
-                        <FadeIn key={item.id} delay={index * 0.05}>
-                            <AccordionItem
-                                value={item.id}
-                                className="bg-[#111113] border border-[#27272A] rounded-lg px-6 py-1 data-[state=open]:border-white/20 transition-all duration-300 overflow-hidden"
-                            >
-                                <AccordionTrigger className="cursor-pointer text-base font-semibold hover:no-underline py-5 text-white text-left">
-                                    {item.question}
-                                </AccordionTrigger>
-                                <AccordionContent className="pb-5">
-                                    <p className="text-[#71717A] leading-relaxed text-sm">
-                                        {item.answer}
-                                    </p>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </FadeIn>
+                <Accordion type="single" collapsible defaultValue="item-1" className="space-y-3">
+                    {faqItems.map((item) => (
+                        <AccordionItem
+                            key={item.id}
+                            value={item.id}
+                            className="bg-[#111113] border border-[#27272A] rounded-lg px-6 py-1 data-[state=open]:border-white/20 transition-colors duration-300"
+                        >
+                            <AccordionTrigger className="cursor-pointer text-base font-semibold hover:no-underline py-5 text-white text-left">
+                                {item.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="pb-5">
+                                <p className="text-[#71717A] leading-relaxed text-sm">
+                                    {item.answer}
+                                </p>
+                            </AccordionContent>
+                        </AccordionItem>
                     ))}
                 </Accordion>
 
@@ -67,7 +66,7 @@ export default function FAQs() {
                     <p className="text-[#71717A] text-sm">
                         Can&apos;t find what you&apos;re looking for?{' '}
                         <Link
-                            href="mailto:support@ShipSafe.dev"
+                            href="mailto:support@shipsafe.dev"
                             className="inline-flex items-center gap-1 text-white font-medium hover:underline underline-offset-4 group"
                         >
                             Contact support
