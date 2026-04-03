@@ -56,7 +56,7 @@ export default function Navigation() {
                             className="bg-white text-[#09090B] px-4 py-1.5 text-[14px] font-medium transition-transform active:scale-95 flex items-center gap-1.5"
                         >
                             <Zap className="w-3.5 h-3.5" />
-                            Get Started Free
+                            Start Free Scan
                         </Link>
                     </div>
 
@@ -134,7 +134,7 @@ export default function Navigation() {
                                         className="bg-white text-[#09090B] px-4 py-2 text-[14px] font-medium flex items-center gap-2"
                                     >
                                         <Zap className="w-4 h-4" />
-                                        Get Started
+                                        Start Free Scan
                                     </Link>
                                 </motion.div>
                             </div>

@@ -23,7 +23,7 @@ export default function CTASection() {
                         href="/signup"
                         className="inline-flex items-center gap-2 bg-white text-black px-8 py-3 font-bold text-sm tracking-tight active:scale-95 transition-transform group"
                     >
-                        Get started free
+                        Start Free Scan
                         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                     <p className="mt-4 text-[#52525B] text-xs">No credit card required</p>
