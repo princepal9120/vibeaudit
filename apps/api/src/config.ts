@@ -57,10 +57,10 @@ export function validateConfig() {
     );
   }
 
-  // Additional required vars in production
+  // Check required vars in production (warn instead of crash for non-critical)
   if (config.nodeEnv === 'production') {
-    const required = [
-      'DATABASE_URL',
+    const critical = ['DATABASE_URL'];
+    const recommended = [
       'REDIS_URL',
       'GITHUB_CLIENT_ID',
       'GITHUB_CLIENT_SECRET',
@@ -69,9 +69,15 @@ export function validateConfig() {
       'OPENAI_API_KEY',
     ];
 
-    const missing = required.filter(key => !process.env[key]);
-    if (missing.length > 0) {
-      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    const missingCritical = critical.filter(key => !process.env[key]);
+    if (missingCritical.length > 0) {
+      throw new Error(`Missing critical environment variables: ${missingCritical.join(', ')}`);
+    }
+
+    const missingRecommended = recommended.filter(key => !process.env[key]);
+    if (missingRecommended.length > 0) {
+      console.warn(`⚠️ Missing recommended environment variables: ${missingRecommended.join(', ')}`);
+      console.warn('Some features (OAuth, scanning, AI) will be unavailable.');
     }
   }
 }
