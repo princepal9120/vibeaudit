@@ -14,7 +14,7 @@ export default function CTASection() {
 
                     <div className="font-mono text-[11px] text-[#52525B] uppercase tracking-widest mb-6">Start for free</div>
                     <h2 className="text-3xl font-bold text-white mb-4 leading-tight">
-                        Analyze your project<br />in two minutes
+                        Analyze your project{" "}<br />in two minutes
                     </h2>
                     <p className="text-[#71717A] mb-10 text-sm leading-relaxed">
                         Your reputation is worth more than a 2-minute scan.
