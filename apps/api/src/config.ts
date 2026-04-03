@@ -39,8 +39,8 @@ export const config = {
   dodoPaymentsWebhookSecret: process.env.DODO_PAYMENTS_WEBHOOK_SECRET || '',
   dodoPaymentsEnvironment: (process.env.DODO_PAYMENTS_ENVIRONMENT || 'test_mode') as 'test_mode' | 'live_mode',
 
-  // Frontend URL (for CORS)
-  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+  // Frontend URLs (for CORS) — supports comma-separated list
+  frontendUrl: (process.env.FRONTEND_URL || 'http://localhost:3000').split(',').map(u => u.trim()),
 
   // Scan settings
   maxScanTimeMs: 180000, // 3 minutes

@@ -15,7 +15,7 @@ export const auth = betterAuth({
   basePath: '/api/auth',
 
   // trustedOrigins allows the frontend to make requests
-  trustedOrigins: [config.frontendUrl],
+  trustedOrigins: config.frontendUrl,
 
   secret: config.jwtSecret,
 
@@ -50,8 +50,8 @@ export const auth = betterAuth({
       enabled: false, // Not needed for localhost
     },
     defaultCookieAttributes: {
-      sameSite: 'lax', // Allow OAuth redirects
-      secure: config.nodeEnv === 'production', // Only secure in production
+      sameSite: 'none', // Required for cross-site OAuth redirects (local to production)
+      secure: true, // Required for sameSite: 'none' (Railway provides HTTPS)
       httpOnly: true,
       path: '/',
     },
