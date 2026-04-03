@@ -13,9 +13,11 @@ RUN apk add --no-cache \
 # Install Trivy
 RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-# Install Gitleaks (auto-detect architecture)
+# Install Gitleaks (fetch latest release dynamically)
 RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
-    curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_${ARCH}.tar.gz" -o /tmp/gitleaks.tar.gz && \
+    GITLEAKS_VERSION=$(curl -s https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep '"tag_name"' | head -1 | sed 's/.*"v\(.*\)".*/\1/') && \
+    echo "Installing gitleaks v${GITLEAKS_VERSION} for ${ARCH}" && \
+    curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_${ARCH}.tar.gz" -o /tmp/gitleaks.tar.gz && \
     tar -xzf /tmp/gitleaks.tar.gz -C /usr/local/bin gitleaks && \
     rm /tmp/gitleaks.tar.gz
 
@@ -44,6 +46,6 @@ RUN pnpm --filter @ShipSafe/api build
 
 WORKDIR /app/apps/api
 
-EXPOSE 3001
+EXPOSE 8000
 
 CMD ["node", "dist/index.js"]
