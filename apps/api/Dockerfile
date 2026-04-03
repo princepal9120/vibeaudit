@@ -13,8 +13,9 @@ RUN apk add --no-cache \
 # Install Trivy
 RUN curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-# Install Gitleaks
-RUN curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_arm64.tar.gz | tar -xz -C /usr/local/bin gitleaks
+# Install Gitleaks (auto-detect architecture)
+RUN ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/') && \
+    curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_${ARCH}.tar.gz" | tar -xz -C /usr/local/bin gitleaks
 
 WORKDIR /app
 
