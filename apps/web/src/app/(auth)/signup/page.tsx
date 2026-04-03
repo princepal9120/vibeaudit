@@ -4,11 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn, signUp } from '@/lib/auth-client';
-import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
 import { toast } from 'sonner';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+
 
 // GitHub Icon
 function GitHubIcon({ className }: { className?: string }) {
@@ -101,145 +100,137 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-[#09090B] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 bg-dot-pattern opacity-20" />
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center hover:opacity-90 transition-opacity">
-            <Logo iconClassName="w-10 h-10" textClassName="text-2xl" />
+          <Link href="/" className="inline-flex items-center gap-2 group">
+            <Logo iconClassName="w-9 h-9" textClassName="text-xl text-white" />
           </Link>
         </div>
 
-        <Card className="border-slate-200">
-          <CardHeader className="text-center">
-            <CardTitle className="text-slate-900">Create an account</CardTitle>
-            <CardDescription className="text-slate-500">
-              Start securing your code in minutes
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* GitHub Signup */}
-            <Button
+        <div className="bg-[#111113] border border-[#27272A] rounded-lg p-8">
+          <div className="mb-6 text-center">
+            <h1 className="text-xl font-bold text-white mb-1">Create an account</h1>
+            <p className="text-[#71717A] text-sm">Start securing your code in minutes</p>
+          </div>
+
+          {/* Social Buttons */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <button
               onClick={handleGitHubSignup}
               disabled={loading}
-              variant="outline"
-              className="w-full border-slate-200 hover:bg-slate-50 text-slate-900"
+              className="flex items-center justify-center gap-2 h-10 bg-transparent border border-[#27272A] text-white text-sm font-medium hover:bg-[#18181B] transition-colors"
             >
-              <GitHubIcon className="w-5 h-5 mr-2" />
-              Continue with GitHub
-            </Button>
-
-            {/* Google Signup */}
-            <Button
+              <GitHubIcon className="w-4 h-4" />
+              GitHub
+            </button>
+            <button
               onClick={handleGoogleSignup}
               disabled={loading}
-              variant="outline"
-              className="w-full border-slate-200 hover:bg-slate-50 text-slate-900"
+              className="flex items-center justify-center gap-2 h-10 bg-transparent border border-[#27272A] text-white text-sm font-medium hover:bg-[#18181B] transition-colors"
             >
-              <GoogleIcon className="w-5 h-5 mr-2" />
-              Continue with Google
-            </Button>
+              <GoogleIcon className="w-4 h-4" />
+              Google
+            </button>
+          </div>
 
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">or</span>
-              </div>
+          {/* Divider */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[#27272A]" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="px-2 bg-[#111113] text-[#52525B] uppercase tracking-wider">or continue with email</span>
+            </div>
+          </div>
+
+          {/* Email Form */}
+          <form onSubmit={handleEmailSignup} className="space-y-4">
+            <div className="space-y-1.5">
+              <label htmlFor="signup-name" className="text-sm font-medium text-[#A1A1AA]">Name</label>
+              <Input
+                id="signup-name"
+                name="name"
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+                className="bg-[#09090B] border-[#27272A] text-white placeholder:text-[#52525B] focus:border-white h-10 rounded-none"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="signup-email" className="text-sm font-medium text-[#A1A1AA]">Email</label>
+              <Input
+                id="signup-email"
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+                spellCheck={false}
+                className="bg-[#09090B] border-[#27272A] text-white placeholder:text-[#52525B] focus:border-white h-10 rounded-none"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="signup-password" className="text-sm font-medium text-[#A1A1AA]">Password</label>
+              <Input
+                id="signup-password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={8}
+                autoComplete="new-password"
+                className="bg-[#09090B] border-[#27272A] text-white placeholder:text-[#52525B] focus:border-white h-10 rounded-none"
+              />
+              <p className="text-xs text-[#52525B]">Minimum 8 characters</p>
             </div>
 
-            {/* Email Signup Form */}
-            <form onSubmit={handleEmailSignup} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="signup-name" className="text-sm font-medium text-slate-700">Name</label>
-                <Input
-                  id="signup-name"
-                  name="name"
-                  type="text"
-                  placeholder="Your name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
-                />
+            {error && (
+              <div className="bg-[#EF4444]/10 border border-[#EF4444]/20 p-3">
+                <p className="text-[#EF4444] text-sm">{error}</p>
               </div>
-              <div className="space-y-2">
-                <label htmlFor="signup-email" className="text-sm font-medium text-slate-700">Email</label>
-                <Input
-                  id="signup-email"
-                  name="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  autoComplete="email"
-                  spellCheck={false}
-                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
-                />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="signup-password" className="text-sm font-medium text-slate-700">Password</label>
-                <Input
-                  id="signup-password"
-                  name="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  autoComplete="new-password"
-                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
-                />
-                <p className="text-xs text-slate-500">Minimum 8 characters</p>
-              </div>
+            )}
 
-              {/* Error */}
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-700 text-sm">{error}</p>
-                </div>
-              )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-white text-black py-2.5 font-bold text-sm tracking-tight active:scale-[0.98] transition-transform mt-2 flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Creating account…
+                </>
+              ) : 'Create account'}
+            </button>
+          </form>
 
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Creating account…
-                  </span>
-                ) : (
-                  'Create account'
-                )}
-              </Button>
-            </form>
-
-            {/* Login link */}
-            <p className="text-center text-sm text-slate-500">
-              Already have an account?{' '}
-              <Link href="/login" className="text-emerald-600 hover:text-emerald-700 font-medium">
-                Sign in
-              </Link>
-            </p>
-
-            {/* Terms */}
-            <p className="text-center text-xs text-slate-500">
-              By signing up, you agree to our{' '}
-              <Link href="/terms" className="text-slate-600 hover:text-slate-700">Terms of Service</Link>
-              {' '}and{' '}
-              <Link href="/privacy" className="text-slate-600 hover:text-slate-700">Privacy Policy</Link>
-            </p>
-          </CardContent>
-        </Card>
+          <p className="text-center text-sm text-[#71717A] mt-6">
+            Already have an account?{' '}
+            <Link href="/login" className="text-white hover:underline underline-offset-4 font-medium">
+              Sign in
+            </Link>
+          </p>
+          <p className="text-center text-xs text-[#52525B] mt-3">
+            By signing up, you agree to our{' '}
+            <Link href="/terms" className="hover:text-white underline-offset-4 hover:underline">Terms of Service</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="hover:text-white underline-offset-4 hover:underline">Privacy Policy</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

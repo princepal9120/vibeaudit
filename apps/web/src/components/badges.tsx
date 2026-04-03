@@ -77,7 +77,7 @@ export function SourceBadge({ source, className }: SourceBadgeProps) {
   return (
     <span
       className={cn(
-        'px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-xs font-medium',
+        'px-2 py-0.5 bg-[#27272A] text-[#A1A1AA] rounded text-xs font-medium',
         className
       )}
     >
@@ -147,22 +147,22 @@ export function FindingsSummary({
   }
 
   return (
-    <div className={cn('grid grid-cols-4 gap-4 text-center', className)}>
-      <div className="p-3 rounded-lg bg-red-50">
-        <div className="text-3xl font-bold text-red-600">{critical}</div>
-        <div className="text-sm text-slate-500">Critical</div>
+    <div className={cn('grid grid-cols-4 gap-3 text-center', className)}>
+      <div className="p-3 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/15">
+        <div className="text-2xl font-bold text-[#EF4444]">{critical}</div>
+        <div className="text-xs text-[#71717A] mt-0.5">Critical</div>
       </div>
-      <div className="p-3 rounded-lg bg-amber-50">
-        <div className="text-3xl font-bold text-amber-600">{high}</div>
-        <div className="text-sm text-slate-500">High</div>
+      <div className="p-3 rounded-lg bg-[#F97316]/10 border border-[#F97316]/15">
+        <div className="text-2xl font-bold text-[#F97316]">{high}</div>
+        <div className="text-xs text-[#71717A] mt-0.5">High</div>
       </div>
-      <div className="p-3 rounded-lg bg-yellow-50">
-        <div className="text-3xl font-bold text-yellow-600">{medium}</div>
-        <div className="text-sm text-slate-500">Medium</div>
+      <div className="p-3 rounded-lg bg-[#EAB308]/10 border border-[#EAB308]/15">
+        <div className="text-2xl font-bold text-[#EAB308]">{medium}</div>
+        <div className="text-xs text-[#71717A] mt-0.5">Medium</div>
       </div>
-      <div className="p-3 rounded-lg bg-blue-50">
-        <div className="text-3xl font-bold text-blue-600">{low}</div>
-        <div className="text-sm text-slate-500">Low</div>
+      <div className="p-3 rounded-lg bg-[#3B82F6]/10 border border-[#3B82F6]/15">
+        <div className="text-2xl font-bold text-[#3B82F6]">{low}</div>
+        <div className="text-xs text-[#71717A] mt-0.5">Low</div>
       </div>
     </div>
   );

@@ -51,7 +51,7 @@ export function SecurityScoreCard({
           )}
           <SecurityScoreGauge score={score} size="lg" showLabel={showLabel} />
         </div>
-        <div className="text-slate-500 text-sm mt-3">Security Score</div>
+        <div className="text-[#71717A] text-sm mt-3">Security Score</div>
       </CardContent>
     </Card>
   );
@@ -122,7 +122,7 @@ export function ScoreWithLabel({ score, label = 'Security Score', className }: S
   return (
     <div className={cn('text-center', className)}>
       <div className={cn('text-4xl font-bold', color)}>{score}</div>
-      <div className="text-slate-500 text-sm mt-1">{label}</div>
+      <div className="text-[#71717A] text-sm mt-1">{label}</div>
       <div className={cn('text-xs font-medium mt-0.5', color)}>{scoreLabel}</div>
     </div>
   );
@@ -164,7 +164,7 @@ export function ScoreRing({
           r={radius}
           fill="none"
           strokeWidth={strokeWidth}
-          className="stroke-slate-100"
+          className="stroke-[#27272A]"
         />
         {/* Progress circle */}
         <circle
@@ -181,7 +181,7 @@ export function ScoreRing({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className={cn('text-3xl font-bold', color)}>{score}</span>
-        <span className="text-xs text-slate-500">{label}</span>
+        <span className="text-xs text-[#71717A]">{label}</span>
       </div>
     </div>
   );
@@ -211,12 +211,12 @@ export function ScoreComparison({
       {diff !== undefined && (
         <div className="text-sm">
           {diff > 0 && (
-            <span className="text-emerald-600 font-medium">+{diff} points</span>
+            <span className="text-[#22C55E] font-medium">+{diff} points</span>
           )}
           {diff < 0 && (
-            <span className="text-red-600 font-medium">{diff} points</span>
+            <span className="text-[#EF4444] font-medium">{diff} points</span>
           )}
-          {diff === 0 && <span className="text-slate-500">No change</span>}
+          {diff === 0 && <span className="text-[#71717A]">No change</span>}
         </div>
       )}
     </div>

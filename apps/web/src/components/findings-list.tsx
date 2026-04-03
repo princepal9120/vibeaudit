@@ -22,32 +22,32 @@ interface FindingDetailProps {
 
 function FindingDetail({ finding }: FindingDetailProps) {
   return (
-    <div className="mt-5 pt-5 border-t border-slate-100 space-y-5">
+    <div className="mt-5 pt-5 border-t border-[#27272A] space-y-4">
       {/* What it is */}
-      <div className="bg-slate-50 rounded-xl p-4">
-        <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-          <span className="h-5 w-5 rounded-full bg-blue-100 flex items-center justify-center text-xs text-blue-600">1</span>
+      <div className="bg-[#3B82F6]/5 border border-[#3B82F6]/15 rounded-lg p-4">
+        <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <span className="h-5 w-5 rounded-full bg-[#3B82F6]/20 flex items-center justify-center text-xs text-[#3B82F6]">1</span>
           What it is
         </h4>
-        <p className="text-slate-600 text-sm leading-relaxed pl-7">{finding.description}</p>
+        <p className="text-[#A1A1AA] text-sm leading-relaxed pl-7">{finding.description}</p>
       </div>
 
       {/* Why it matters */}
-      <div className="bg-amber-50 rounded-xl p-4">
-        <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-          <span className="h-5 w-5 rounded-full bg-amber-100 flex items-center justify-center text-xs text-amber-600">2</span>
+      <div className="bg-[#EAB308]/5 border border-[#EAB308]/15 rounded-lg p-4">
+        <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <span className="h-5 w-5 rounded-full bg-[#EAB308]/20 flex items-center justify-center text-xs text-[#EAB308]">2</span>
           Why it matters
         </h4>
-        <p className="text-slate-600 text-sm leading-relaxed pl-7">{finding.impact}</p>
+        <p className="text-[#A1A1AA] text-sm leading-relaxed pl-7">{finding.impact}</p>
       </div>
 
       {/* How to fix */}
-      <div className="bg-emerald-50 rounded-xl p-4">
-        <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-          <span className="h-5 w-5 rounded-full bg-emerald-100 flex items-center justify-center text-xs text-emerald-600">3</span>
+      <div className="bg-[#22C55E]/5 border border-[#22C55E]/15 rounded-lg p-4">
+        <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <span className="h-5 w-5 rounded-full bg-[#22C55E]/20 flex items-center justify-center text-xs text-[#22C55E]">3</span>
           How to fix
         </h4>
-        <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap pl-7">
+        <p className="text-[#A1A1AA] text-sm leading-relaxed whitespace-pre-wrap pl-7">
           {finding.remediation}
         </p>
       </div>
@@ -55,25 +55,25 @@ function FindingDetail({ finding }: FindingDetailProps) {
       {/* Code snippet */}
       {finding.codeSnippet && (
         <div>
-          <h4 className="text-sm font-semibold text-slate-700 mb-2">Vulnerable Code</h4>
-          <pre className="bg-slate-900 text-slate-100 p-4 rounded-xl text-sm overflow-x-auto font-mono">
+          <h4 className="text-sm font-semibold text-white mb-2">Vulnerable Code</h4>
+          <pre className="bg-[#09090B] border border-[#27272A] text-[#A1A1AA] p-4 rounded-lg text-sm overflow-x-auto font-mono">
             {finding.codeSnippet}
           </pre>
         </div>
       )}
 
       {/* Metadata */}
-      <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-500">
-        <span className="bg-slate-100 px-2 py-1 rounded-md">
+      <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-[#71717A]">
+        <span className="bg-[#27272A] px-2 py-1 rounded-md">
           Confidence: {Math.round(finding.confidence * 100)}%
         </span>
         {finding.ruleId && (
-          <span className="bg-slate-100 px-2 py-1 rounded-md font-mono">
+          <span className="bg-[#27272A] px-2 py-1 rounded-md font-mono">
             {finding.ruleId}
           </span>
         )}
         {finding.aiValidated && (
-          <span className="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">
+          <span className="flex items-center gap-1 text-[#22C55E] bg-[#22C55E]/10 px-2 py-1 rounded-md">
             <CheckCircleIcon className="h-3 w-3" />
             AI Validated
           </span>
@@ -103,8 +103,8 @@ function FindingCard({ finding, isExpanded, onToggle }: FindingCardProps) {
 
   return (
     <Card className={cn(
-      'border-slate-200/60 hover:border-slate-300 transition-all hover:shadow-sm border-l-4',
-      severityColors[finding.severity.toUpperCase()] || 'border-l-gray-400'
+      'border-[#27272A] hover:border-[#3F3F46] transition-all hover:bg-[#18181B]/50 border-l-4',
+      severityColors[finding.severity.toUpperCase()] || 'border-l-[#52525B]'
     )}>
       <CardContent className="py-4">
         {/* Header (clickable) */}
@@ -113,15 +113,15 @@ function FindingCard({ finding, isExpanded, onToggle }: FindingCardProps) {
             <div className="flex items-start gap-3 min-w-0 flex-1">
               <SeverityBadge severity={finding.severity} />
               <div className="min-w-0 flex-1">
-                <span className="font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors block">
+                <span className="font-semibold text-white group-hover:text-[#A1A1AA] transition-colors block">
                   {finding.title}
                 </span>
                 {/* File path */}
                 {finding.filePath && (
-                  <div className="text-sm text-slate-500 mt-1 font-mono truncate">
+                  <div className="text-sm text-[#71717A] mt-1 font-mono truncate">
                     {finding.filePath}
                     {finding.lineNumber && (
-                      <span className="text-slate-400">:{finding.lineNumber}</span>
+                      <span className="text-[#52525B]">:{finding.lineNumber}</span>
                     )}
                   </div>
                 )}
@@ -131,7 +131,7 @@ function FindingCard({ finding, isExpanded, onToggle }: FindingCardProps) {
               <SourceBadge source={finding.source} />
               <ChevronDownIcon
                 className={cn(
-                  'h-5 w-5 text-slate-400 transition-transform',
+                  'h-5 w-5 text-[#71717A] transition-transform',
                   isExpanded && 'rotate-180'
                 )}
               />
@@ -152,13 +152,13 @@ function FindingCard({ finding, isExpanded, onToggle }: FindingCardProps) {
 
 function NoFindingsState() {
   return (
-    <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-50/30">
+    <Card className="border-[#22C55E]/20 bg-[#22C55E]/5">
       <CardContent className="py-16 text-center">
-        <div className="h-20 w-20 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-6 shadow-sm">
-          <CheckCircleIcon className="h-10 w-10 text-emerald-600" />
+        <div className="h-16 w-16 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/20 flex items-center justify-center mx-auto mb-6">
+          <CheckCircleIcon className="h-8 w-8 text-[#22C55E]" />
         </div>
-        <h3 className="text-2xl font-bold text-slate-900 mb-2">All Clear!</h3>
-        <p className="text-slate-600 max-w-sm mx-auto">
+        <h3 className="text-xl font-bold text-white mb-2">All Clear!</h3>
+        <p className="text-[#71717A] max-w-sm mx-auto text-sm">
           No security vulnerabilities were detected in this scan. Your code is looking secure.
         </p>
       </CardContent>
@@ -224,10 +224,10 @@ export function FindingsListWithHeader({
 }: FindingsListWithHeaderProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-slate-900">
+      <h2 className="text-lg font-semibold text-white">
         {title}
         {showCount && findings.length > 0 && (
-          <span className="text-slate-400 font-normal ml-2">({findings.length})</span>
+          <span className="text-[#52525B] font-normal ml-2">({findings.length})</span>
         )}
       </h2>
       <FindingsList findings={findings} {...props} />
@@ -243,13 +243,13 @@ export function FindingsListSkeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-3">
       {[...Array(count)].map((_, i) => (
-        <Card key={i} className="border-slate-200">
+        <Card key={i} className="border-[#27272A]">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <div className="h-6 w-16 bg-slate-200 rounded animate-pulse" />
-              <div className="h-4 w-48 bg-slate-200 rounded animate-pulse" />
+              <div className="h-6 w-16 bg-[#27272A] rounded animate-pulse" />
+              <div className="h-4 w-48 bg-[#27272A] rounded animate-pulse" />
             </div>
-            <div className="mt-2 h-3 w-32 bg-slate-200 rounded animate-pulse" />
+            <div className="mt-2 h-3 w-32 bg-[#27272A] rounded animate-pulse" />
           </CardContent>
         </Card>
       ))}

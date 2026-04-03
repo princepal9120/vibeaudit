@@ -41,8 +41,8 @@ export function StatsCard({
                         <span
                             className={cn(
                                 "text-xs font-medium",
-                                isPositive && "text-green-600",
-                                isNegative && "text-red-600",
+                                isPositive && "text-[#22C55E]",
+                                isNegative && "text-[#EF4444]",
                                 !isPositive && !isNegative && "text-muted-foreground"
                             )}
                         >

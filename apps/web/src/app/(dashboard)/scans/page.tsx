@@ -143,9 +143,9 @@ export default function ScansPage() {
 
                 const score = report.securityScore;
                 const color =
-                    score >= 80 ? 'text-green-600' :
-                        score >= 60 ? 'text-yellow-600' :
-                            'text-red-600';
+                    score >= 80 ? 'text-[#22C55E]' :
+                        score >= 60 ? 'text-[#EAB308]' :
+                            'text-[#EF4444]';
 
                 return <span className={`font-semibold ${color}`}>{score}</span>;
             },
@@ -161,7 +161,7 @@ export default function ScansPage() {
                     <div className="text-sm">
                         <span className="font-medium">{total}</span>
                         {critical > 0 && (
-                            <span className="ml-2 text-red-600">({critical} critical)</span>
+                            <span className="ml-2 text-[#EF4444]">({critical} critical)</span>
                         )}
                     </div>
                 );

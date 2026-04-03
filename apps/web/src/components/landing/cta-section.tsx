@@ -1,36 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/ui/motion";
 import { ArrowRight } from "lucide-react";
 
 export default function CTASection() {
     return (
-        <section className="py-20 px-4 sm:px-6 bg-muted/30 bg-dots">
-            <div className="container">
-                <FadeIn>
-                    <div className="text-center max-w-2xl mx-auto">
-                        <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-                            Analyze your project<br />in two minutes
-                        </h2>
-                        <p className="text-xl text-secondary-foreground mb-10">
-                            Your reputation is worth more than a 2-minute scan.
-                        </p>
-                        <Button
-                            size="lg"
-                            asChild
-                            className="h-16 px-12 text-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl lime-glow"
-                        >
-                            <Link href="/signup" className="flex items-center gap-3">
-                                Get started free
-                                <ArrowRight className="w-6 h-6" />
-                            </Link>
-                        </Button>
-                        <p className="mt-6 text-muted-foreground">No credit card required</p>
-                    </div>
-                </FadeIn>
-            </div>
+        <section className="max-w-3xl mx-auto px-6 text-center py-20">
+            <FadeIn>
+                <div className="border border-[#27272A] rounded-lg p-12 bg-[#111113] relative overflow-hidden">
+                    {/* Subtle bg glow */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
+
+                    <div className="font-mono text-[11px] text-[#52525B] uppercase tracking-widest mb-6">Start for free</div>
+                    <h2 className="text-3xl font-bold text-white mb-4 leading-tight">
+                        Analyze your project<br />in two minutes
+                    </h2>
+                    <p className="text-[#71717A] mb-10 text-sm leading-relaxed">
+                        Your reputation is worth more than a 2-minute scan.
+                    </p>
+                    <Link
+                        href="/signup"
+                        className="inline-flex items-center gap-2 bg-white text-black px-8 py-3 font-bold text-sm tracking-tight active:scale-95 transition-transform group"
+                    >
+                        Get started free
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    <p className="mt-4 text-[#52525B] text-xs">No credit card required</p>
+                </div>
+            </FadeIn>
         </section>
     );
 }

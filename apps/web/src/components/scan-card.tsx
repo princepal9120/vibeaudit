@@ -28,15 +28,15 @@ function ScanTypeIcon({ isGitHub, className }: ScanTypeIconProps) {
 
   if (isGitHub) {
     return (
-      <div className={cn(baseClasses, 'bg-slate-100 group-hover:bg-slate-200', className)}>
-        <GitHubIcon className="h-5 w-5 text-slate-700" />
+      <div className={cn(baseClasses, 'bg-[#27272A] group-hover:bg-[#3F3F46]', className)}>
+        <GitHubIcon className="h-5 w-5 text-white" />
       </div>
     );
   }
 
   return (
-    <div className={cn(baseClasses, 'bg-blue-50 group-hover:bg-blue-100', className)}>
-      <GlobeIcon className="h-5 w-5 text-blue-600" />
+    <div className={cn(baseClasses, 'bg-[#3B82F6]/10 group-hover:bg-[#3B82F6]/20', className)}>
+      <GlobeIcon className="h-5 w-5 text-[#3B82F6]" />
     </div>
   );
 }
@@ -82,7 +82,7 @@ export function ScanCard({ scan, className }: ScanCardProps) {
     <Link href={`/scans/${scan.id}`}>
       <Card
         className={cn(
-          'border-slate-200/60 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer group',
+          'border-[#27272A] hover:border-[#3F3F46] hover:bg-[#18181B]/60 transition-all cursor-pointer group',
           className
         )}
       >
@@ -93,8 +93,8 @@ export function ScanCard({ scan, className }: ScanCardProps) {
             <div className="flex items-center gap-4 min-w-0">
               <ScanTypeIcon isGitHub={isGitHub} />
               <div className="min-w-0">
-                <div className="font-semibold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">{target}</div>
-                <div className="text-sm text-slate-500">{formatDate(scan.createdAt)}</div>
+                <div className="font-semibold text-white truncate group-hover:text-[#A1A1AA] transition-colors">{target}</div>
+                <div className="text-sm text-[#71717A]">{formatDate(scan.createdAt)}</div>
               </div>
             </div>
 
@@ -137,19 +137,19 @@ export function ScanCard({ scan, className }: ScanCardProps) {
 
 export function ScanCardSkeleton() {
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[#27272A]">
       <CardContent className="py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-10 w-10 rounded-lg bg-slate-200 animate-pulse" />
+            <div className="h-10 w-10 rounded-lg bg-[#27272A] animate-pulse" />
             <div className="space-y-2">
-              <div className="h-4 w-32 bg-slate-200 rounded animate-pulse" />
-              <div className="h-3 w-24 bg-slate-200 rounded animate-pulse" />
+              <div className="h-4 w-32 bg-[#27272A] rounded animate-pulse" />
+              <div className="h-3 w-24 bg-[#27272A] rounded animate-pulse" />
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-lg bg-slate-200 animate-pulse" />
-            <div className="h-6 w-20 rounded bg-slate-200 animate-pulse" />
+            <div className="h-12 w-12 rounded-lg bg-[#27272A] animate-pulse" />
+            <div className="h-6 w-20 rounded bg-[#27272A] animate-pulse" />
           </div>
         </div>
       </CardContent>

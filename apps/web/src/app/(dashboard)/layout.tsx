@@ -29,12 +29,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main Content */}
       <main className="md:ml-[72px] min-h-screen pt-16 pb-20 md:pt-0 md:pb-0">
         {/* Top Navigation */}
-        <div className="sticky top-0 z-30 flex h-14 items-center gap-4 bg-background/50 px-4 md:px-10 backdrop-blur-xl border-b transition-all">
+        <div className="sticky top-0 z-30 flex h-14 items-center gap-4 bg-[#09090B]/80 px-4 md:px-10 backdrop-blur-xl border-b border-[#27272A] transition-all">
           <div className="flex flex-1 items-center gap-2">
-            {/* Future Breadcrumbs */}
-            <span className="text-sm font-medium tracking-tight text-muted-foreground/70">Console</span>
-            <span className="text-muted-foreground/40">/</span>
-            <span className="text-sm font-medium tracking-tight text-foreground">{session?.user?.name?.split(' ')[0] || 'User'}'s Workspace</span>
+            {/* Breadcrumbs */}
+            <span className="text-sm font-medium tracking-tight text-[#52525B]">Console</span>
+            <span className="text-[#27272A]">/</span>
+            <span className="text-sm font-medium tracking-tight text-white">{session?.user?.name?.split(' ')[0] || 'User'}&apos;s Workspace</span>
           </div>
           <div className="flex items-center gap-2">
             <CommandMenu />

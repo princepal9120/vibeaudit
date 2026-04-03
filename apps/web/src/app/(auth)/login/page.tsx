@@ -4,12 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from '@/lib/auth-client';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ShieldCheck, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+
 
 // GitHub Icon
 function GitHubIcon({ className }: { className?: string }) {
@@ -94,36 +93,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted" />
-      <div className="absolute inset-0 bg-dot-pattern opacity-30" />
-
-      {/* Animated gradient orbs */}
-      <motion.div
-        className="absolute top-[20%] left-[10%] w-[400px] h-[400px] rounded-full bg-primary/10 blur-[120px]"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.4, 0.2],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute bottom-[20%] right-[10%] w-[300px] h-[300px] rounded-full bg-accent/10 blur-[100px]"
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.15, 0.3, 0.15],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-[#09090B]">
+      {/* Background pattern */}
+      <div className="absolute inset-0 bg-dot-pattern opacity-20" />
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
@@ -134,15 +106,8 @@ export default function LoginPage() {
           className="text-center mb-8"
         >
           <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center transition-all duration-300 group-hover:shadow-[0_0_30px_rgba(0,217,255,0.5)]">
-              <ShieldCheck className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <span
-              className="text-2xl font-bold text-foreground"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              ShipSafe
-            </span>
+            <ShieldCheck className="w-8 h-8 text-white" />
+            <span className="text-2xl font-bold text-white tracking-tight">ShipSafe</span>
           </Link>
         </motion.div>
 
@@ -151,119 +116,104 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <Card className="border-border/50 bg-card/80 backdrop-blur-xl shadow-2xl">
-            <CardHeader className="text-center pb-2">
-              <CardTitle
-                className="text-2xl"
-                style={{ fontFamily: "var(--font-display)" }}
+          <div className="bg-[#111113] border border-[#27272A] p-8">
+            <div className="text-center mb-6">
+              <h1 className="text-xl font-bold text-white mb-1">Welcome back</h1>
+              <p className="text-[#71717A] text-sm">Sign in to your account to continue</p>
+            </div>
+
+            {/* Social Login Buttons */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <button
+                onClick={handleGitHubLogin}
+                disabled={loading}
+                className="flex items-center justify-center gap-2 h-10 bg-transparent border border-[#27272A] text-white text-sm font-medium hover:bg-[#18181B] transition-colors"
               >
-                Welcome back
-              </CardTitle>
-              <CardDescription>
-                Sign in to your account to continue
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5 pt-4">
-              {/* Social Login Buttons */}
-              <div className="grid grid-cols-2 gap-3">
-                <Button
-                  onClick={handleGitHubLogin}
-                  disabled={loading}
-                  variant="outline"
-                  className="h-11"
-                >
-                  <GitHubIcon className="w-5 h-5 mr-2" />
-                  GitHub
-                </Button>
-                <Button
-                  onClick={handleGoogleLogin}
-                  disabled={loading}
-                  variant="outline"
-                  className="h-11"
-                >
-                  <GoogleIcon className="w-5 h-5 mr-2" />
-                  Google
-                </Button>
+                <GitHubIcon className="w-4 h-4" />
+                GitHub
+              </button>
+              <button
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="flex items-center justify-center gap-2 h-10 bg-transparent border border-[#27272A] text-white text-sm font-medium hover:bg-[#18181B] transition-colors"
+              >
+                <GoogleIcon className="w-4 h-4" />
+                Google
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#27272A]" />
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-2 bg-[#111113] text-[#52525B] uppercase tracking-wider">or continue with email</span>
+              </div>
+            </div>
+
+            {/* Email Login Form */}
+            <form onSubmit={handleEmailLogin} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-[#A1A1AA]">Email</label>
+                <Input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-[#09090B] border-[#27272A] text-white placeholder:text-[#52525B] focus:border-white h-10 rounded-none"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-[#A1A1AA]">Password</label>
+                  <Link href="/forgot-password" className="text-xs text-[#71717A] hover:text-white transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
+                <Input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  className="bg-[#09090B] border-[#27272A] text-white placeholder:text-[#52525B] focus:border-white h-10 rounded-none"
+                />
               </div>
 
-              {/* Divider */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">or continue with email</span>
-                </div>
-              </div>
-
-              {/* Email Login Form */}
-              <form onSubmit={handleEmailLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Email</label>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="h-11 bg-background/50 border-border focus:border-primary focus:ring-primary/20"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-foreground">Password</label>
-                    <Link href="/forgot-password" className="text-xs text-primary hover:underline">
-                      Forgot password?
-                    </Link>
-                  </div>
-                  <Input
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={8}
-                    className="h-11 bg-background/50 border-border focus:border-primary focus:ring-primary/20"
-                  />
-                </div>
-
-                {/* Error */}
-                {error && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-destructive/10 border border-destructive/20 rounded-lg p-3"
-                  >
-                    <p className="text-destructive text-sm">{error}</p>
-                  </motion.div>
-                )}
-
-                <Button
-                  type="submit"
-                  disabled={loading}
-                  variant="glow"
-                  className="w-full h-11"
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-[#EF4444]/10 border border-[#EF4444]/20 p-3"
                 >
-                  {loading ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Signing in...
-                    </span>
-                  ) : (
-                    'Sign in'
-                  )}
-                </Button>
-              </form>
+                  <p className="text-[#EF4444] text-sm">{error}</p>
+                </motion.div>
+              )}
 
-              {/* Sign up link */}
-              <p className="text-center text-sm text-muted-foreground">
-                Don&apos;t have an account?{' '}
-                <Link href="/signup" className="text-primary hover:underline font-medium">
-                  Sign up
-                </Link>
-              </p>
-            </CardContent>
-          </Card>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-white text-black py-2.5 font-bold text-sm tracking-tight active:scale-[0.98] transition-transform mt-2 flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : 'Sign in'}
+              </button>
+            </form>
+
+            <p className="text-center text-sm text-[#71717A] mt-6">
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="text-white hover:underline underline-offset-4 font-medium">
+                Sign up
+              </Link>
+            </p>
+          </div>
         </motion.div>
       </div>
     </div>

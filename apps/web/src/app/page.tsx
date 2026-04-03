@@ -13,20 +13,16 @@ import Footer from "@/components/landing/footer";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground font-sans">
+    <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-white selection:text-black">
       <Navigation />
-
-      <main className="pt-16">
-        <HeroSection />
-        <StatsSection />
-        <HowItWorks />
-        <TestimonialSection />
-        <FeaturesSection />
-        <PricingSection />
-        <FAQSection />
-        <CTASection />
-      </main>
-
+      <HeroSection />
+      <StatsSection />
+      <HowItWorks />
+      <FeaturesSection />
+      <PricingSection />
+      <TestimonialSection />
+      <FAQSection />
+      <CTASection />
       <Footer />
     </div>
   );

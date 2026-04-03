@@ -3,7 +3,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import Link from 'next/link'
 import { FadeIn } from "@/components/ui/motion"
-import { HelpCircle, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 export default function FAQs() {
     const faqItems = [
@@ -15,7 +15,7 @@ export default function FAQs() {
         {
             id: 'item-2',
             question: 'Does ShipSafe store my code?',
-            answer: 'No. Check our privacy policy - we operate with a "clone, scan, delete" policy. We access your repo to perform the security analysis and satisfy the audit, but your intellectual property is deleted from our servers immediately after the report generation.',
+            answer: 'No. We operate with a "clone, scan, delete" policy. We access your repo to perform the security analysis, but your intellectual property is deleted from our servers immediately after report generation.',
         },
         {
             id: 'item-3',
@@ -25,82 +25,57 @@ export default function FAQs() {
         {
             id: 'item-4',
             question: 'How much does it cost?',
-            answer: "We offer a simple 'pay-as-you-go' model. Your first scan is completely free. Subsequent scans are $30 each. There are no monthly subscriptions, hidden fees, or long-term contracts.",
+            answer: "Simple pay-as-you-go model. Your first scan is free. Subsequent scans are $30 each. No monthly subscriptions, no hidden fees, no long-term contracts.",
         },
         {
             id: 'item-5',
             question: 'Can I share the report with my client?',
-            answer: 'Absolutely. ShipSafe is designed for freelancers and agencies. You can generate a professional, unbranded or co-branded PDF report to prove to your clients that the code you are delivering has been professionally audited for security vulnerabilities.',
+            answer: 'Absolutely. You can generate a professional PDF report to prove to your clients that the code you are delivering has been professionally audited for security vulnerabilities.',
         },
     ]
 
     return (
-        <section className="py-24 px-4 sm:px-6 bg-muted/20 relative overflow-hidden">
-            {/* Background pattern */}
-            <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+        <section id="faq" className="max-w-4xl mx-auto px-6 mt-32 pb-20">
+            <FadeIn>
+                <div className="text-center mb-16">
+                    <div className="font-mono text-[11px] text-[#52525B] uppercase tracking-widest mb-3">FAQ</div>
+                    <h2 className="text-3xl font-bold text-white mb-4">Your questions answered</h2>
+                    <p className="text-[#71717A]">Common questions about ShipSafe</p>
+                </div>
 
-            <div className="container max-w-4xl relative z-10">
-                <FadeIn>
-                    <div className="space-y-12">
-                        <div className="text-center">
-                            <p className="text-primary font-semibold text-sm uppercase tracking-wider mb-3">
-                                FAQ
-                            </p>
-                            <h2
-                                className="text-3xl sm:text-4xl lg:text-5xl mb-4"
-                                style={{ fontFamily: "var(--font-display)" }}
+                <Accordion type="single" collapsible className="space-y-3">
+                    {faqItems.map((item, index) => (
+                        <FadeIn key={item.id} delay={index * 0.05}>
+                            <AccordionItem
+                                value={item.id}
+                                className="bg-[#111113] border border-[#27272A] rounded-lg px-6 py-1 data-[state=open]:border-white/20 transition-all duration-300 overflow-hidden"
                             >
-                                Your questions answered
-                            </h2>
-                            <p className="text-lg sm:text-xl text-muted-foreground">
-                                Common questions about ShipSafe
-                            </p>
-                        </div>
+                                <AccordionTrigger className="cursor-pointer text-base font-semibold hover:no-underline py-5 text-white text-left">
+                                    {item.question}
+                                </AccordionTrigger>
+                                <AccordionContent className="pb-5">
+                                    <p className="text-[#71717A] leading-relaxed text-sm">
+                                        {item.answer}
+                                    </p>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </FadeIn>
+                    ))}
+                </Accordion>
 
-                        <Accordion
-                            type="single"
-                            collapsible
-                            className="space-y-3"
+                <div className="text-center pt-10">
+                    <p className="text-[#71717A] text-sm">
+                        Can&apos;t find what you&apos;re looking for?{' '}
+                        <Link
+                            href="mailto:support@ShipSafe.dev"
+                            className="inline-flex items-center gap-1 text-white font-medium hover:underline underline-offset-4 group"
                         >
-                            {faqItems.map((item, index) => (
-                                <FadeIn key={item.id} delay={index * 0.05}>
-                                    <AccordionItem
-                                        value={item.id}
-                                        className="bg-card border border-border rounded-xl px-6 py-1 data-[state=open]:border-primary/30 data-[state=open]:shadow-lg transition-all duration-300 overflow-hidden"
-                                    >
-                                        <AccordionTrigger className="cursor-pointer text-base sm:text-lg font-semibold hover:no-underline py-5 [&[data-state=open]>svg]:rotate-45 [&>svg]:transition-transform">
-                                            <div className="flex items-center gap-3 text-left">
-                                                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                    <HelpCircle className="w-4 h-4 text-primary" />
-                                                </div>
-                                                {item.question}
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent className="pb-5">
-                                            <p className="text-muted-foreground leading-relaxed pl-11">
-                                                {item.answer}
-                                            </p>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </FadeIn>
-                            ))}
-                        </Accordion>
-
-                        <div className="text-center pt-4">
-                            <p className="text-muted-foreground">
-                                Can&apos;t find what you&apos;re looking for?{' '}
-                                <Link
-                                    href="mailto:support@ShipSafe.dev"
-                                    className="inline-flex items-center gap-1 text-primary font-semibold hover:underline group"
-                                >
-                                    Contact support
-                                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                </Link>
-                            </p>
-                        </div>
-                    </div>
-                </FadeIn>
-            </div>
+                            Contact support
+                            <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                        </Link>
+                    </p>
+                </div>
+            </FadeIn>
         </section>
     )
 }

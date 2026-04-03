@@ -220,7 +220,7 @@ export default function NewScanPage() {
                   errors.githubUrl ? 'border-destructive' : 'border-border'
                 )}
               />
-              {errors.githubUrl && <p className="text-xs text-red-500">{errors.githubUrl}</p>}
+              {errors.githubUrl && <p className="text-xs text-[#EF4444]">{errors.githubUrl}</p>}
             </div>
           )}
 
@@ -241,7 +241,7 @@ export default function NewScanPage() {
                   errors.liveUrl ? 'border-destructive' : 'border-border'
                 )}
               />
-              {errors.liveUrl && <p className="text-xs text-red-500">{errors.liveUrl}</p>}
+              {errors.liveUrl && <p className="text-xs text-[#EF4444]">{errors.liveUrl}</p>}
             </div>
           )}
 
@@ -305,8 +305,8 @@ export default function NewScanPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 sm:gap-y-3">
           {features.map((feature) => (
             <div key={feature} className="flex items-center gap-2.5">
-              <div className="w-5 h-5 rounded bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                <Check className="w-3 h-3 text-green-500" />
+              <div className="w-5 h-5 rounded bg-[#22C55E]/10 flex items-center justify-center flex-shrink-0">
+                <Check className="w-3 h-3 text-[#22C55E]" />
               </div>
               <span className="text-xs sm:text-sm text-muted-foreground">{feature}</span>
             </div>
@@ -316,8 +316,8 @@ export default function NewScanPage() {
 
       {/* Error Message */}
       {errors.general && (
-        <div className="p-4 rounded-lg bg-red-50 border border-red-200">
-          <p className="text-sm text-red-600">{errors.general}</p>
+        <div className="p-4 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20">
+          <p className="text-sm text-[#EF4444]">{errors.general}</p>
         </div>
       )}
 

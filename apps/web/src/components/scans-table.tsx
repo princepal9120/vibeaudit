@@ -14,15 +14,15 @@ interface StatusBadgeProps {
 }
 
 function StatusBadge({ status, size = 'default' }: StatusBadgeProps) {
-  const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
-    COMPLETED: { bg: 'bg-[#D1FAE5]', text: 'text-[#065F46]', label: 'Completed' },
-    SCANNING: { bg: 'bg-[#DBEAFE]', text: 'text-[#1E40AF]', label: 'Scanning' },
-    QUEUED: { bg: 'bg-[#F3F4F6]', text: 'text-[#4B5563]', label: 'Queued' },
-    FAILED: { bg: 'bg-[#FEE2E2]', text: 'text-[#991B1B]', label: 'Failed' },
-    CLONING: { bg: 'bg-[#FEF3C7]', text: 'text-[#92400E]', label: 'Cloning' },
-    ANALYZING: { bg: 'bg-[#E0E7FF]', text: 'text-[#3730A3]', label: 'Analyzing' },
-    GENERATING_REPORT: { bg: 'bg-[#FCE7F3]', text: 'text-[#9D174D]', label: 'Generating' },
-    CANCELLED: { bg: 'bg-[#F3F4F6]', text: 'text-[#6B7280]', label: 'Cancelled' },
+  const statusConfig: Record<string, { bg: string; text: string; dot: string; label: string }> = {
+    COMPLETED: { bg: 'bg-[#22C55E]/10', text: 'text-[#22C55E]', dot: 'bg-[#22C55E]', label: 'Completed' },
+    SCANNING: { bg: 'bg-[#3B82F6]/10', text: 'text-[#3B82F6]', dot: 'bg-[#3B82F6]', label: 'Scanning' },
+    QUEUED: { bg: 'bg-[#71717A]/10', text: 'text-[#71717A]', dot: 'bg-[#71717A]', label: 'Queued' },
+    FAILED: { bg: 'bg-[#EF4444]/10', text: 'text-[#EF4444]', dot: 'bg-[#EF4444]', label: 'Failed' },
+    CLONING: { bg: 'bg-[#EAB308]/10', text: 'text-[#EAB308]', dot: 'bg-[#EAB308]', label: 'Cloning' },
+    ANALYZING: { bg: 'bg-[#A855F7]/10', text: 'text-[#A855F7]', dot: 'bg-[#A855F7]', label: 'Analyzing' },
+    GENERATING_REPORT: { bg: 'bg-[#F97316]/10', text: 'text-[#F97316]', dot: 'bg-[#F97316]', label: 'Generating' },
+    CANCELLED: { bg: 'bg-[#71717A]/10', text: 'text-[#52525B]', dot: 'bg-[#52525B]', label: 'Cancelled' },
   };
 
   const config = statusConfig[status] || statusConfig.QUEUED;
