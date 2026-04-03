@@ -39,7 +39,7 @@ export default function Navigation() {
                             <Link
                                 key={item}
                                 href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                                className="font-['Geist'] text-[14px] tracking-tight text-[#71717A] hover:text-white transition-colors duration-200"
+                                className="font-['Geist'] text-[14px] tracking-tight text-[#71717A] hover:text-white transition-colors duration-200 py-3"
                             >
                                 {item}
                             </Link>
@@ -48,7 +48,7 @@ export default function Navigation() {
 
                     {/* Desktop Auth Buttons */}
                     <div className="hidden md:flex items-center gap-4">
-                        <Link href="/login" className="font-['Geist'] text-[14px] text-[#71717A] hover:text-white transition-colors">
+                        <Link href="/login" className="font-['Geist'] text-[14px] text-[#71717A] hover:text-white transition-colors py-3">
                             Sign in
                         </Link>
                         <Link

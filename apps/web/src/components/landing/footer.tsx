@@ -47,7 +47,7 @@ export default function Footer() {
                                 className="text-white hover:opacity-100 transition-opacity"
                                 aria-label={social.name}
                             >
-                                <social.icon className="w-5 h-5" />
+                                <social.icon className="w-5 h-5 m-2" />
                             </Link>
                         ))}
                     </div>
@@ -60,7 +60,7 @@ export default function Footer() {
                         <ul className="space-y-3 text-sm text-[#71717A]">
                             {footerLinks.product.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="hover:text-white hover:underline underline-offset-4 transition-colors">
+                                    <Link href={link.href} className="hover:text-white hover:underline underline-offset-4 transition-colors py-2 inline-block">
                                         {link.name}
                                     </Link>
                                 </li>
@@ -73,7 +73,7 @@ export default function Footer() {
                         <ul className="space-y-3 text-sm text-[#71717A]">
                             {footerLinks.legal.map((link) => (
                                 <li key={link.name}>
-                                    <Link href={link.href} className="hover:text-white hover:underline underline-offset-4 transition-colors">
+                                    <Link href={link.href} className="hover:text-white hover:underline underline-offset-4 transition-colors py-2 inline-block">
                                         {link.name}
                                     </Link>
                                 </li>
