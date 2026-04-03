@@ -21,7 +21,7 @@ export default function CTASection() {
                     </p>
                     <Link
                         href="/signup"
-                        className="inline-flex items-center gap-2 bg-white text-black px-8 py-3 font-bold text-sm tracking-tight active:scale-95 transition-transform group"
+                        className="inline-flex items-center gap-2 bg-white text-black px-8 py-3 font-bold text-sm tracking-tight active:scale-95 transition-transform group rounded"
                     >
                         Start Free Scan
                         <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
