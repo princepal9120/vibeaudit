@@ -234,6 +234,11 @@ enum FindingCategory {
   SSRF
   MASS_ASSIGNMENT
   DESERIALIZATION
+  // Launch readiness categories
+  SEO
+  PERFORMANCE
+  ACCESSIBILITY
+  ESSENTIALS
   OTHER
 }
 
@@ -244,6 +249,11 @@ enum ScanSource {
   TRIVY
   GITLEAKS
   ADVANCED
+  // Launch readiness scanners
+  SEO_SCANNER
+  PERFORMANCE_SCANNER
+  ACCESSIBILITY_SCANNER
+  ESSENTIALS_SCANNER
 }
 
 // Payment tracking (for pay-per-scan model)

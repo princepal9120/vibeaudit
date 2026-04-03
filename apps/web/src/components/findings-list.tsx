@@ -5,11 +5,12 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { SeverityBadge, SourceBadge } from '@/components/badges';
+import { SeverityBadge, SourceBadge, CategoryBadge } from '@/components/badges';
 import { ChevronDownIcon, CheckCircleIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
+import { LAUNCH_READINESS_CATEGORIES, CATEGORY_CONFIG, type FindingCategory } from '@/lib/constants';
 import type { Finding } from '@/lib/types';
 
 // ============================================
@@ -127,7 +128,8 @@ function FindingCard({ finding, isExpanded, onToggle }: FindingCardProps) {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <CategoryBadge category={finding.category} />
               <SourceBadge source={finding.source} />
               <ChevronDownIcon
                 className={cn(
@@ -231,6 +233,142 @@ export function FindingsListWithHeader({
         )}
       </h2>
       <FindingsList findings={findings} {...props} />
+    </div>
+  );
+}
+
+// ============================================
+// Grouped Findings List (Security + Launch Readiness)
+// ============================================
+
+type FindingsTab = 'all' | 'security' | 'seo' | 'performance' | 'accessibility' | 'essentials';
+
+interface GroupedFindingsListProps {
+  findings: Finding[];
+  className?: string;
+}
+
+export function GroupedFindingsList({ findings, className }: GroupedFindingsListProps) {
+  const [activeTab, setActiveTab] = useState<FindingsTab>('all');
+
+  const { securityFindings, launchFindings, categoryCounts } = useMemo(() => {
+    const security: Finding[] = [];
+    const launch: Finding[] = [];
+    const counts: Record<string, number> = {
+      all: findings.length,
+      security: 0,
+      seo: 0,
+      performance: 0,
+      accessibility: 0,
+      essentials: 0,
+    };
+
+    for (const f of findings) {
+      if (LAUNCH_READINESS_CATEGORIES.has(f.category)) {
+        launch.push(f);
+        const key = f.category.toLowerCase();
+        counts[key] = (counts[key] || 0) + 1;
+      } else {
+        security.push(f);
+        counts.security++;
+      }
+    }
+
+    return { securityFindings: security, launchFindings: launch, categoryCounts: counts };
+  }, [findings]);
+
+  const hasLaunchFindings = launchFindings.length > 0;
+
+  const filteredFindings = useMemo(() => {
+    switch (activeTab) {
+      case 'security':
+        return securityFindings;
+      case 'seo':
+        return findings.filter(f => f.category === 'SEO');
+      case 'performance':
+        return findings.filter(f => f.category === 'PERFORMANCE');
+      case 'accessibility':
+        return findings.filter(f => f.category === 'ACCESSIBILITY');
+      case 'essentials':
+        return findings.filter(f => f.category === 'ESSENTIALS');
+      default:
+        return findings;
+    }
+  }, [activeTab, findings, securityFindings]);
+
+  const tabs: { key: FindingsTab; label: string; count: number; className: string }[] = [
+    { key: 'all', label: 'All', count: categoryCounts.all, className: 'text-white' },
+    { key: 'security', label: 'Security', count: categoryCounts.security, className: 'text-red-400' },
+    ...(hasLaunchFindings ? [
+      { key: 'seo' as FindingsTab, label: 'SEO', count: categoryCounts.seo, className: 'text-emerald-400' },
+      { key: 'performance' as FindingsTab, label: 'Performance', count: categoryCounts.performance, className: 'text-cyan-400' },
+      { key: 'accessibility' as FindingsTab, label: 'Accessibility', count: categoryCounts.accessibility, className: 'text-violet-400' },
+      { key: 'essentials' as FindingsTab, label: 'Essentials', count: categoryCounts.essentials, className: 'text-pink-400' },
+    ] : []),
+  ];
+
+  return (
+    <div className={cn('space-y-4', className)}>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-white">
+          Findings
+          <span className="text-[#52525B] font-normal ml-2">({findings.length})</span>
+        </h2>
+      </div>
+
+      {/* Category Tabs */}
+      {hasLaunchFindings && (
+        <div className="flex flex-wrap gap-2">
+          {tabs.map(tab => (
+            tab.count > 0 || tab.key === 'all' ? (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={cn(
+                  'px-3 py-1.5 rounded-lg text-sm font-medium transition-all border',
+                  activeTab === tab.key
+                    ? 'bg-[#27272A] border-[#3F3F46] text-white'
+                    : 'bg-transparent border-transparent text-[#71717A] hover:text-[#A1A1AA] hover:bg-[#27272A]/50'
+                )}
+              >
+                {tab.label}
+                {tab.count > 0 && (
+                  <span className={cn('ml-1.5 text-xs', activeTab === tab.key ? tab.className : 'text-[#52525B]')}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ) : null
+          ))}
+        </div>
+      )}
+
+      {/* Launch Readiness Summary Cards (show when on "all" tab and launch findings exist) */}
+      {activeTab === 'all' && hasLaunchFindings && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {(['SEO', 'PERFORMANCE', 'ACCESSIBILITY', 'ESSENTIALS'] as const).map(cat => {
+            const count = categoryCounts[cat.toLowerCase()] || 0;
+            const config = CATEGORY_CONFIG[cat];
+            if (!config) return null;
+            return (
+              <button
+                key={cat}
+                onClick={() => count > 0 && setActiveTab(cat.toLowerCase() as FindingsTab)}
+                className={cn(
+                  'p-3 rounded-lg border text-left transition-all',
+                  count > 0 ? 'hover:bg-[#18181B]/50 cursor-pointer' : 'opacity-50 cursor-default',
+                  config.className
+                )}
+              >
+                <div className="text-lg font-bold">{count}</div>
+                <div className="text-xs mt-0.5 opacity-75">{config.label} Issues</div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <FindingsList findings={filteredFindings} />
     </div>
   );
 }

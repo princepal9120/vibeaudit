@@ -10,6 +10,10 @@ import { runAdvancedSecurityScan } from '../services/scanners/advanced-security.
 import { runConfigSecurityScan } from '../services/scanners/config-security.js';
 import { runFrameworkSecurityScan } from '../services/scanners/framework-security.js';
 import { runAIDeepAnalysis } from '../services/scanners/ai-deep-analysis.js';
+import { runSeoScanner } from '../services/scanners/seo-scanner.js';
+import { runPerformanceScanner } from '../services/scanners/performance-scanner.js';
+import { runAccessibilityScanner } from '../services/scanners/accessibility-scanner.js';
+import { runEssentialsScanner } from '../services/scanners/essentials-scanner.js';
 import { cloneRepository, cleanupRepository } from '../services/git.js';
 import { generateAIExplanations } from '../services/ai-explanations.js';
 import { calculateSecurityScore } from '../services/scoring.js';
@@ -104,6 +108,31 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
       });
 
       allFindings.push(...zapFindings);
+      await job.updateProgress(62);
+
+      // Phase 5: Launch Readiness Checks (SEO, Performance, Accessibility, Essentials)
+      await updateScanStatus(scanId, 'SCANNING', 'Running launch readiness checks...', 63);
+
+      const [seoFindings, perfFindings, a11yFindings, essentialsFindings] = await Promise.all([
+        runSeoScanner(liveUrl).catch(err => {
+          console.error('SEO scanner error:', err);
+          return [] as RawFinding[];
+        }),
+        runPerformanceScanner(liveUrl).catch(err => {
+          console.error('Performance scanner error:', err);
+          return [] as RawFinding[];
+        }),
+        runAccessibilityScanner(liveUrl).catch(err => {
+          console.error('Accessibility scanner error:', err);
+          return [] as RawFinding[];
+        }),
+        runEssentialsScanner(liveUrl).catch(err => {
+          console.error('Essentials scanner error:', err);
+          return [] as RawFinding[];
+        }),
+      ]);
+
+      allFindings.push(...seoFindings, ...perfFindings, ...a11yFindings, ...essentialsFindings);
       await job.updateProgress(70);
     }
 
@@ -212,7 +241,7 @@ async function updateScanStatus(
       status,
       progress,
       progressPercent,
-      ...(status === 'SCANNING' ? { startedAt: new Date() } : {}),
+      ...(status === 'CLONING' ? { startedAt: new Date() } : {}),
     },
   });
 }
@@ -235,17 +264,15 @@ function isKnownFalsePositive(finding: RawFinding): boolean {
     /\.test\.(ts|js|tsx|jsx)$/,
     /\.spec\.(ts|js|tsx|jsx)$/,
     /__tests__\//,
-    /test\//,
     // Documentation
     /\.md$/,
-    /docs?\//,
-    // Example/sample code
-    /example/i,
-    /sample/i,
+    // Example/sample directories
+    /\/examples?\//i,
+    /\/samples?\//i,
     // Mock/stub files
-    /mock/i,
-    /stub/i,
-    /fixture/i,
+    /\/__mocks__\//,
+    /\.mock\.(ts|js|tsx|jsx)$/,
+    /\/fixtures?\//i,
   ];
 
   if (finding.filePath) {

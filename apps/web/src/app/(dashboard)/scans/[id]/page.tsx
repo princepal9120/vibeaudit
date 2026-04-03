@@ -20,7 +20,7 @@ import { GitHubIcon, GlobeIcon, ArrowLeftIcon, DocumentIcon, RefreshIcon } from 
 import { LoadingOverlay, ProgressBar, PulsingDot } from '@/components/loading';
 import { StatusBadge, FindingsSummary } from '@/components/badges';
 import { SecurityScoreCard } from '@/components/security-score';
-import { FindingsListWithHeader, FindingsListSkeleton } from '@/components/findings-list';
+import { FindingsListWithHeader, FindingsListSkeleton, GroupedFindingsList } from '@/components/findings-list';
 import { useScan } from '@/hooks';
 import { cn, formatDateLong, getScanTarget, isScanInProgress, isScanFailed } from '@/lib/utils';
 import type { Scan } from '@/lib/types';
@@ -223,13 +223,9 @@ function ResultsSection({ scan }: ResultsSectionProps) {
         </Card>
       )}
 
-      {/* Findings List */}
+      {/* Findings List (grouped with tabs when launch readiness findings exist) */}
       <div className="pt-4">
-        <FindingsListWithHeader
-          findings={report.findings}
-          title="Security Findings"
-          showCount
-        />
+        <GroupedFindingsList findings={report.findings} />
       </div>
     </div>
   );

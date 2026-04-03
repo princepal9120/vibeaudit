@@ -103,6 +103,7 @@ export function PrdUploadForm({ onSubmit, disabled, error }: PrdUploadFormProps)
 
     setLocalError(null);
     setLoading(true);
+    const toastId = toast.loading('Initiating architectural review...');
 
     try {
       await onSubmit({
@@ -110,6 +111,11 @@ export function PrdUploadForm({ onSubmit, disabled, error }: PrdUploadFormProps)
         content: content.trim(),
         fileName: fileName || undefined,
       });
+      toast.success('PRD submitted for analysis', { id: toastId });
+    } catch (err: any) {
+      const msg = err?.message || 'Failed to submit PRD';
+      setLocalError(msg);
+      toast.error(msg, { id: toastId });
     } finally {
       setLoading(false);
     }

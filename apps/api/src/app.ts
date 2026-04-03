@@ -20,8 +20,22 @@ export function createApp(): Express {
   app.use(helmet());
 
   // CORS
+  console.log('🛡️ Configuring CORS with origins:', config.frontendUrl);
   app.use(cors({
-    origin: config.frontendUrl,
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      // Allow any localhost origin
+      if (origin.startsWith('http://localhost:')) return callback(null, true);
+
+      // Allow any configured origins
+      if (config.frontendUrl.includes(origin)) return callback(null, true);
+
+      // Reject otherwise
+      console.warn(`🚫 CORS blocked request from: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],

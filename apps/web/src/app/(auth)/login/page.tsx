@@ -57,7 +57,9 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
-      setError(message.includes('fetch') ? 'Unable to connect to the server. Please try again later.' : message);
+      const errorMessage = message.includes('fetch') ? 'Unable to connect to the server. Please try again later.' : message;
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -73,7 +75,9 @@ export default function LoginPage() {
         callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'GitHub login failed');
+      const errorMessage = err instanceof Error ? err.message : 'GitHub login failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       setLoading(false);
     }
   };
@@ -88,7 +92,9 @@ export default function LoginPage() {
         callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Google login failed');
+      const errorMessage = err instanceof Error ? err.message : 'Google login failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       setLoading(false);
     }
   };

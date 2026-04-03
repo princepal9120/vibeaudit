@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useSession, signOut } from '@/lib/auth-client';
+import { useSession } from '@/lib/auth-client';
 import { Sidebar } from '@/components/sidebar';
 import { PageLoading } from '@/components/loading';
 import { CommandMenu } from '@/components/dashboard/command-menu';

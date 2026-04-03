@@ -21,7 +21,7 @@ const scanTypes = [
     type: 'url' as ScanType,
     icon: Globe,
     title: 'Live URL',
-    description: 'DAST scan',
+    description: 'DAST + Launch Readiness',
   },
   {
     type: 'file' as ScanType,
@@ -33,7 +33,7 @@ const scanTypes = [
     type: 'both' as ScanType,
     icon: Shield,
     title: 'Full Scan',
-    description: 'SAST + DAST',
+    description: 'SAST + DAST + Launch',
   },
 ];
 
@@ -51,6 +51,10 @@ const urlFeatures = [
   'SSL/TLS configuration',
   'Cookie security flags',
   'Common web vulnerabilities',
+  'SEO readiness (meta tags, OG, sitemap)',
+  'Performance (load time, compression)',
+  'Accessibility (alt text, ARIA, headings)',
+  'Launch essentials (favicon, 404, legal pages)',
 ];
 
 const prdFeatures = [
@@ -116,6 +120,7 @@ export default function NewScanPage() {
     }
 
     setErrors({});
+    const toastId = toast.loading('Initializing security scan...');
 
     try {
       const scan = await createScan({
@@ -126,13 +131,15 @@ export default function NewScanPage() {
       });
 
       if (scan?.id) {
-        toast.success('Scan started successfully');
+        toast.success('Scan started successfully', { id: toastId });
         router.push(`/scans/${scan.id}`);
+      } else {
+        toast.error('Failed to create scan. Please check your inputs.', { id: toastId });
       }
     } catch (err: any) {
       const errorMessage = err?.message || 'Failed to create scan. Please try again.';
       setErrors({ general: errorMessage });
-      toast.error(errorMessage);
+      toast.error(errorMessage, { id: toastId });
     }
   }, [formData, createScan, router]);
 
@@ -148,7 +155,7 @@ export default function NewScanPage() {
       {/* Header */}
       <PageHeader
         title="New Security Scan"
-        description="Scan your GitHub repository, live application, or PRD for vulnerabilities"
+        description="Scan your GitHub repository or live application for security, SEO, performance, and launch readiness"
       />
 
       {/* Scan Type Selection */}

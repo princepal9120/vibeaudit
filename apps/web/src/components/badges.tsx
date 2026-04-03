@@ -1,6 +1,6 @@
 
 import { Badge } from '@/components/ui/badge';
-import { STATUS_CONFIG, SEVERITY_CONFIG, type ScanStatus, type Severity } from '@/lib/constants';
+import { STATUS_CONFIG, SEVERITY_CONFIG, CATEGORY_CONFIG, SOURCE_LABELS, type ScanStatus, type Severity, type FindingCategory } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { PulsingDot } from './loading';
 
@@ -68,12 +68,39 @@ export function CountBadge({ count, severity, label, className }: CountBadgeProp
 }
 
 // ============================================
+// Category Badge
+// ============================================
+
+interface CategoryBadgeProps {
+  category: FindingCategory;
+  className?: string;
+}
+
+export function CategoryBadge({ category, className }: CategoryBadgeProps) {
+  const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.OTHER;
+
+  return (
+    <span
+      className={cn(
+        'px-2 py-0.5 rounded text-xs font-medium border',
+        config.className,
+        className
+      )}
+    >
+      {config.label}
+    </span>
+  );
+}
+
+// ============================================
 interface SourceBadgeProps {
   source: string;
   className?: string;
 }
 
 export function SourceBadge({ source, className }: SourceBadgeProps) {
+  const label = SOURCE_LABELS[source] || source;
+
   return (
     <span
       className={cn(
@@ -81,7 +108,7 @@ export function SourceBadge({ source, className }: SourceBadgeProps) {
         className
       )}
     >
-      {source}
+      {label}
     </span>
   );
 }

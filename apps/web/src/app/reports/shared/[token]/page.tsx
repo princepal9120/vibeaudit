@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { CATEGORY_CONFIG, SOURCE_LABELS, LAUNCH_READINESS_CATEGORIES, type FindingCategory } from '@/lib/constants';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -275,7 +276,12 @@ export default function SharedReportPage() {
                           <span className="font-medium text-slate-900">{finding.title}</span>
                         </div>
                         <div className="flex items-center gap-2 text-slate-500 text-sm">
-                          <span className="px-2 py-0.5 bg-slate-100 rounded text-xs">{finding.source}</span>
+                          {CATEGORY_CONFIG[finding.category] && (
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium border ${CATEGORY_CONFIG[finding.category].className}`}>
+                              {CATEGORY_CONFIG[finding.category].label}
+                            </span>
+                          )}
+                          <span className="px-2 py-0.5 bg-slate-100 rounded text-xs">{SOURCE_LABELS[finding.source] || finding.source}</span>
                           <ChevronIcon className="h-4 w-4" direction={expandedFinding === finding.id ? 'up' : 'down'} />
                         </div>
                       </div>

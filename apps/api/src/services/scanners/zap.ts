@@ -218,37 +218,30 @@ async function checkSSL(url: string): Promise<RawFinding[]> {
     }
 
     // Check SSL certificate using openssl
-    // Using safeSpawn with validated hostname to prevent command injection
-    const { stdout } = await safeSpawn(
-      'openssl',
-      ['s_client', '-servername', hostname, '-connect', `${hostname}:443`],
-      { timeout: 10000 }
+    // Pipe s_client output into x509 using shell for stdin redirection
+    // Hostname is validated above to only contain [a-zA-Z0-9.-]
+    const { stdout: certOutput, exitCode } = await safeSpawn(
+      'sh',
+      [
+        '-c',
+        `echo | openssl s_client -servername "${hostname}" -connect "${hostname}:443" 2>/dev/null | openssl x509 -noout -dates -checkend 2592000 2>/dev/null`,
+      ],
+      { timeout: 15000 }
     );
 
-    // Parse the certificate from stdout and check expiration
-    if (stdout) {
-      // Run x509 to check certificate expiration (30 days = 2592000 seconds)
-      const { stdout: certOutput, exitCode } = await safeSpawn(
-        'openssl',
-        ['x509', '-noout', '-dates', '-checkend', '2592000'],
-        { timeout: 5000 }
-      );
-
-      // Exit code 1 from checkend means certificate will expire
-      if (exitCode === 1 || certOutput.includes('Certificate will expire')) {
-        findings.push({
-          title: 'SSL Certificate Expiring Soon',
-          severity: 'MEDIUM',
-          category: 'CONFIGURATION',
-          source: 'ZAP',
-          description: 'The SSL certificate will expire within 30 days.',
-          impact: 'Users will see security warnings if the certificate expires.',
-          remediation: 'Renew the SSL certificate before expiration.',
-          confidence: 0.95,
-          ruleId: 'ssl-expiring',
-          rawFinding: { url, output: certOutput },
-        });
-      }
+    if (exitCode === 1 || certOutput.includes('Certificate will expire')) {
+      findings.push({
+        title: 'SSL Certificate Expiring Soon',
+        severity: 'MEDIUM',
+        category: 'CONFIGURATION',
+        source: 'ZAP',
+        description: 'The SSL certificate will expire within 30 days.',
+        impact: 'Users will see security warnings if the certificate expires.',
+        remediation: 'Renew the SSL certificate before expiration.',
+        confidence: 0.95,
+        ruleId: 'ssl-expiring',
+        rawFinding: { url, output: certOutput },
+      });
     }
   } catch (error) {
     // Certificate might be expired or invalid

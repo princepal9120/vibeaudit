@@ -7,6 +7,9 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { GroupedFindingsList } from '@/components/findings-list';
+import { CATEGORY_CONFIG, SOURCE_LABELS } from '@/lib/constants';
+import type { FindingCategory } from '@/lib/constants';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -23,6 +26,10 @@ interface Finding {
   lineNumber: number | null;
   codeSnippet: string | null;
   confidence: number;
+  aiValidated?: boolean;
+  falsePositive?: boolean;
+  ruleId?: string | null;
+  createdAt?: string;
 }
 
 interface Report {
@@ -109,7 +116,6 @@ export default function ReportDetailPage() {
   const [report, setReport] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedFinding, setExpandedFinding] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [sharing, setSharing] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -336,79 +342,9 @@ export default function ReportDetailPage() {
         </Card>
       )}
 
-      {/* Findings List */}
+      {/* Findings List (grouped with tabs when launch readiness findings exist) */}
       <div>
-        <h2 className="text-xl font-semibold text-foreground mb-4">
-          Findings ({report.totalFindings})
-        </h2>
-        {report.findings.length === 0 ? (
-          <Card className="border-border">
-            <CardContent className="py-8 text-center">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">No Issues Found</h3>
-              <p className="text-muted-foreground">Great job! No security vulnerabilities were detected.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {report.findings.map((finding) => (
-              <Card key={finding.id} className="border-border">
-                <CardContent className="py-4">
-                  <button
-                    onClick={() => setExpandedFinding(expandedFinding === finding.id ? null : finding.id)}
-                    className="w-full text-left"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {getSeverityBadge(finding.severity)}
-                        <span className="font-medium text-foreground">{finding.title}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <span className="px-2 py-0.5 bg-secondary rounded text-xs">{finding.source}</span>
-                        <ChevronIcon className="h-4 w-4" direction={expandedFinding === finding.id ? 'up' : 'down'} />
-                      </div>
-                    </div>
-                    {finding.filePath && (
-                      <div className="text-sm text-muted-foreground mt-1 font-mono">
-                        {finding.filePath}
-                        {finding.lineNumber && `:${finding.lineNumber}`}
-                      </div>
-                    )}
-                  </button>
-
-                  {expandedFinding === finding.id && (
-                    <div className="mt-4 pt-4 border-t border-border space-y-4">
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground mb-1">What it is</h4>
-                        <p className="text-foreground">{finding.description}</p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground mb-1">Why it matters</h4>
-                        <p className="text-foreground">{finding.impact}</p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-muted-foreground mb-1">How to fix</h4>
-                        <p className="text-foreground whitespace-pre-wrap">{finding.remediation}</p>
-                      </div>
-                      {finding.codeSnippet && (
-                        <div>
-                          <h4 className="text-sm font-medium text-muted-foreground mb-1">Code</h4>
-                          <pre className="bg-muted border border-border p-3 rounded-lg text-sm text-foreground overflow-x-auto font-mono">
-                            {finding.codeSnippet}
-                          </pre>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        <GroupedFindingsList findings={report.findings as any} />
       </div>
     </div>
   );
