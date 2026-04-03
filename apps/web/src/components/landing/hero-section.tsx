@@ -50,7 +50,7 @@ export default function HeroSection() {
                             Start Free Scan
                         </Link>
                         <Link href="#how-it-works" className="bg-transparent border border-[#27272A] text-white px-8 py-3 font-bold text-sm tracking-tight hover:bg-[#111113] active:scale-95 transition-transform w-full sm:w-auto rounded text-center">
-                            See sample report
+                            See how it works
                         </Link>
                     </div>
                 </FadeIn>
