@@ -56,7 +56,8 @@ export default function LoginPage() {
       toast.success('Welcome back!');
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const message = err instanceof Error ? err.message : 'Login failed';
+      setError(message.includes('fetch') ? 'Unable to connect to the server. Please try again later.' : message);
     } finally {
       setLoading(false);
     }
