@@ -53,7 +53,7 @@ export default function Navigation() {
                         </Link>
                         <Link
                             href="/signup"
-                            className="bg-white text-[#09090B] px-4 py-1.5 text-[14px] font-medium transition-transform active:scale-95 flex items-center gap-1.5"
+                            className="bg-white text-[#09090B] px-4 py-1.5 text-[14px] font-medium transition-transform active:scale-95 flex items-center gap-1.5 rounded"
                         >
                             <Zap className="w-3.5 h-3.5" />
                             Start Free Scan
@@ -131,7 +131,7 @@ export default function Navigation() {
                                     <Link
                                         href="/signup"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="bg-white text-[#09090B] px-4 py-2 text-[14px] font-medium flex items-center gap-2"
+                                        className="bg-white text-[#09090B] px-4 py-2 text-[14px] font-medium flex items-center gap-2 rounded"
                                     >
                                         <Zap className="w-4 h-4" />
                                         Start Free Scan
