@@ -3,22 +3,17 @@ import { defineConfig } from 'prisma/config';
 import dotenv from 'dotenv';
 
 // Load .env from the api directory
-dotenv.config({ path: path.join(import.meta.dirname, '.env') });
+const envPath = path.join(import.meta.dirname, '.env');
+dotenv.config({ path: envPath });
+
+// Fallback to monorepo root
+if (!process.env.DATABASE_URL) {
+  dotenv.config({ path: path.join(import.meta.dirname, '..', '..', '.env') });
+}
 
 export default defineConfig({
-  earlyAccess: true,
-  schema: path.join(import.meta.dirname, 'prisma', 'schema.prisma'),
-  migrate: {
-    adapter: async () => {
-      const { PrismaPg } = await import('@prisma/adapter-pg');
-      const { Pool } = await import('pg');
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-      });
-      return new PrismaPg(pool);
-    },
-  },
+  schema: './prisma/schema.prisma',
   datasource: {
-    url: process.env.DATABASE_URL,
+    url: process.env.DATABASE_URL || '',
   },
 });

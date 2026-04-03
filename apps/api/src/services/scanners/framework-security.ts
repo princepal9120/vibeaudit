@@ -15,6 +15,7 @@ import type { RawFinding, Severity, FindingCategory } from './types.js';
 
 interface FrameworkPattern {
   pattern: RegExp;
+  negative?: boolean; // If true, finding is raised when pattern does NOT match
   title: string;
   severity: Severity;
   category: FindingCategory;

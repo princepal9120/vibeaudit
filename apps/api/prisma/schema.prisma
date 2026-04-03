@@ -229,6 +229,11 @@ enum FindingCategory {
   DEPENDENCIES
   CRYPTOGRAPHY
   CONFIGURATION
+  RACE_CONDITION
+  IDOR
+  SSRF
+  MASS_ASSIGNMENT
+  DESERIALIZATION
   OTHER
 }
 
@@ -238,6 +243,7 @@ enum ScanSource {
   NPM_AUDIT
   TRIVY
   GITLEAKS
+  ADVANCED
 }
 
 // Payment tracking (for pay-per-scan model)
