@@ -9,8 +9,7 @@ export const scanRepoSchema = z.object({
   branch: z
     .string()
     .optional()
-    .default('main')
-    .describe('Branch to scan (defaults to "main")'),
+    .describe('Branch to scan (optional, defaults to the repository default branch)'),
   waitForCompletion: z
     .boolean()
     .optional()
@@ -34,8 +33,7 @@ export const scanRepoTool = {
       },
       branch: {
         type: 'string',
-        description: 'Branch to scan (defaults to "main")',
-        default: 'main',
+        description: 'Branch to scan (optional, defaults to the repository default branch)',
       },
       waitForCompletion: {
         type: 'boolean',

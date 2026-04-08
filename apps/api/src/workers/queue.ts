@@ -7,7 +7,7 @@ export interface ScanJobData {
   userId: string;
   githubRepoUrl?: string;
   liveUrl?: string;
-  branch: string;
+  branch?: string;
 }
 
 // BullMQ connection options using URL

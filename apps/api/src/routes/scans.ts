@@ -14,7 +14,7 @@ router.use(authenticateToken);
 const createScanSchema = z.object({
   githubRepoUrl: z.string().url().optional(),
   liveUrl: z.string().url().optional(),
-  branch: z.string().optional(),
+  branch: z.string().trim().optional(),
 }).refine(
   data => data.githubRepoUrl || data.liveUrl,
   { message: 'Either githubRepoUrl or liveUrl is required' }
@@ -68,6 +68,7 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
   try {
     const userId = getUserId(req);
     const body = createScanSchema.parse(req.body);
+    const normalizedBranch = body.branch || undefined;
 
     // Check if user has available credits
     const hasCredits = await hasAvailableCredits(userId);
@@ -97,7 +98,7 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
         userId,
         githubRepoUrl: body.githubRepoUrl,
         liveUrl: body.liveUrl,
-        branch: body.branch || 'main',
+        branch: normalizedBranch ?? null,
         status: 'QUEUED',
         progress: 'Scan queued...',
         progressPercent: 0,
@@ -111,7 +112,7 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
         userId,
         githubRepoUrl: body.githubRepoUrl,
         liveUrl: body.liveUrl,
-        branch: body.branch || 'main',
+        branch: normalizedBranch,
       });
     } catch (queueError) {
       // Queue might not be available in development
@@ -128,6 +129,12 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
           errorMessage: 'Job queue unavailable. Please try again later.',
         },
       });
+
+      res.status(503).json({
+        error: 'Job queue unavailable. Please try again later.',
+        code: 'QUEUE_UNAVAILABLE',
+      });
+      return;
     }
 
     res.status(201).json(scan);
@@ -267,7 +274,7 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
         userId,
         githubRepoUrl: originalScan.githubRepoUrl || undefined,
         liveUrl: originalScan.liveUrl || undefined,
-        branch: originalScan.branch || 'main',
+        branch: originalScan.branch || undefined,
       });
     } catch (queueError) {
       console.error('Failed to add rescan to queue:', queueError);
@@ -282,6 +289,12 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
           errorMessage: 'Job queue unavailable. Please try again later.',
         },
       });
+
+      res.status(503).json({
+        error: 'Job queue unavailable. Please try again later.',
+        code: 'QUEUE_UNAVAILABLE',
+      });
+      return;
     }
 
     res.status(201).json(newScan);

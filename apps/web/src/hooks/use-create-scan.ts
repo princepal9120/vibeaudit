@@ -11,7 +11,7 @@ import type { Scan, CreateScanRequest } from '@/lib/types';
 import { getErrorMessage } from '@/lib/utils';
 
 interface UseCreateScanResult {
-  createScan: (data: CreateScanRequest) => Promise<Scan | null>;
+  createScan: (data: CreateScanRequest) => Promise<Scan>;
   loading: boolean;
   error: string | null;
   clearError: () => void;
@@ -21,7 +21,7 @@ export function useCreateScan(): UseCreateScanResult {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const createScan = useCallback(async (data: CreateScanRequest): Promise<Scan | null> => {
+  const createScan = useCallback(async (data: CreateScanRequest): Promise<Scan> => {
     setLoading(true);
     setError(null);
 
@@ -62,7 +62,7 @@ export function useCreateScan(): UseCreateScanResult {
     } catch (err) {
       const message = getErrorMessage(err);
       setError(message);
-      return null;
+      throw err;
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,5 @@
 import { simpleGit, SimpleGit, CloneOptions } from 'simple-git';
-import { mkdtemp, rm } from 'fs/promises';
+import { mkdir, mkdtemp, rm } from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { config } from '../config.js';
@@ -14,10 +14,14 @@ const SUSPICIOUS_CHARS_PATTERN = /[;&|`$\\<>(){}[\]!#*?~]/;
 
 export async function cloneRepository(
   repoUrl: string,
-  branch: string = 'main'
+  branch?: string
 ): Promise<string> {
+  const tempRoot = config.tempDir || tmpdir();
+  await mkdir(tempRoot, { recursive: true });
+  const normalizedBranch = branch?.trim();
+
   // Create temp directory
-  const tempDir = await mkdtemp(join(config.tempDir || tmpdir(), 'ShipSafe-'));
+  const tempDir = await mkdtemp(join(tempRoot, 'ShipSafe-'));
 
   const git: SimpleGit = simpleGit({
     timeout: {
@@ -27,9 +31,12 @@ export async function cloneRepository(
 
   const cloneOptions: CloneOptions = {
     '--depth': 1, // Shallow clone for speed
-    '--branch': branch,
-    '--single-branch': null,
   };
+
+  if (normalizedBranch) {
+    cloneOptions['--branch'] = normalizedBranch;
+    cloneOptions['--single-branch'] = null;
+  }
 
   try {
     // Parse and validate URL
@@ -53,8 +60,8 @@ export async function cloneRepository(
       if (error.message.includes('timeout')) {
         throw new Error('Repository clone timed out. The repository may be too large.');
       }
-      if (error.message.includes('branch')) {
-        throw new Error(`Branch "${branch}" not found. Try "main" or "master".`);
+      if (normalizedBranch && error.message.includes('branch')) {
+        throw new Error(`Branch "${normalizedBranch}" not found. Check the branch name or leave it blank to use the repository default branch.`);
       }
     }
 

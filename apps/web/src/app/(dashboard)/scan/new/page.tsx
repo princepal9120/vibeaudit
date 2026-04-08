@@ -101,7 +101,7 @@ export default function NewScanPage() {
     scanType: 'github',
     githubUrl: '',
     liveUrl: '',
-    branch: 'main',
+    branch: '',
     file: null,
   });
   const [errors, setErrors] = useState<ScanFormErrors>({});
@@ -126,16 +126,12 @@ export default function NewScanPage() {
       const scan = await createScan({
         githubRepoUrl: formData.scanType !== 'url' && formData.scanType !== 'file' ? formData.githubUrl : undefined,
         liveUrl: formData.scanType !== 'github' && formData.scanType !== 'file' ? formData.liveUrl : undefined,
-        branch: formData.branch || undefined,
+        branch: formData.branch.trim() || undefined,
         file: formData.scanType === 'file' && formData.file ? formData.file : undefined,
       });
 
-      if (scan?.id) {
-        toast.success('Scan started successfully', { id: toastId });
-        router.push(`/scans/${scan.id}`);
-      } else {
-        toast.error('Failed to create scan. Please check your inputs.', { id: toastId });
-      }
+      toast.success('Scan started successfully', { id: toastId });
+      router.push(`/scans/${scan.id}`);
     } catch (err: any) {
       const errorMessage = err?.message || 'Failed to create scan. Please try again.';
       setErrors({ general: errorMessage });
@@ -297,10 +293,11 @@ export default function NewScanPage() {
                 type="text"
                 value={formData.branch}
                 onChange={(e) => setFormData((prev) => ({ ...prev, branch: e.target.value }))}
-                placeholder="main"
+                placeholder="Leave blank to use the repo default branch"
                 autoComplete="off"
                 className="w-full sm:w-[200px] px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
+              <p className="text-xs text-muted-foreground">Optional. Leave empty to scan the repository&apos;s default branch.</p>
             </div>
           )}
         </div>
