@@ -25,12 +25,18 @@ const checkoutSchema = z.object({
 
 // GET /api/payments/products - Get available products
 router.get('/products', (_req: Request, res: Response) => {
+  const usd = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+
   const products = Object.entries(PRODUCTS).map(([type, product]) => ({
     type,
     ...product,
-    priceFormatted: `$${(product.price / 100).toFixed(2)}`,
+    priceFormatted: usd.format(product.price / 100),
     perScanPrice: product.price / product.credits,
-    perScanFormatted: `$${(product.price / product.credits / 100).toFixed(2)}`,
+    perScanFormatted: usd.format(product.price / product.credits / 100),
+    currency: 'USD',
   }));
 
   res.json({ products });

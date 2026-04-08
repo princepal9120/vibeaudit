@@ -13,8 +13,15 @@
 | Attribute           | Value                                                                        |
 | ------------------- | ---------------------------------------------------------------------------- |
 | **Target Customer** | Solo SaaS founder shipping production software built 50%+ with Cursor/Claude |
-| **Pricing Model**   | Pay-per-scan ($15-50), no subscriptions, no minimums                         |
+| **Pricing Model**   | Security Scan uses pay-per-scan credits, PRD Review is a separate subscription product |
 | **Core Value**      | Democratize security for people who code without security teams              |
+
+### Current Product Reality
+
+- **VibeAudit Security Scan:** 1 free scan, then $30 for 1, $125 for 5, or $200 for 10.
+- **PRD Review:** separate product with a free tier and PRD Review Pro for unlimited reviews.
+- **Auth:** Better Auth, not NextAuth.
+- **Billing:** current checkout flow uses Dodo Payments.
 
 ---
 
@@ -473,7 +480,7 @@ GET  /api/reports/shared/:token    # View shared report (no auth)
 ### Billing (Phase 2)
 
 ```
-POST /api/billing/checkout        # Create Stripe session
+POST /api/billing/checkout        # Create checkout session
 GET  /api/billing/invoices        # List user invoices
 POST /api/billing/update-method   # Update payment method
 ```
@@ -630,7 +637,8 @@ OPENAI_API_KEY=sk-...
 GITHUB_CLIENT_ID=xxx
 GITHUB_CLIENT_SECRET=xxx
 AWS_S3_BUCKET=vibeaudit-reports
-NEXTAUTH_SECRET=xxx
+BETTER_AUTH_SECRET=xxx
+DODO_PAYMENTS_API_KEY=xxx
 ```
 
 ---
@@ -700,7 +708,8 @@ Each scan runs in separate Docker container with:
 - [x] PDF report generation
 - [x] Email signup + GitHub login
 - [x] Scan history dashboard
-- [x] 1 free scan per user, $30 per additional
+- [x] 1 free scan, then pay-per-scan credits for Security Scan
+- [x] Separate PRD Review product with its own subscription flow
 
 ### Out of Scope (MVP)
 
@@ -745,7 +754,7 @@ Each scan runs in separate Docker container with:
 - [ ] Advanced DAST: API endpoint testing
 - [ ] Freelancer features: Co-branded reports
 - [ ] Repeat scanning: Before/after comparison
-- [ ] Stripe integration: Billing
+- [ ] Billing polish and subscription lifecycle improvements
 - [ ] Admin dashboard: Usage, revenue
 
 ### Phase 3+ (Months 2-3)
@@ -776,7 +785,7 @@ Each scan runs in separate Docker container with:
 2. LLM-powered explanations reduce jargon better than human writing
 3. Developers prefer 3-min scan over manual code review
 4. Semgrep + ZAP + secrets detection covers 80% of real vulnerabilities
-5. Pay-per-scan model better than subscription for indie builders
+5. Pay-per-scan works better for the Security Scan product, while PRD Review can sustain a separate subscription
 
 ---
 

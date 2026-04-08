@@ -8,24 +8,24 @@ import type { ProductType, PaymentStatus } from '@prisma/client';
 export const PRODUCTS = {
   SCAN_CREDIT: {
     id: 'scan-single',
-    name: 'Single Scan',
-    price: 3000, // $30 in cents
+    name: 'Launch Audit',
+    price: 3900, // $39 in cents
     credits: 1,
-    description: 'One security scan for your application',
+    description: 'Full security scan for a launch, handoff, or release',
   },
   SCAN_BUNDLE_5: {
     id: 'scan-bundle-5',
-    name: '5-Pack Scans',
-    price: 12500, // $125 in cents
+    name: 'Growth Pack',
+    price: 9900, // $99 in cents
     credits: 5,
-    description: 'Five security scans - Save 17%',
+    description: 'Five security scans - Save 49%',
   },
   SCAN_BUNDLE_10: {
     id: 'scan-bundle-10',
-    name: '10-Pack Scans',
-    price: 20000, // $200 in cents
+    name: 'Agency Pack',
+    price: 17900, // $179 in cents
     credits: 10,
-    description: 'Ten security scans - Save 33%',
+    description: 'Ten security scans - Save 54%',
   },
 } as const;
 
@@ -79,7 +79,7 @@ export async function createCheckoutSession(
     data: {
       userId,
       amount: product.price,
-      currency: 'usd',
+      currency: 'USD',
       productType,
       quantity: product.credits,
       status: 'PENDING',

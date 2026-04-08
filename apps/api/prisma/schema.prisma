@@ -269,7 +269,7 @@ model Payment {
 
   // Payment details
   amount          Int       // Amount in cents
-  currency        String    @default("usd")
+  currency        String    @default("USD")
   status          PaymentStatus @default(PENDING)
 
   // Product info
@@ -304,9 +304,9 @@ model ScanCredit {
 }
 
 enum ProductType {
-  SCAN_CREDIT      // Single scan ($30)
-  SCAN_BUNDLE_5    // 5-pack ($125)
-  SCAN_BUNDLE_10   // 10-pack ($200)
+  SCAN_CREDIT      // Single scan ($39)
+  SCAN_BUNDLE_5    // 5-pack ($99)
+  SCAN_BUNDLE_10   // 10-pack ($179)
 }
 
 enum PaymentStatus {

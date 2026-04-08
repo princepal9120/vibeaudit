@@ -25,7 +25,7 @@ export default function FAQs() {
         {
             id: 'item-4',
             question: 'How much does it cost?',
-            answer: 'Your first scan is free. After that, you can buy scan credits: $30 for one scan, $125 for five scans, or $200 for ten scans. No subscription is required for the scanner.',
+            answer: 'Your first scan is free. After that, launch audits are $39, with pack pricing at $99 for five scans or $179 for ten scans. No subscription is required for the scanner.',
         },
         {
             id: 'item-5',

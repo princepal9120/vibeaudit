@@ -51,9 +51,9 @@ function ProductCard({
   isLoading: boolean;
 }) {
   const savings = product.type === 'SCAN_BUNDLE_5'
-    ? '17%'
+    ? '49%'
     : product.type === 'SCAN_BUNDLE_10'
-      ? '33%'
+      ? '54%'
       : null;
 
   return (

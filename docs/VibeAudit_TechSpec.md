@@ -39,7 +39,7 @@
 └────────────────────────────────────────┘
     │
     └─────→ Database (PostgreSQL)
-    └─────→ Storage (S3 for reports/artifacts)
+    └─────→ Storage (ImageKit / cloud file storage for reports)
 ```
 
 ### Key Components
@@ -50,7 +50,7 @@
 4. **LLM Service:** OpenAI GPT-4 API for explanations and fix suggestions
 5. **Database:** PostgreSQL (user data, scan history, findings)
 6. **Queue:** Redis + Bull for job queue management
-7. **Storage:** AWS S3 for PDFs, reports, code artifacts (temporary)
+7. **Storage:** Cloud file storage for PDFs and shareable artifacts, ImageKit in the current implementation
 
 ---
 
@@ -60,7 +60,7 @@
 - **Framework:** Next.js 16.1 (App Router, React Compiler support)
 - **UI Library:** React 19.2 (Concurrent features, improved hydration)
 - **Styling:** Tailwind CSS v4.1 + shadcn/ui components
-- **State Management:** TanStack Query (React Query) for server state
+- **State Management:** Custom React hooks + fetch-based API client for server interactions
 - **Auth:** Better Auth v1.4 with GitHub/Google OAuth + email/password (cookie-based, no vendor lock-in)
 
 ### Key Pages
@@ -93,8 +93,8 @@
   - Checkbox: "Scan GitHub dependencies"
   - Checkbox: "Scan live site (DAST)"
   - "Scan" button (submits, shows loading)
-  - Free tier: "You have 1 free scan remaining"
-  - Paid: "Scan costs $30, you'll be charged after"
+  - Credit-aware UX: show available scan credits and checkout prompts when needed
+  - First-use path: one free scan before paid credits are required
 - **Components:** ScanForm, URLInput, AdvancedOptions, CostBreakdown
 
 #### 2.4 Scan Progress / Results
@@ -135,14 +135,13 @@
   - Privacy: Data deletion request
 - **Components:** ProfileForm, BillingManager, DataDeletion
 
-### State Management (TanStack Query)
+### State Management (Current Frontend Data Flow)
 
 ```javascript
-// Example queries
-useQuery(['scans'], fetchScans) // List all scans
-useQuery(['scans', scanId], () => fetchScan(scanId)) // Single scan
-useMutation(createScan) // Start new scan
-useMutation(deleteScan) // Delete scan
+// Current pattern in the app
+// - fetch-based API client in apps/web/src/lib/api.ts
+// - page-level useEffect/useState for loading and mutations
+// - lightweight custom hooks for scan list/detail flows
 ```
 
 ### Authentication Flow
@@ -150,9 +149,9 @@ useMutation(deleteScan) // Delete scan
 ```
 1. User lands on /
 2. Clicks "Login with GitHub" or "Sign up"
-3. GitHub OAuth redirect → NextAuth handler
-4. Token stored in httpOnly cookie
-5. Middleware checks auth on protected routes
+3. Better Auth completes OAuth or email auth flow
+4. Session stored via secure httpOnly cookies
+5. Middleware checks authenticated session on protected routes
 6. Redirect to /dashboard if authenticated
 7. Logout: Clear session, redirect to /
 ```
@@ -164,9 +163,9 @@ useMutation(deleteScan) // Delete scan
 ### Tech Stack
 - **Framework:** Express.js (Node.js)
 - **Database:** PostgreSQL with ORM (Prisma)
-- **Auth:** NextAuth.js (shared session) + JWT for API calls
-- **Job Queue:** Bull (Redis-backed)
-- **External APIs:** OpenAI GPT-4, GitHub API, npm Registry
+- **Auth:** Better Auth session cookies, plus authenticated API routes
+- **Job Queue:** BullMQ (Redis-backed)
+- **External APIs:** OpenAI, GitHub, ImageKit, Dodo Payments
 
 ### API Endpoints (REST)
 
@@ -199,7 +198,7 @@ GET /api/reports/shared/:token    # View shared report (no auth)
 
 #### Billing (Phase 2)
 ```
-POST /api/billing/checkout        # Create Stripe session
+POST /api/billing/checkout        # Create checkout session
 GET /api/billing/invoices         # List user invoices
 POST /api/billing/update-method   # Update payment method
 ```
@@ -257,7 +256,7 @@ model Report {
   findings        Finding[]
   
   // Report metadata
-  pdfUrl          String?   // S3 URL for generated PDF
+  pdfUrl          String?   // Cloud file URL for generated PDF
   shareToken      String?   @unique // For public sharing
   
   createdAt       DateTime  @default(now())
@@ -294,7 +293,7 @@ model Finding {
 
 ```javascript
 // Authentication middleware
-app.use(requireAuth) // Checks NextAuth session
+app.use(requireAuth) // Checks authenticated session / auth token
 
 // Rate limiting (500 reqs/hour per IP)
 app.use(rateLimit)
@@ -347,9 +346,9 @@ async generateExplanations(findings) {
 async generatePDF(reportId) {
   1. Fetch report + findings
   2. Render HTML template (findings list, severity breakdown, score)
-  3. Convert HTML to PDF (Puppeteer or Chromium)
-  4. Upload to S3
-  5. Return S3 URL
+  3. Generate PDF buffer
+  4. Upload to ImageKit (or another cloud file provider)
+  5. Return shareable file URL
 }
 ```
 
@@ -723,7 +722,7 @@ Reduce API calls from 8 to 2
   findings: Finding[], // Array of findings
   
   // Sharing
-  pdfUrl: String, // S3 URL
+  pdfUrl: String, // Cloud file URL
   shareToken: String, // For public access
   shareTokenCreatedAt: Date,
   shareTokenExpiresAt: Date, // 30 days default
@@ -740,7 +739,7 @@ Reduce API calls from 8 to 2
 
 ```
 ┌─────────────────────────────────────────────┐
-│           AWS Infrastructure                │
+│      Example Production Infrastructure      │
 ├─────────────────────────────────────────────┤
 │                                             │
 │  ┌──────────────────────────────────────┐  │
@@ -767,15 +766,15 @@ Reduce API calls from 8 to 2
 │  └──────────────────────────────────────┘  │
 │                                             │
 │  ┌──────────────────────────────────────┐  │
-│  │  AWS S3 (Report PDFs, artifacts)     │  │
-│  │  Private bucket, signed URLs         │  │
+│  │  ImageKit / File Storage             │  │
+│  │  Report PDFs and shareable assets    │  │
 │  └──────────────────────────────────────┘  │
 │                                             │
 │  ┌──────────────────────────────────────┐  │
 │  │  AWS Secrets Manager                 │  │
 │  │  - GitHub OAuth secret               │  │
 │  │  - OpenAI API key                    │  │
-│  │  - Stripe API key                    │  │
+│  │  - Dodo Payments API key             │  │
 │  └──────────────────────────────────────┘  │
 │                                             │
 └─────────────────────────────────────────────┘
@@ -790,7 +789,7 @@ Reduce API calls from 8 to 2
 | Database | AWS RDS PostgreSQL | Managed, HA, backups automatic |
 | Cache/Queue | AWS ElastiCache Redis | Managed, fast |
 | Secrets | AWS Secrets Manager | Rotatable, secure |
-| Storage | AWS S3 | Durable, CDN-friendly with CloudFront |
+| Storage | ImageKit or equivalent | Durable, easy public/private file delivery |
 
 ### Environment Variables
 
@@ -810,14 +809,16 @@ GITHUB_CLIENT_SECRET=xxx
 GITHUB_TOKEN=ghp_... (for API access)
 AWS_ACCESS_KEY_ID=xxx
 AWS_SECRET_ACCESS_KEY=xxx
-AWS_S3_BUCKET=vibeaudit-reports
-STRIPE_SECRET_KEY=sk_... (Phase 2)
-NEXTAUTH_SECRET=xxx
+IMAGEKIT_PUBLIC_KEY=xxx
+IMAGEKIT_PRIVATE_KEY=xxx
+IMAGEKIT_URL_ENDPOINT=https://ik.imagekit.io/...
+DODO_PAYMENTS_API_KEY=xxx
+BETTER_AUTH_SECRET=xxx
 ```
 
 ### Monitoring & Logging
 
-- **Logs:** CloudWatch (ECS logs), Vercel (frontend errors)
+- **Logs:** CloudWatch / platform logs (API), Vercel logs (frontend)
 - **Metrics:** CloudWatch (CPU, memory, queue depth)
 - **Alerts:** CloudWatch alarms (error rate > 5%, queue > 100 jobs)
 - **APM:** DataDog or New Relic (optional, post-MVP)
@@ -975,7 +976,7 @@ User requests account deletion
 - [ ] Repeat scanning: Before/after comparison
 
 **Week 7-8:**
-- [ ] Stripe integration: Billing
+- [ ] Billing polish and lifecycle improvements
 - [ ] Admin dashboard: Usage, revenue
 - [ ] Promotional campaign: Indie Hackers launch
 
@@ -991,7 +992,7 @@ User requests account deletion
 | **Cache/Queue** | Redis 8.4 + BullMQ 5.66 | Fast, modern Bull replacement |
 | **LLM** | OpenAI GPT-4o | Best quality, multimodal support |
 | **Scanning** | Semgrep 1.148, OWASP ZAP 2.17, Trivy 0.68 | Best-in-class open-source tools |
-| **Deployment** | Vercel, AWS ECS Fargate | Scalable, serverless containers |
+| **Deployment** | Vercel + containerized API host | Flexible deployment without changing app architecture |
 | **Auth** | Better Auth v1.4 | No vendor lock-in, Prisma adapter, cookie sessions |
 | **ORM** | Prisma 7.2 | Type-safe, new migrations engine |
 | **Job Queue** | BullMQ + Redis | Modern, better DX |

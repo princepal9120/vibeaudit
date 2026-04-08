@@ -151,6 +151,7 @@ class ApiClient {
         priceFormatted: string;
         perScanPrice: number;
         perScanFormatted: string;
+        currency?: string;
       }>;
     }>('/payments/products');
   }

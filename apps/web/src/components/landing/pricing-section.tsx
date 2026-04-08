@@ -22,34 +22,34 @@ const pricingTiers = [
     featured: false,
   },
   {
-    name: "Single Scan",
-    description: "Best for a launch, handoff, or quick audit.",
-    price: "$30",
+    name: "Launch Audit",
+    description: "Best for a launch, handoff, or pre-release confidence check.",
+    price: "$39",
     period: "per scan",
     features: [
       { text: "Full repo + live app scan" },
       { text: "PDF report export" },
       { text: "AI fix guidance" },
       { text: "No subscription required" },
-      { text: "Buy only when needed" },
+      { text: "Actionable issues in plain English" },
     ],
-    buttonText: "Buy 1 Scan",
+    buttonText: "Buy Launch Audit",
     buttonHref: "/checkout",
     featured: true,
   },
   {
-    name: "Scan Packs",
-    description: "For freelancers, agencies, and repeat launches.",
-    price: "$125",
-    period: "5 scans · or $200 for 10 scans",
+    name: "Growth Packs",
+    description: "For freelancers, agencies, and teams shipping repeatedly.",
+    price: "$99",
+    period: "5 scans · or $179 for 10 scans",
     features: [
-      { text: "Lower per-scan cost" },
+      { text: "Save up to 54% per scan" },
       { text: "No expiration on credits" },
       { text: "Great for client work" },
       { text: "Re-scan after fixes" },
       { text: "Same full reporting" },
     ],
-    buttonText: "Buy Scan Pack",
+    buttonText: "Buy Growth Pack",
     buttonHref: "/checkout",
     featured: false,
   },
@@ -58,9 +58,9 @@ const pricingTiers = [
 export default function PricingSection() {
   return (
     <section id="pricing" className="max-w-7xl mx-auto px-6 mt-40 text-center pb-20">
-      <h2 className="text-3xl font-bold mb-4 text-white">Pay as you ship</h2>
+      <h2 className="text-3xl font-bold mb-4 text-white">Launch-ready security in minutes</h2>
       <p className="text-[#71717A] max-w-2xl mx-auto mb-12">
-        Your first scan is free. After that, buy credits only when you need them.
+        Start with 1 free scan, then only pay when you ship.
       </p>
       <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
         {pricingTiers.map((tier, index) => (

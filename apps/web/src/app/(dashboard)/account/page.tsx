@@ -358,7 +358,7 @@ export default function AccountPage() {
                         Pay-as-you-go
                       </div>
                       <div className="text-[13px] text-muted-foreground">
-                        $30 per scan
+                        From $17.90 per scan
                       </div>
                     </div>
                     <span className="px-3 py-1 rounded-full bg-[#D1FAE5] text-[#065F46] text-xs font-medium">
@@ -437,7 +437,10 @@ export default function AccountPage() {
                             </div>
                             <div className="flex items-center gap-3">
                               <span className="text-sm font-medium text-foreground">
-                                ${(payment.amount / 100).toFixed(2)}
+                                {new Intl.NumberFormat("en-US", {
+                                  style: "currency",
+                                  currency: "USD",
+                                }).format(payment.amount / 100)}
                               </span>
                               <span
                                 className={cn(

@@ -246,7 +246,8 @@ Democratize security for people who code (but don't have security teams).
 ### 5.1 Code Scanning Engine
 
 **Requirement 5.1.1:** GitHub Repository Scanning
-- Accept GitHub repo URL (public or private with auth token)
+- Accept GitHub repo URL
+- MVP focus: public repos first, private repo access can follow as a later expansion
 - Clone repo, analyze code for vulnerabilities
 - Support: JavaScript/TypeScript, Python, Go, Java, Ruby, PHP, C#
 - Detect: SQL injection, XSS, CSRF, hardcoded secrets, insecure dependencies
@@ -383,8 +384,9 @@ Democratize security for people who code (but don't have security teams).
 ### 6.4 Cost Constraints
 
 - Each scan costs ~$1-3 to run (LLM + scanning tools)
-- Pricing: $25-50 per scan to maintain 50%+ margin
-- Free tier: 1 free scan per user, then pay-per-scan
+- Security Scan pricing: 1 free scan, then credit packs priced at $30 for 1, $125 for 5, or $200 for 10
+- PRD Review monetization is separate and should not be treated as part of Security Scan unit economics
+- Free tier: 1 free scan per user, then pay-per-scan credits
 
 ### 6.5 Availability
 
@@ -407,7 +409,8 @@ Democratize security for people who code (but don't have security teams).
 - PDF report generation
 - Email signup + GitHub login
 - Scan history dashboard
-- 1 free scan per user, $30 per additional scan
+- 1 free scan per user, then scan-credit checkout
+- Separate PRD Review product with its own subscription flow
 
 **Out of Scope (MVP):**
 - Private GitHub repo scanning (will add in weeks 4-6)
@@ -428,7 +431,7 @@ Democratize security for people who code (but don't have security teams).
 - Freelancer co-branded reports
 - Report sharing with email invites
 - Admin dashboard (usage, billing, users)
-- Pay-per-scan billing (Stripe integration)
+- Billing and checkout polish for scan credits + PRD Review subscriptions
 - CLI tool for local scanning
 
 ### Phase 3+ (Months 2-3)
@@ -448,7 +451,7 @@ Democratize security for people who code (but don't have security teams).
 
 ### Key Assumptions
 
-1. **Market Demand:** Solo builders will pay $25-50 for pre-launch security validation (untested, need MVP validation)
+1. **Market Demand:** Solo builders will pay for pre-launch security validation, either as a $30 single scan or a larger credit pack (untested, need MVP validation)
 2. **AI Works:** LLM-powered explanations reduce jargon better than human writing (needs testing with users)
 3. **Speed is Valuable:** Developers prefer 3-min scan over manual code review (untested)
 4. **Scanning Tools Sufficient:** Combining Semgrep + OWASP ZAP + secrets detection covers 80% of real vulnerabilities (assumption, not proven)
@@ -474,7 +477,7 @@ Democratize security for people who code (but don't have security teams).
 **We'll consider MVP successful if:**
 
 1. ✅ First 10 users sign up organically (no paid ads)
-2. ✅ 3+ users willing to pay for a scan ($25+)
+2. ✅ 3+ users willing to buy a scan or scan credit pack
 3. ✅ NPS > 30 (at least users happy it exists)
 4. ✅ <5% of findings are false positives (user feedback)
 5. ✅ Average scan time <3 minutes
