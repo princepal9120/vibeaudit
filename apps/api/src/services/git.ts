@@ -50,18 +50,28 @@ export async function cloneRepository(
     await rm(tempDir, { recursive: true, force: true }).catch(() => { });
 
     if (error instanceof Error) {
+      const lowerMessage = error.message.toLowerCase();
+
       // Handle common errors
-      if (error.message.includes('not found') || error.message.includes('404')) {
+      if (
+        normalizedBranch &&
+        (
+          lowerMessage.includes('remote branch') ||
+          lowerMessage.includes('branch') ||
+          lowerMessage.includes("couldn't find remote ref") ||
+          lowerMessage.includes('remote ref')
+        )
+      ) {
+        throw new Error(`Branch "${normalizedBranch}" not found. Check the branch name or leave it blank to use the repository default branch.`);
+      }
+      if (lowerMessage.includes('not found') || lowerMessage.includes('404')) {
         throw new Error('Repository not found. Check the URL and ensure the repository is public.');
       }
-      if (error.message.includes('authentication') || error.message.includes('permission')) {
+      if (lowerMessage.includes('authentication') || lowerMessage.includes('permission')) {
         throw new Error('Access denied. Private repositories require authentication.');
       }
-      if (error.message.includes('timeout')) {
+      if (lowerMessage.includes('timeout')) {
         throw new Error('Repository clone timed out. The repository may be too large.');
-      }
-      if (normalizedBranch && error.message.includes('branch')) {
-        throw new Error(`Branch "${normalizedBranch}" not found. Check the branch name or leave it blank to use the repository default branch.`);
       }
     }
 

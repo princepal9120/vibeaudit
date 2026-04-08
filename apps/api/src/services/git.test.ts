@@ -8,7 +8,7 @@ const tempRoot = join(tmpdir(), `shipsafe-git-tests-${Date.now()}`);
 
 process.env.TEMP_DIR = tempRoot;
 
-const { cloneRepository, cleanupRepository } = await import('./git.ts');
+const { cloneRepository, cleanupRepository } = await import('./git.js');
 
 test.after(async () => {
   await rm(tempRoot, { recursive: true, force: true });

@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { Upload, FileText, X, Loader2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 interface PrdUploadFormProps {
@@ -112,8 +113,8 @@ export function PrdUploadForm({ onSubmit, disabled, error }: PrdUploadFormProps)
         fileName: fileName || undefined,
       });
       toast.success('PRD submitted for analysis', { id: toastId });
-    } catch (err: any) {
-      const msg = err?.message || 'Failed to submit PRD';
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to submit PRD';
       setLocalError(msg);
       toast.error(msg, { id: toastId });
     } finally {
