@@ -1,5 +1,5 @@
 /**
- * Core types for the ShipSafe security scanning system
+ * Core types for the VibeAudit security scanning system
  */
 
 export type Severity = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';

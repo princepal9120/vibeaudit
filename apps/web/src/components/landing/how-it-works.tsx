@@ -39,7 +39,7 @@ export default function HowItWorks() {
                         </div>
                         <div className="bg-[#111113] border border-[#FFFFFF] rounded-lg p-8 flex flex-col h-full relative shadow-[0_0_40px_rgba(255,255,255,0.05)]">
                             <div className="font-mono text-[10px] text-white mb-6 tracking-widest uppercase flex items-center gap-2">
-                                ShipSafe Optimized
+                                VibeAudit Optimized
                                 <span className="bg-white text-black px-1.5 py-0.5 text-[9px] font-bold">HUMAN-READABLE</span>
                             </div>
                             <div className="flex-grow">

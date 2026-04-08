@@ -14,7 +14,7 @@ export default function FAQs() {
         },
         {
             id: 'item-2',
-            question: 'Does ShipSafe store my code?',
+            question: 'Does VibeAudit store my code?',
             answer: 'No. We operate with a "clone, scan, delete" policy. We access your repo to perform the security analysis, but your intellectual property is deleted from our servers immediately after report generation.',
         },
         {
@@ -41,19 +41,19 @@ export default function FAQs() {
 
     return (
         <section id="faq" className="max-w-5xl mx-auto px-6 mt-32 pb-20">
-            <FadeIn>
+            <FadeIn fullWidth>
                 <div className="text-center mb-16">
                     <div className="font-mono text-[11px] text-[#52525B] uppercase tracking-widest mb-3">FAQ</div>
                     <h2 className="text-3xl font-bold text-white mb-4">Your questions answered</h2>
-                    <p className="text-[#71717A]">Common questions about ShipSafe</p>
+                    <p className="text-[#71717A]">Common questions about VibeAudit</p>
                 </div>
 
-                <Accordion type="single" collapsible defaultValue="item-1" className="space-y-3">
+                <Accordion type="single" collapsible defaultValue="item-1" className="w-full space-y-3">
                     {faqItems.map((item) => (
                         <AccordionItem
                             key={item.id}
                             value={item.id}
-                            className="bg-[#111113] border border-[#27272A] rounded-lg px-6 py-1 data-[state=open]:border-white/20 transition-colors duration-300"
+                            className="w-full bg-[#111113] border border-[#27272A] rounded-lg px-6 py-1 data-[state=open]:border-white/20 transition-colors duration-300"
                         >
                             <AccordionTrigger className="cursor-pointer text-base font-semibold hover:no-underline py-5 text-white text-left">
                                 {item.question}
@@ -71,7 +71,7 @@ export default function FAQs() {
                     <p className="text-[#71717A] text-sm">
                         Can&apos;t find what you&apos;re looking for?{' '}
                         <Link
-                            href="mailto:support@shipsafe.dev"
+                            href="mailto:support@vibeaudit.site"
                             className="inline-flex items-center gap-1 text-white font-medium hover:underline underline-offset-4 group"
                         >
                             Contact support

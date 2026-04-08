@@ -1,12 +1,12 @@
-# Product Requirements Document: ShipSafe
+# Product Requirements Document: VibeAudit
 
 ## Executive Summary
 
-**ShipSafe** is a security scanning platform built for indie builders, vibe coders, freelancers, and early-stage teams who ship code fast using AI tools. It validates code and live apps for security vulnerabilities, translates findings into plain English, and generates client-friendly reports—without the complexity, cost, or setup friction of enterprise security tools.
+**VibeAudit** is a security scanning platform built for indie builders, vibe coders, freelancers, and early-stage teams who ship code fast using AI tools. It validates code and live apps for security vulnerabilities, translates findings into plain English, and generates client-friendly reports—without the complexity, cost, or setup friction of enterprise security tools.
 
 **Target Customer:** Solo SaaS founder shipping production software built 50%+ with Cursor/Claude, needing security validation before public launch.
 
-**Pricing Model:** ShipSafe Security Scan uses pay-per-scan credits: 1 free scan, then $30 for 1, $125 for 5, or $200 for 10. PRD Security Review is a separate subscription product with a free tier and a $19/month Pro plan.
+**Pricing Model:** VibeAudit Security Scan uses pay-per-scan credits: 1 free scan, then $30 for 1, $125 for 5, or $200 for 10. PRD Security Review is a separate subscription product with a free tier and a $19/month Pro plan.
 
 ---
 
@@ -33,7 +33,7 @@ Democratize security for people who code (but don't have security teams).
 - Knowledge gaps force developers to "hope" their code is secure
 
 ### Solution
-**ShipSafe** scans code and live apps, flags vulnerabilities, explains findings in plain English, suggests AI-powered fixes, and generates reports for stakeholders—all in 2-3 minutes, no setup required.
+**VibeAudit** scans code and live apps, flags vulnerabilities, explains findings in plain English, suggests AI-powered fixes, and generates reports for stakeholders—all in 2-3 minutes, no setup required.
 
 ### Core Use Cases
 
@@ -75,7 +75,7 @@ Democratize security for people who code (but don't have security teams).
 
 3. **Category Leadership**
    - Become the default security tool for indie builders
-   - 80% customer awareness of ShipSafe among active indie hacker communities
+   - 80% customer awareness of VibeAudit among active indie hacker communities
 
 ### User Success Metrics
 
@@ -97,7 +97,7 @@ Democratize security for people who code (but don't have security teams).
 4. **Trust Building**
    - Security score easy to explain ("You're 72% secure")
    - Report looks professional enough to share with clients/investors
-   - Users feel confident shipping after ShipSafe scan
+   - Users feel confident shipping after VibeAudit scan
 
 ---
 
@@ -170,7 +170,7 @@ Democratize security for people who code (but don't have security teams).
 **Actor:** Solo SaaS founder  
 **Trigger:** "Shipping tomorrow, want to validate code"  
 **Steps:**
-1. Navigate to ShipSafe dashboard
+1. Navigate to VibeAudit dashboard
 2. Enter GitHub repo URL + live staging URL
 3. Click "Scan"
 4. Wait 2-3 minutes
@@ -333,7 +333,7 @@ Democratize security for people who code (but don't have security teams).
 
 **Requirement 5.4.4:** Shareable Report Link
 - Generate link to view report (read-only)
-- Can share with client without ShipSafe account
+- Can share with client without VibeAudit account
 - Option to revoke access later
 
 ---
@@ -452,7 +452,7 @@ Democratize security for people who code (but don't have security teams).
 2. **AI Works:** LLM-powered explanations reduce jargon better than human writing (needs testing with users)
 3. **Speed is Valuable:** Developers prefer 3-min scan over manual code review (untested)
 4. **Scanning Tools Sufficient:** Combining Semgrep + OWASP ZAP + secrets detection covers 80% of real vulnerabilities (assumption, not proven)
-5. **Pricing Model:** Pay-per-scan fits ShipSafe Security Scan better than subscriptions for indie builders, while PRD Security Review remains a separate recurring product (needs validation with users)
+5. **Pricing Model:** Pay-per-scan fits VibeAudit Security Scan better than subscriptions for indie builders, while PRD Security Review remains a separate recurring product (needs validation with users)
 
 ### Risks & Mitigations
 
@@ -463,7 +463,7 @@ Democratize security for people who code (but don't have security teams).
 | **Scanning too slow** | Users abandon before report completes | Low | Pre-optimize scanning pipeline, cache results |
 | **LLM explanations are still confusing** | Non-technical users still don't understand findings | Medium | User testing with vibe coders, iterate on language |
 | **Competitors move faster** | Enterprise tools copy our positioning | Low | Focus on indie builder community first (they're under-monetized), build moat with brand loyalty |
-| **Security liability:** We miss a real vulnerability | Indie builder ships insecure code after ShipSafe scan | Medium | Clear ToS: "ShipSafe is not a substitute for professional security review"; highlight we're automated, not human expert |
+| **Security liability:** We miss a real vulnerability | Indie builder ships insecure code after VibeAudit scan | Medium | Clear ToS: "VibeAudit is not a substitute for professional security review"; highlight we're automated, not human expert |
 | **Privacy concern:** We're analyzing user code** | Users hesitant to scan proprietary code | High | Clear privacy policy, no code stored >24hrs, no code used for model training, encrypted transit/rest |
 | **Scaling costs too high** | Each scan costs more than pricing allows | Low | Optimize scanning pipeline, batch processing, negotiate tool licensing |
 

@@ -1,4 +1,4 @@
-// API client for ShipSafe backend
+// API client for the VibeAudit backend
 // Authentication is handled by Better Auth via cookies (credentials: 'include')
 
 // API_URL points to the backend server (e.g., http://localhost:8000)

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShieldCheck, Github, Twitter, Mail } from "lucide-react";
+import { ShieldCheck, Globe, Mail } from "lucide-react";
 
 const footerLinks = {
     product: [
@@ -20,9 +20,8 @@ const footerLinks = {
 };
 
 const socialLinks = [
-    { name: "GitHub", href: "https://github.com/shipsafe", icon: Github },
-    { name: "Twitter", href: "https://twitter.com/shipsafe", icon: Twitter },
-    { name: "Email", href: "mailto:support@shipsafe.dev", icon: Mail },
+    { name: "Website", href: "https://vibeaudit.site", icon: Globe },
+    { name: "Email", href: "mailto:support@vibeaudit.site", icon: Mail },
 ];
 
 export default function Footer() {
@@ -33,7 +32,7 @@ export default function Footer() {
                 <div className="col-span-2 md:col-span-1">
                     <Link href="/" className="flex items-center gap-2 mb-6">
                         <ShieldCheck className="w-5 h-5 text-white" />
-                        <span className="font-bold text-white text-xl">ShipSafe</span>
+                        <span className="font-bold text-white text-xl">VibeAudit</span>
                     </Link>
                     <p className="text-sm leading-relaxed text-[#71717A] max-w-xs mb-6">
                         Building the future of developer security. High-performance scanning for the modern web.
@@ -85,7 +84,7 @@ export default function Footer() {
                 {/* Bottom bar */}
                 <div className="col-span-2 border-t border-[#1A1A1A] pt-8 flex justify-between items-center">
                     <div className="text-sm text-[#71717A]">
-                        © {new Date().getFullYear()} ShipSafe. All rights reserved.
+                        © {new Date().getFullYear()} VibeAudit. All rights reserved.
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#71717A]">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] animate-pulse" />

@@ -23,7 +23,7 @@ export async function runAccessibilityScanner(liveUrl: string): Promise<RawFindi
 
     const { stdout: html } = await safeSpawn(
       'curl',
-      ['-sL', '--max-time', '15', '-A', 'Mozilla/5.0 (compatible; ShipSafe/1.0)', liveUrl],
+      ['-sL', '--max-time', '15', '-A', 'Mozilla/5.0 (compatible; VibeAudit/1.0)', liveUrl],
       { timeout: 20000 }
     );
 

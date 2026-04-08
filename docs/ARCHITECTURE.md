@@ -1,6 +1,6 @@
 # Architecture Overview
 
-ShipSafe is a monorepo application designed to be a lightweight, developer-focused security scanning tool.
+VibeAudit is a monorepo application designed to be a lightweight, developer-focused security scanning tool.
 
 ## High-Level Structure
 
@@ -37,7 +37,7 @@ The project is structured as a monorepo using npm workspaces:
 ## Key Components
 
 ### 1. Landing & Pricing (Current Focus)
--   Marketing pages currently focus on ShipSafe Security Scan pricing: 1 free scan, then scan-credit packs.
+-   Marketing pages currently focus on VibeAudit Security Scan pricing: 1 free scan, then scan-credit packs.
 -   PRD Security Review uses a separate subscription flow and account-management surface.
 -   Integration with Resend for transactional emails and product messaging.
 

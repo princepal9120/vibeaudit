@@ -26,7 +26,7 @@ export async function runPerformanceScanner(liveUrl: string): Promise<RawFinding
         '-sL', '--max-time', '20',
         '-o', '/dev/null',
         '-w', '%{time_total}|%{size_download}|%{time_starttfb}|%{time_connect}|%{num_redirects}',
-        '-A', 'Mozilla/5.0 (compatible; ShipSafe/1.0)',
+        '-A', 'Mozilla/5.0 (compatible; VibeAudit/1.0)',
         liveUrl,
       ],
       { timeout: 25000 }
@@ -178,7 +178,7 @@ export async function runPerformanceScanner(liveUrl: string): Promise<RawFinding
     // Analyze HTML content for performance issues
     const { stdout: html } = await safeSpawn(
       'curl',
-      ['-sL', '--max-time', '15', '-A', 'Mozilla/5.0 (compatible; ShipSafe/1.0)', liveUrl],
+      ['-sL', '--max-time', '15', '-A', 'Mozilla/5.0 (compatible; VibeAudit/1.0)', liveUrl],
       { timeout: 20000 }
     );
 

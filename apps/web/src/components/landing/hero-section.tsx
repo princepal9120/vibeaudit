@@ -63,7 +63,7 @@ export default function HeroSection() {
                     <div className="max-w-[1000px] mx-auto bg-[#111113] border border-[#27272A] rounded-lg overflow-hidden shadow-2xl aspect-[16/9] relative flex items-center justify-center">
                         <Image
                             fill
-                            alt="ShipSafe Dashboard"
+                            alt="VibeAudit Dashboard"
                             className="object-contain relative z-10 opacity-90 transition-opacity hover:opacity-100"
                             onError={(e) => {
                                 e.currentTarget.style.display = 'none';

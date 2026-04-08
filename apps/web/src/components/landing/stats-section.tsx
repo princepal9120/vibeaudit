@@ -84,7 +84,7 @@ export default function StatsSection() {
                                 <Shield className="w-4 h-4 text-white" />
                             </div>
                             <p className="text-2xl font-mono text-white font-bold mb-1">1 free</p>
-                            <p className="text-xs text-[#71717A] max-w-[120px]">scan to try ShipSafe first</p>
+                            <p className="text-xs text-[#71717A] max-w-[120px]">scan to try VibeAudit first</p>
                         </div>
                     </div>
                 </FadeIn>

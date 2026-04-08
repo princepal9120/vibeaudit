@@ -13,7 +13,7 @@ export default function NotFound() {
                 href="/"
                 className="bg-white text-black px-6 py-3 font-bold text-sm rounded transition-transform active:scale-95"
             >
-                Back to ShipSafe
+                Back to VibeAudit
             </Link>
         </div>
     );

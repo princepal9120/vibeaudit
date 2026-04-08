@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
         <div className="min-h-screen bg-[#09090B] flex flex-col items-center justify-center px-4">
             <Link href="/" className="flex items-center gap-2 mb-10">
                 <ShieldCheck className="w-6 h-6 text-primary" />
-                <span className="text-xl font-bold text-white">ShipSafe</span>
+                <span className="text-xl font-bold text-white">VibeAudit</span>
             </Link>
 
             <motion.div

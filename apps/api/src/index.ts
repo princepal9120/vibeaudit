@@ -10,7 +10,7 @@ async function main() {
   await new Promise<void>((resolve) => {
     app.listen(config.port, () => {
       console.log(`
-🚀 ShipSafe API Server
+🚀 VibeAudit API Server
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Environment: ${config.nodeEnv}
    Port:        ${config.port}

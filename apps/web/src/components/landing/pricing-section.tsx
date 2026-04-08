@@ -7,7 +7,7 @@ import { Check, Shield } from "lucide-react";
 const pricingTiers = [
   {
     name: "Free Trial",
-    description: "Try ShipSafe on one real repo or live app.",
+    description: "Try VibeAudit on one real repo or live app.",
     price: "$0",
     period: "one-time",
     features: [

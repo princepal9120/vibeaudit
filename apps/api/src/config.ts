@@ -6,7 +6,7 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
 
   // Database
-  databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/ShipSafe',
+  databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/vibeaudit',
 
   // Redis
   redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
@@ -44,7 +44,7 @@ export const config = {
 
   // Scan settings
   maxScanTimeMs: 180000, // 3 minutes
-  tempDir: process.env.TEMP_DIR || '/tmp/ShipSafe-scans',
+  tempDir: process.env.TEMP_DIR || '/tmp/vibeaudit-scans',
 } as const;
 
 // Validate required config

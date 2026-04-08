@@ -158,7 +158,7 @@ export default function SharedReportPage() {
             <h3 className="text-xl font-semibold text-slate-900 mb-2">Report Not Found</h3>
             <p className="text-slate-600 mb-4">{error || 'This report link may have expired or is invalid.'}</p>
             <Link href="/" className="text-emerald-600 hover:text-emerald-700 font-medium">
-              Go to ShipSafe
+              Go to VibeAudit
             </Link>
           </CardContent>
         </Card>
@@ -175,7 +175,7 @@ export default function SharedReportPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <ShieldIcon className="h-8 w-8 text-emerald-600" />
-            <span className="font-bold text-xl text-slate-900">ShipSafe</span>
+            <span className="font-bold text-xl text-slate-900">VibeAudit</span>
           </Link>
           <Badge className="bg-slate-100 text-slate-600">Shared Report</Badge>
         </div>
@@ -332,7 +332,7 @@ export default function SharedReportPage() {
               Want to scan your own project?
             </h3>
             <p className="text-slate-600 mb-4">
-              Get your first security scan free with ShipSafe
+              Get your first security scan free with VibeAudit
             </p>
             <Link
               href="/"
@@ -350,7 +350,7 @@ export default function SharedReportPage() {
           <div className="flex items-center justify-center gap-2">
             <ShieldIcon className="h-5 w-5 text-emerald-600" />
             <span className="text-sm text-slate-500">
-              Powered by <span className="font-medium text-slate-900">ShipSafe</span>
+              Powered by <span className="font-medium text-slate-900">VibeAudit</span>
             </span>
           </div>
         </div>

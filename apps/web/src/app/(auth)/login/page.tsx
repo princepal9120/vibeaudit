@@ -114,7 +114,7 @@ export default function LoginPage() {
         >
           <Link href="/" className="inline-flex items-center gap-3 group">
             <ShieldCheck className="w-8 h-8 text-white" />
-            <span className="text-2xl font-bold text-white tracking-tight">ShipSafe</span>
+            <span className="text-2xl font-bold text-white tracking-tight">VibeAudit</span>
           </Link>
         </motion.div>
 

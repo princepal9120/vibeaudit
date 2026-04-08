@@ -21,7 +21,7 @@ export async function cloneRepository(
   const normalizedBranch = branch?.trim();
 
   // Create temp directory
-  const tempDir = await mkdtemp(join(tempRoot, 'ShipSafe-'));
+  const tempDir = await mkdtemp(join(tempRoot, 'VibeAudit-'));
 
   const git: SimpleGit = simpleGit({
     timeout: {

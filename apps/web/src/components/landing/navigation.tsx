@@ -29,7 +29,7 @@ export default function Navigation() {
                     {/* Logo */}
                     <Link href="/" className="font-['Geist'] font-medium text-white flex items-center gap-2 group">
                         <ShieldCheck className="w-5 h-5 text-white" />
-                        <span className="tracking-tight">ShipSafe</span>
+                        <span className="tracking-tight">VibeAudit</span>
                     </Link>
 
                     {/* Desktop Navigation */}

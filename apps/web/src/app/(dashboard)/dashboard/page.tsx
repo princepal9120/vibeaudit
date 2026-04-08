@@ -15,8 +15,8 @@ const dummyScans: ScanWithReportSummary[] = [
   {
     id: 'demo-scan-5',
     userId: 'demo-user',
-    githubRepoUrl: 'ShipSafe/core-api',
-    liveUrl: 'https://api.shipsafe.dev',
+    githubRepoUrl: 'vibeaudit/core-api',
+    liveUrl: 'https://api.vibeaudit.site',
     branch: null,
     status: 'COMPLETED',
     progress: null,

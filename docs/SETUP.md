@@ -1,6 +1,6 @@
 # Developer Setup Guide
 
-Follow these instructions to get ShipSafe running on your local machine.
+Follow these instructions to get VibeAudit running on your local machine.
 
 ## Prerequisites
 
@@ -12,8 +12,8 @@ Follow these instructions to get ShipSafe running on your local machine.
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/your-org/ShipSafe.git
-    cd ShipSafe
+    git clone https://github.com/your-org/vibeaudit.git
+    cd vibeaudit
     ```
 
 2.  **Install dependencies**:
@@ -37,7 +37,7 @@ Follow these instructions to get ShipSafe running on your local machine.
     Create a `.env` file in `apps/api`:
     ```env
     # Database Connection
-    DATABASE_URL="postgresql://user:password@localhost:5432/ShipSafe?schema=public"
+    DATABASE_URL="postgresql://user:password@localhost:5432/vibeaudit?schema=public"
     ```
 
 ## Database Setup

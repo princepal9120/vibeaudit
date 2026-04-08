@@ -1,4 +1,4 @@
-# Technical Specification: ShipSafe
+# Technical Specification: VibeAudit
 
 **Version:** 1.0 (MVP)  
 **Last Updated:** January 2026  
@@ -12,7 +12,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    ShipSafe System                               │
+│                    VibeAudit System                               │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────┐
@@ -796,7 +796,7 @@ Reduce API calls from 8 to 2
 
 **Frontend (.env.local):**
 ```
-NEXT_PUBLIC_API_URL=https://api.ShipSafe.dev
+NEXT_PUBLIC_API_URL=https://api.vibeaudit.site
 NEXT_PUBLIC_GA_ID=<analytics>
 ```
 
@@ -810,7 +810,7 @@ GITHUB_CLIENT_SECRET=xxx
 GITHUB_TOKEN=ghp_... (for API access)
 AWS_ACCESS_KEY_ID=xxx
 AWS_SECRET_ACCESS_KEY=xxx
-AWS_S3_BUCKET=ShipSafe-reports
+AWS_S3_BUCKET=vibeaudit-reports
 STRIPE_SECRET_KEY=sk_... (Phase 2)
 NEXTAUTH_SECRET=xxx
 ```

@@ -139,7 +139,7 @@ export function Sidebar({ user }: SidebarProps) {
             className="text-foreground font-bold"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            ShipSafe
+            VibeAudit
           </span>
         </Link>
 

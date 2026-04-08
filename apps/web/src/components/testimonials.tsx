@@ -11,14 +11,14 @@ const testimonials = [
         role: "Creator",
         stars: 5,
         avatar: "https://avatars.githubusercontent.com/u/47919550?v=4",
-        content: "ShipSafe is the first security tool that doesn't feel like a chore. It gives me exactly what I need to fix, and then gets out of my way.",
+        content: "VibeAudit is the first security tool that doesn't feel like a chore. It gives me exactly what I need to fix, and then gets out of my way.",
     },
     {
         name: "Théo Balick",
         role: "Frontend Dev",
         stars: 4,
         avatar: "https://avatars.githubusercontent.com/u/68236786?v=4",
-        content: "ShipSafe has transformed how I ship web apps. I no longer worry about leaking API keys in client bundles.",
+        content: "VibeAudit has transformed how I ship web apps. I no longer worry about leaking API keys in client bundles.",
     },
     {
         name: "Glodie Lukose",
