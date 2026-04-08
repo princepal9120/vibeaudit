@@ -4,7 +4,7 @@ import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
-const tempRoot = join(tmpdir(), `shipsafe-git-tests-${Date.now()}`);
+const tempRoot = join(tmpdir(), `vibeaudit-git-tests-${Date.now()}`);
 
 process.env.TEMP_DIR = tempRoot;
 

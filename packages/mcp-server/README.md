@@ -1,6 +1,6 @@
-# ShipSafe MCP Server
+# VibeAudit MCP Server
 
-Model Context Protocol (MCP) server for ShipSafe security scanning. Enables Claude Desktop and other MCP clients to scan repositories and URLs for security vulnerabilities.
+Model Context Protocol (MCP) server for VibeAudit security scanning. Enables Claude Desktop and other MCP clients to scan repositories and URLs for security vulnerabilities.
 
 ## Available Tools
 
@@ -44,12 +44,12 @@ Add to your Claude Desktop config file:
 ```json
 {
   "mcpServers": {
-    "ShipSafe": {
+    "VibeAudit": {
       "command": "node",
-      "args": ["/path/to/ShipSafe/packages/mcp-server/dist/index.js"],
+      "args": ["/path/to/vibeaudit/packages/mcp-server/dist/index.js"],
       "env": {
-        "ShipSafe_API_URL": "https://api.ShipSafe.dev",
-        "ShipSafe_API_KEY": "your-api-key-here"
+        "VIBEAUDIT_API_URL": "https://api.vibeaudit.site",
+        "VIBEAUDIT_API_KEY": "your-api-key-here"
       }
     }
   }
@@ -64,11 +64,13 @@ After updating the config, restart Claude Desktop to load the MCP server.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `ShipSafe_API_URL` | Yes | `http://localhost:3001` | ShipSafe API URL |
-| `ShipSafe_API_KEY` | No | - | API key for authentication |
-| `ShipSafe_REQUEST_TIMEOUT` | No | `30000` | Request timeout in ms |
-| `ShipSafe_POLL_INTERVAL` | No | `2000` | Scan status poll interval in ms |
-| `ShipSafe_MAX_WAIT_TIME` | No | `180000` | Max wait time for scan completion |
+| `VIBEAUDIT_API_URL` | Yes | `http://localhost:3001` | VibeAudit API URL |
+| `VIBEAUDIT_API_KEY` | No | - | API key for authentication |
+| `VIBEAUDIT_REQUEST_TIMEOUT` | No | `30000` | Request timeout in ms |
+| `VIBEAUDIT_POLL_INTERVAL` | No | `2000` | Scan status poll interval in ms |
+| `VIBEAUDIT_MAX_WAIT_TIME` | No | `180000` | Max wait time for scan completion |
+
+Legacy `ShipSafe_*` env vars are still accepted as fallbacks for existing local configs.
 
 ## Development
 

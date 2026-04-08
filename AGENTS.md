@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-ShipSafe is a `pnpm` workspace with three packages:
+VibeAudit is a `pnpm` workspace with three packages:
 - `apps/web`: Next.js 16 frontend. Code lives in `src/app`, `src/components`, `src/hooks`, and `src/lib`; assets live in `public/`.
 - `apps/api`: Express API and scan workers. Use `src/routes` for endpoints, `src/services` for domain logic, `src/workers` for queues, and `prisma/` for the schema.
 - `packages/mcp-server`: Model Context Protocol server in `src/`.
@@ -25,8 +25,8 @@ Name React components in PascalCase, hooks as `use-*.ts`, and utility/component 
 ## Testing Guidelines
 There is no dedicated automated test suite yet. Verify changes with the smallest relevant checks:
 - `pnpm lint` for frontend edits.
-- `pnpm --filter @ShipSafe/api build` for API changes.
-- `pnpm --filter @ShipSafe/mcp-server build` for MCP changes.
+- `pnpm --filter @vibeaudit/api build` for API changes.
+- `pnpm --filter @vibeaudit/mcp-server build` for MCP changes.
 - Manual smoke testing for auth, scan creation, report views, and PRD review uploads.
 
 When adding tests, place them beside the feature as `*.test.ts` / `*.test.tsx`.

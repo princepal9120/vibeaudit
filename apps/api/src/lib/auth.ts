@@ -78,7 +78,7 @@ export const auth = betterAuth({
   //     allowUserToCreateOrganization: true,
   //   }),
   //   twoFactor({
-  //     issuer: 'ShipSafe',
+  //     issuer: 'VibeAudit',
   //     otpOptions: {
   //       period: 30,
   //       digits: 6,

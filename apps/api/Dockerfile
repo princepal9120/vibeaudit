@@ -1,4 +1,4 @@
-# ShipSafe API — Production Dockerfile (Monorepo optimized for Railway)
+# VibeAudit API — Production Dockerfile (Monorepo optimized for Railway)
 # ─────────────────────────────────────────────────────────────────────────────
 
 # ─── Stage 1: base — security tools (CI/scan use only) ───────────────────────
@@ -38,7 +38,7 @@ COPY package*.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
 
 # Install only the API's dependencies (including workspace deps)
-RUN pnpm install --frozen-lockfile --filter @ShipSafe/api
+RUN pnpm install --frozen-lockfile --filter @vibeaudit/api
 
 
 # ─── Stage 3: builder — compile TypeScript ───────────────────────────────────
@@ -59,10 +59,10 @@ COPY --from=deps /app/pnpm-workspace.yaml ./
 COPY apps/api ./apps/api
 
 # Generate Prisma client first
-RUN pnpm --filter @ShipSafe/api exec prisma generate
+RUN pnpm --filter @vibeaudit/api exec prisma generate
 
 # Final build
-RUN pnpm --filter @ShipSafe/api build
+RUN pnpm --filter @vibeaudit/api build
 
 
 # ─── Stage 4: runner — lean production image ─────────────────────────────────

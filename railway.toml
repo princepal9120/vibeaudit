@@ -1,4 +1,4 @@
-# Railway deployment configuration for ShipSafe API
+# Railway deployment configuration for VibeAudit API
 # Docs: https://docs.railway.com/reference/config-as-code
 
 [build]
