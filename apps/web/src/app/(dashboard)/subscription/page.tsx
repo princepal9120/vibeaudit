@@ -48,7 +48,7 @@ export default function SubscriptionPage() {
       setPlans(plansRes.plans);
       setError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load subscription data';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load PRD Review plan data';
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -77,7 +77,7 @@ export default function SubscriptionPage() {
   };
 
   const handleCancel = async () => {
-    if (!confirm('Are you sure you want to cancel your subscription? You will still have access until the end of your billing period.')) {
+    if (!confirm('Are you sure you want to cancel PRD Review Pro? You will still have access until the end of your billing period.')) {
       return;
     }
 
@@ -85,9 +85,9 @@ export default function SubscriptionPage() {
       setCancelling(true);
       await api.cancelSubscription();
       await fetchData();
-      toast.success('Subscription cancelled successfully');
+      toast.success('PRD Review Pro cancelled successfully');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to cancel subscription';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to cancel PRD Review Pro';
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -122,10 +122,10 @@ export default function SubscriptionPage() {
           className="text-2xl md:text-3xl font-bold text-foreground"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Subscription
+          PRD Review Plans
         </h1>
         <p className="text-muted-foreground mt-1 hidden sm:block">
-          Manage your PRD Security Review subscription
+          Manage your PRD Review plan
         </p>
       </div>
 
@@ -140,9 +140,9 @@ export default function SubscriptionPage() {
             <Check className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="font-semibold text-foreground">Welcome to Pro!</p>
+            <p className="font-semibold text-foreground">Welcome to PRD Review Pro!</p>
             <p className="text-sm text-muted-foreground mt-1">
-              You now have unlimited PRD security reviews. Start analyzing your PRDs with confidence.
+              You now have unlimited PRD reviews. Start analyzing your specs with confidence.
             </p>
           </div>
         </motion.div>
@@ -158,7 +158,7 @@ export default function SubscriptionPage() {
           <div>
             <p className="font-semibold text-amber-600">Checkout cancelled</p>
             <p className="text-sm text-muted-foreground mt-1">
-              You can upgrade anytime to get unlimited PRD reviews.
+              You can upgrade anytime to unlock unlimited PRD reviews.
             </p>
           </div>
         </motion.div>
@@ -189,7 +189,7 @@ export default function SubscriptionPage() {
                 className="text-xl font-bold text-foreground"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {subscription?.planName || 'Free'} Plan
+                {isPro ? 'PRD Review Pro' : 'Free Plan'}
               </h3>
               {isPro && (
                 <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-semibold">
@@ -198,7 +198,7 @@ export default function SubscriptionPage() {
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              {isPro ? 'Unlimited PRD security reviews' : '2 free reviews per month'}
+              {isPro ? 'Unlimited PRD reviews' : '2 free reviews per month'}
             </p>
           </div>
           {isPro && !subscription?.cancelAtPeriodEnd && (
@@ -207,7 +207,7 @@ export default function SubscriptionPage() {
               disabled={cancelling}
               className="text-sm text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
             >
-              {cancelling ? 'Cancelling...' : 'Cancel Plan'}
+              {cancelling ? 'Cancelling...' : 'Cancel PRD Review Pro'}
             </button>
           )}
         </div>
@@ -229,7 +229,7 @@ export default function SubscriptionPage() {
         {subscription?.cancelAtPeriodEnd && (
           <div className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
             <p className="text-sm text-amber-600">
-              Your subscription will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}.
+              Your PRD Review Pro plan will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}.
               You&apos;ll be moved to the free plan after that.
             </p>
           </div>
@@ -242,7 +242,7 @@ export default function SubscriptionPage() {
           className="text-xl font-bold text-foreground"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Available Plans
+          PRD Review Plans
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {plans.map((plan) => {
@@ -325,7 +325,7 @@ export default function SubscriptionPage() {
                     ) : (
                       <>
                         <Zap className="w-4 h-4" />
-                        <span>Upgrade to Pro</span>
+                        <span>Upgrade to PRD Review Pro</span>
                       </>
                     )}
                   </Button>
@@ -351,12 +351,12 @@ export default function SubscriptionPage() {
               a: 'Your 2 free reviews reset at the beginning of each calendar month.',
             },
             {
-              q: 'Can I cancel anytime?',
-              a: "Yes! You can cancel your Pro subscription anytime. You'll keep access until the end of your billing period.",
+              q: 'Can I cancel PRD Review Pro anytime?',
+              a: "Yes. You can cancel PRD Review Pro anytime and keep access until the end of your billing period.",
             },
             {
               q: 'What happens to my reviews if I downgrade?',
-              a: "All your existing reviews remain accessible. You just won't be able to create new ones beyond the free tier limit.",
+              a: "All your existing reviews remain accessible. You just won't be able to create new ones beyond the free PRD review limit.",
             },
           ].map((item, i) => (
             <div key={i}>

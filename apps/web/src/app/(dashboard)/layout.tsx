@@ -1,13 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
 import { Sidebar } from '@/components/sidebar';
 import { PageLoading } from '@/components/loading';
 import { CommandMenu } from '@/components/dashboard/command-menu';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const { data: session, isPending } = useSession();
 
   // Loading state

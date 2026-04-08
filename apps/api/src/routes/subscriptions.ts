@@ -68,15 +68,15 @@ router.get('/plans', async (_req: Request, res: Response, next: NextFunction) =>
       features:
         key === 'PRO'
           ? [
-              'Unlimited PRD security reviews',
-              'All security frameworks analysis',
+              'Unlimited PRD reviews',
+              'Analysis across all security frameworks',
               'Secured PRD generation',
               'Framework coverage reports',
               'Priority support',
             ]
           : [
               '2 PRD reviews per month',
-              'All security frameworks analysis',
+              'Analysis across all security frameworks',
               'Secured PRD generation',
               'Framework coverage reports',
             ],

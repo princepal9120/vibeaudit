@@ -102,16 +102,16 @@ export default function NewPrdReviewPage() {
       {/* Limit Reached Warning */}
       {isAtLimit && (
         <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 space-y-3">
-          <p className="text-destructive font-medium">Monthly review limit reached</p>
+          <p className="text-destructive font-medium">Free plan limit reached</p>
           <p className="text-sm text-muted-foreground">
-            You&apos;ve used all your free reviews for this month. Upgrade to Pro for unlimited reviews.
+            You&apos;ve used all your free PRD reviews for this month. Upgrade to PRD Review Pro for unlimited reviews.
           </p>
           <Link
             href="/subscription"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
           >
             <Zap className="w-4 h-4" />
-            Upgrade to Pro
+            Upgrade to PRD Review Pro
           </Link>
         </div>
       )}

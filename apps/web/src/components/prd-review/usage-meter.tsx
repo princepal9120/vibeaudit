@@ -54,7 +54,7 @@ export function UsageMeter({
       <div className={cn('flex items-center gap-2 text-sm text-muted-foreground', className)}>
         <Zap className="w-4 h-4 text-primary" />
         <span>
-          <span className="font-medium text-primary">Pro Plan</span> - Unlimited reviews
+          <span className="font-medium text-primary">PRD Review Pro</span> - Unlimited reviews
         </span>
       </div>
     );
@@ -86,12 +86,12 @@ export function UsageMeter({
 
       {isAtLimit && showUpgrade && (
         <div className="flex items-center justify-between pt-1">
-          <span className="text-xs text-destructive">Monthly limit reached</span>
+          <span className="text-xs text-destructive">Free plan limit reached</span>
           <Link
             href="/subscription"
             className="text-xs font-medium text-primary hover:underline"
           >
-            Upgrade to Pro
+            Upgrade to PRD Review Pro
           </Link>
         </div>
       )}

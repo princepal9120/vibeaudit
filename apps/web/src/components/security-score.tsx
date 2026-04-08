@@ -202,7 +202,6 @@ export function ScoreComparison({
   previousScore,
   className,
 }: ScoreComparisonProps) {
-  const color = getScoreColor(currentScore);
   const diff = previousScore !== undefined ? currentScore - previousScore : undefined;
 
   return (

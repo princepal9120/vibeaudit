@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { FadeIn, Stagger } from "@/components/ui/motion";
+import { FadeIn } from "@/components/ui/motion";
 import { TypewriterEffect } from "@/components/ui/typewriter-effect";
 
 export default function HeroSection() {
@@ -60,14 +61,16 @@ export default function HeroSection() {
             <FadeIn delay={0.6}>
                 <section className="mt-20 px-6">
                     <div className="max-w-[1000px] mx-auto bg-[#111113] border border-[#27272A] rounded-lg overflow-hidden shadow-2xl aspect-[16/9] relative flex items-center justify-center">
-                        {/* Replace src with the actual path to your dashboard screenshot */}
-                        <img
-                            src="/dashboard.png"
+                        <Image
+                            fill
                             alt="ShipSafe Dashboard"
-                            className="w-full h-full object-contain relative z-10 opacity-90 transition-opacity hover:opacity-100"
+                            className="object-contain relative z-10 opacity-90 transition-opacity hover:opacity-100"
                             onError={(e) => {
                                 e.currentTarget.style.display = 'none';
                             }}
+                            priority
+                            sizes="(max-width: 1024px) 100vw, 1000px"
+                            src="/dashboard.png"
                         />
                     </div>
                 </section>

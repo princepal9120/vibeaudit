@@ -27,16 +27,6 @@ import {
 } from './false-positives';
 
 /**
- * Severity weights for calculating aggregate confidence
- */
-const SEVERITY_WEIGHTS: Record<Severity, number> = {
-  CRITICAL: 1.0,
-  HIGH: 0.9,
-  MEDIUM: 0.7,
-  LOW: 0.5,
-};
-
-/**
  * Source reliability scores (based on historical false positive rates)
  * Higher = more reliable = fewer false positives
  */
@@ -145,7 +135,7 @@ function triageFinding(finding: RawFinding, config: TriageConfig): TriagedFindin
   let confidence = calculateBaseConfidence(finding);
 
   // Layer 2: Apply context penalties
-  const { confidence: adjustedConfidence, penalties } = applyContextPenalties(finding, confidence);
+  const { confidence: adjustedConfidence } = applyContextPenalties(finding, confidence);
   confidence = adjustedConfidence;
 
   // Track test file status

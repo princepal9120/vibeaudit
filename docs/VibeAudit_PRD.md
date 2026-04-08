@@ -6,7 +6,7 @@
 
 **Target Customer:** Solo SaaS founder shipping production software built 50%+ with Cursor/Claude, needing security validation before public launch.
 
-**Pricing Model:** Pay-per-scan ($15-50), no subscriptions, no minimums.
+**Pricing Model:** ShipSafe Security Scan uses pay-per-scan credits: 1 free scan, then $30 for 1, $125 for 5, or $200 for 10. PRD Security Review is a separate subscription product with a free tier and a $19/month Pro plan.
 
 ---
 
@@ -452,7 +452,7 @@ Democratize security for people who code (but don't have security teams).
 2. **AI Works:** LLM-powered explanations reduce jargon better than human writing (needs testing with users)
 3. **Speed is Valuable:** Developers prefer 3-min scan over manual code review (untested)
 4. **Scanning Tools Sufficient:** Combining Semgrep + OWASP ZAP + secrets detection covers 80% of real vulnerabilities (assumption, not proven)
-5. **Pricing Model:** Pay-per-scan better than subscription for indie builders (need A/B test)
+5. **Pricing Model:** Pay-per-scan fits ShipSafe Security Scan better than subscriptions for indie builders, while PRD Security Review remains a separate recurring product (needs validation with users)
 
 ### Risks & Mitigations
 

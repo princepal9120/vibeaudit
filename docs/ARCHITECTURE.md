@@ -37,9 +37,9 @@ The project is structured as a monorepo using npm workspaces:
 ## Key Components
 
 ### 1. Landing & Pricing (Current Focus)
--   Marketing pages with "Starter", "Pro", and "Enterprise" tiers.
--   Waitlist functionality gating paid features using a modal and email collection.
--   Integration with Resend for transactional "Coming Soon" emails.
+-   Marketing pages currently focus on ShipSafe Security Scan pricing: 1 free scan, then scan-credit packs.
+-   PRD Security Review uses a separate subscription flow and account-management surface.
+-   Integration with Resend for transactional emails and product messaging.
 
 ### 2. Scanner Engine
 -   Analysis of GitHub repositories and Live URLs.

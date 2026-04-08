@@ -25,10 +25,15 @@ export default function FAQs() {
         {
             id: 'item-4',
             question: 'How much does it cost?',
-            answer: "One simple plan. Your first scan is free. After that, ShipSafe Pro is just $29 per year for unlimited scans, full PDF reports, and priority support.",
+            answer: 'Your first scan is free. After that, you can buy scan credits: $30 for one scan, $125 for five scans, or $200 for ten scans. No subscription is required for the scanner.',
         },
         {
             id: 'item-5',
+            question: 'Do scan credits expire?',
+            answer: 'No. Once you buy scan credits, they stay on your account until you use them.',
+        },
+        {
+            id: 'item-6',
             question: 'Can I share the report with my client?',
             answer: 'Absolutely. You can generate a professional PDF report to prove to your clients that the code you are delivering has been professionally audited for security vulnerabilities.',
         },

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
 import { api, type ProductType } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -113,7 +112,6 @@ function ProductCard({
 }
 
 export default function CheckoutPage() {
-  const router = useRouter();
   const { data: session, isPending: sessionPending } = useSession();
   const [products, setProducts] = useState<Product[]>([]);
   const [credits, setCredits] = useState<{ totalCredits: number; usedCredits: number; availableCredits: number } | null>(null);

@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CATEGORY_CONFIG, SOURCE_LABELS, LAUNCH_READINESS_CATEGORIES, type FindingCategory } from '@/lib/constants';
+import { CATEGORY_CONFIG, SOURCE_LABELS } from '@/lib/constants';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 

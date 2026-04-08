@@ -13,14 +13,13 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GitHubIcon, GlobeIcon, ArrowLeftIcon, DocumentIcon, RefreshIcon } from '@/components/icons';
 import { LoadingOverlay, ProgressBar, PulsingDot } from '@/components/loading';
 import { StatusBadge, FindingsSummary } from '@/components/badges';
 import { SecurityScoreCard } from '@/components/security-score';
-import { FindingsListWithHeader, FindingsListSkeleton, GroupedFindingsList } from '@/components/findings-list';
+import { GroupedFindingsList } from '@/components/findings-list';
 import { useScan } from '@/hooks';
 import { cn, formatDateLong, getScanTarget, isScanInProgress, isScanFailed } from '@/lib/utils';
 import type { Scan } from '@/lib/types';

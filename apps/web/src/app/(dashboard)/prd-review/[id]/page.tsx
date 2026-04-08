@@ -86,7 +86,7 @@ export default function PrdReviewDetailPage() {
       const result = await api.uploadPrdReviewPdf(reviewId);
       // Open the PDF URL in a new tab
       window.open(result.url, '_blank');
-    } catch (err) {
+    } catch {
       // Fallback to on-the-fly PDF generation
       try {
         const url = api.getPrdReviewPdfUrl(reviewId);

@@ -48,6 +48,7 @@ export function DataTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
 
+    // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table intentionally returns imperative helpers; this component consumes them directly
     const table = useReactTable({
         data,
         columns,

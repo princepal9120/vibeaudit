@@ -5,7 +5,6 @@ import { FacetedFilter } from "./faceted-filter"
 import { CalendarDateRangePicker } from "./date-range-picker"
 import { Button } from "@/components/ui/button"
 import { X, Search } from "lucide-react"
-import { ScanStatus } from "@/lib/constants"
 import { DateRange } from "react-day-picker"
 
 interface ScanFiltersProps {

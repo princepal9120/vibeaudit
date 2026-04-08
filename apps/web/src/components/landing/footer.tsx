@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShieldCheck, Github, Twitter, Linkedin, Mail } from "lucide-react";
+import { ShieldCheck, Github, Twitter, Mail } from "lucide-react";
 
 const footerLinks = {
     product: [

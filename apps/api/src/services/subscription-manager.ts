@@ -15,7 +15,7 @@ export const SUBSCRIPTION_PLANS = {
   },
   PRO: {
     id: 'prd-pro-monthly',
-    name: 'Pro',
+    name: 'PRD Review Pro',
     price: 1900, // $19 in cents
     reviewsPerMonth: -1, // Unlimited
     description: 'Unlimited PRD reviews',
@@ -107,7 +107,7 @@ export async function canCreateReview(userId: string): Promise<{
   if (usage.reviewsUsed >= usage.reviewsLimit) {
     return {
       allowed: false,
-      reason: 'Monthly review limit reached. Upgrade to Pro for unlimited reviews.',
+      reason: 'Monthly PRD review limit reached. Upgrade to PRD Review Pro for unlimited reviews.',
       usage: {
         reviewsUsed: usage.reviewsUsed,
         reviewsLimit: usage.reviewsLimit,

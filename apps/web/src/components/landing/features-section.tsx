@@ -1,6 +1,5 @@
 "use client";
 
-import { FadeIn } from "@/components/ui/motion";
 import { Search, Globe, Sparkles, FileText, Lock, BarChart3, ShieldCheck } from "lucide-react";
 
 const features = [

@@ -19,7 +19,7 @@ export function MarkdownPreview({ content, className = '' }: MarkdownPreviewProp
             setCopied(true);
             toast.success('Markdown copied to clipboard');
             setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
+        } catch {
             toast.error('Failed to copy markdown');
         }
     };

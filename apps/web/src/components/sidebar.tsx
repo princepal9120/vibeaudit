@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @next/next/no-img-element -- auth avatar URLs are provider-hosted and not statically allowlisted */
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

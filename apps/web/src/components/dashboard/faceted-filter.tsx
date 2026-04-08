@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 
-interface FacetedFilterProps<TData, TValue> {
+interface FacetedFilterProps {
     title?: string
     options: {
         label: string
@@ -33,12 +33,12 @@ interface FacetedFilterProps<TData, TValue> {
     onSelect?: (values: Set<string>) => void
 }
 
-export function FacetedFilter<TData, TValue>({
+export function FacetedFilter({
     title,
     options,
     selectedValues,
     onSelect,
-}: FacetedFilterProps<TData, TValue>) {
+}: FacetedFilterProps) {
     const selected = selectedValues || new Set()
 
     return (

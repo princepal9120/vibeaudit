@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { SeverityBadge, SourceBadge, CategoryBadge } from '@/components/badges';
 import { ChevronDownIcon, CheckCircleIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { LAUNCH_READINESS_CATEGORIES, CATEGORY_CONFIG, type FindingCategory } from '@/lib/constants';
+import { LAUNCH_READINESS_CATEGORIES, CATEGORY_CONFIG } from '@/lib/constants';
 import type { Finding } from '@/lib/types';
 
 // ============================================

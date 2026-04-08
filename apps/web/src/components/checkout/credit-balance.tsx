@@ -161,7 +161,7 @@ export function useScanCredits() {
       const res = await api.getScanCredits();
       setCredits(res);
       setError(null);
-    } catch (err) {
+    } catch {
       setError('Failed to refresh credits');
     } finally {
       setLoading(false);

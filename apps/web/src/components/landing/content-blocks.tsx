@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ReactNode } from "react";
 
@@ -16,8 +15,7 @@ export function StepBlock({
     number,
     title,
     description,
-    variant = "card",
-    icon
+    variant = "card"
 }: StepBlockProps) {
     if (variant === "list") {
         return (

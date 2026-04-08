@@ -1,7 +1,6 @@
 "use client";
 
 import { FadeIn } from "@/components/ui/motion";
-import { Github, Globe, FileText } from "lucide-react";
 
 const steps = [
     {

@@ -99,7 +99,7 @@ class ApiClient {
       }
     };
 
-    eventSource.onerror = (error) => {
+    eventSource.onerror = () => {
       onError?.(new Error('Connection error'));
       eventSource.close();
     };
