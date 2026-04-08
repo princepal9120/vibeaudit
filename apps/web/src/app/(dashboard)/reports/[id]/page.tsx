@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { GroupedFindingsList } from '@/components/findings-list';
 import { CATEGORY_CONFIG, SOURCE_LABELS } from '@/lib/constants';
 import type { FindingCategory } from '@/lib/constants';
+import type { Finding as ReportFinding } from '@/lib/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -344,7 +345,7 @@ export default function ReportDetailPage() {
 
       {/* Findings List (grouped with tabs when launch readiness findings exist) */}
       <div>
-        <GroupedFindingsList findings={report.findings as any} />
+        <GroupedFindingsList findings={report.findings as ReportFinding[]} />
       </div>
     </div>
   );

@@ -40,7 +40,7 @@ export default function HeroSection() {
 
                 <FadeIn delay={0.3}>
                     <p className="text-[#71717A] text-lg max-w-2xl mx-auto mb-10 leading-relaxed font-['Geist']">
-                        AI writes 48% of your code, but it doesn't check for security. Connect your repo, get a hardened report, and fix critical issues in minutes—not weeks.
+                        AI writes 48% of your code, but it doesn&apos;t check for security. Connect your repo, get a hardened report, and fix critical issues in minutes—not weeks.
                     </p>
                 </FadeIn>
 

@@ -9,6 +9,70 @@ import { useScans } from '@/hooks';
 import { calculateDashboardStats, isScanInProgress } from '@/lib/utils';
 import { ScansTable, ScansTableSkeleton } from '@/components/scans-table';
 import { OverviewChart } from '@/components/dashboard/overview-chart';
+import type { ScanWithReportSummary } from '@/lib/types';
+
+const dummyScans: ScanWithReportSummary[] = [
+  {
+    id: 'demo-scan-5',
+    userId: 'demo-user',
+    githubRepoUrl: 'ShipSafe/core-api',
+    liveUrl: 'https://api.shipsafe.dev',
+    branch: null,
+    status: 'COMPLETED',
+    progress: null,
+    progressPercent: 100,
+    errorMessage: null,
+    totalFindings: 3,
+    criticalCount: 0,
+    highCount: 0,
+    mediumCount: 1,
+    lowCount: 2,
+    createdAt: '2026-04-08T18:15:00.000Z',
+    startedAt: '2026-04-08T18:10:00.000Z',
+    completedAt: '2026-04-08T18:14:30.000Z',
+    report: { id: 'demo-report-5', securityScore: 98, totalFindings: 3, criticalCount: 0, highCount: 0, pdfUrl: null },
+  },
+  {
+    id: 'demo-scan-4',
+    userId: 'demo-user',
+    githubRepoUrl: 'indiehacker/saas-startup',
+    liveUrl: null,
+    branch: null,
+    status: 'COMPLETED',
+    progress: null,
+    progressPercent: 100,
+    errorMessage: null,
+    totalFindings: 18,
+    criticalCount: 1,
+    highCount: 4,
+    mediumCount: 8,
+    lowCount: 5,
+    createdAt: '2026-04-08T14:00:00.000Z',
+    startedAt: '2026-04-08T13:54:00.000Z',
+    completedAt: '2026-04-08T13:59:00.000Z',
+    report: { id: 'demo-report-4', securityScore: 76, totalFindings: 18, criticalCount: 1, highCount: 4, pdfUrl: null },
+  },
+  {
+    id: 'demo-scan-3',
+    userId: 'demo-user',
+    githubRepoUrl: 'vibecoder/auth-service',
+    liveUrl: null,
+    branch: null,
+    status: 'SCANNING',
+    progress: 'Running scanners',
+    progressPercent: 45,
+    errorMessage: null,
+    totalFindings: null,
+    criticalCount: null,
+    highCount: null,
+    mediumCount: null,
+    lowCount: null,
+    createdAt: '2026-04-08T18:58:00.000Z',
+    startedAt: '2026-04-08T18:59:00.000Z',
+    completedAt: null,
+    report: null,
+  },
+];
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -16,31 +80,6 @@ export default function DashboardPage() {
     autoRefresh: true,
     refreshInterval: 5000,
   });
-
-  const dummyScans = [
-    {
-      id: "demo-scan-5",
-      githubRepoUrl: "ShipSafe/core-api",
-      liveUrl: "https://api.shipsafe.dev",
-      status: "COMPLETED",
-      createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-      report: { securityScore: 98, totalFindings: 3, criticalCount: 0, highCount: 0, mediumCount: 1, lowCount: 2 }
-    },
-    {
-      id: "demo-scan-4",
-      githubRepoUrl: "indiehacker/saas-startup",
-      status: "COMPLETED",
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-      report: { securityScore: 76, totalFindings: 18, criticalCount: 1, highCount: 4, mediumCount: 8, lowCount: 5 }
-    },
-    {
-      id: "demo-scan-3",
-      githubRepoUrl: "vibecoder/auth-service",
-      status: "SCANNING",
-      createdAt: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
-      report: null
-    }
-  ] as any[];
 
   // Force dummy data if there's an error to show an awesome UI for screenshots
   const isDemonstration = !!fetchedError || (fetchedScans.length === 0 && !fetchedLoading);

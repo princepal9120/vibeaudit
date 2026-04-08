@@ -1,3 +1,5 @@
+import type { ReportSummary } from '../types';
+
 export type Scan = {
     id: string
     status: string
@@ -10,22 +12,11 @@ export type Scan = {
     progress?: string
     progressPercent?: number
     errorMessage?: string
-    report?: any // Using any for now to avoid circular deps, refined in types.ts
+    report?: ReportSummary | null
 }
 
 export type ScanWithReportSummary = Scan & {
-    report?: {
-        id: string
-        securityScore: number
-        totalFindings: number
-        criticalCount: number
-        highCount: number
-        mediumCount: number
-        lowCount: number
-        pdfUrl?: string
-        executiveSummary?: string
-        findings: any[]
-    }
+    report?: ReportSummary | null
     totalFindings?: number
     criticalCount?: number
 }

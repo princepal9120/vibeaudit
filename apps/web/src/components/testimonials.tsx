@@ -51,7 +51,7 @@ export default function TestimonialSection() {
     return (
         <section className="max-w-4xl mx-auto px-6 mt-40 mb-20 text-center">
             {/* Decorative giant quote mark */}
-            <div className="text-[120px] font-bold text-[#1A1A1A] leading-none select-none mb-[-40px]">"</div>
+            <div className="text-[120px] font-bold text-[#1A1A1A] leading-none select-none mb-[-40px]">&quot;</div>
 
             <div className="relative min-h-[160px] flex flex-col items-center justify-center">
                 <blockquote className="text-xl sm:text-2xl font-medium mb-8 leading-relaxed italic text-white transition-all duration-500">

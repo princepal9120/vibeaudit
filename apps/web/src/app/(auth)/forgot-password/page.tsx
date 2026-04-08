@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
                                 Reset your password
                             </h1>
                             <p className="text-sm text-[#71717A] text-center mb-6">
-                                Enter your email and we'll send you a reset link
+                                Enter your email and we&apos;ll send you a reset link
                             </p>
 
                             <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
                                 Check your email
                             </h1>
                             <p className="text-sm text-[#71717A] mb-6">
-                                If an account exists for {email}, you'll receive a password reset link shortly.
+                                If an account exists for {email}, you&apos;ll receive a password reset link shortly.
                             </p>
                         </div>
                     )}

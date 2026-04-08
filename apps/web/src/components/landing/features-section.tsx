@@ -12,18 +12,18 @@ const features = [
         colSpan: "md:col-span-8",
         extraContent: (
             <div className="mt-8 bg-[#09090B] border border-[#27272A] p-6 font-mono text-[12px] rounded-t-lg translate-y-4">
-                <div className="text-[#52525B] mb-2">// config/aws.js</div>
+                <div className="text-[#52525B] mb-2">{"// config/aws.js"}</div>
                 <div className="flex gap-4">
                     <span className="text-[#52525B]">08</span>
-                    <span className="text-white">module.exports = {"{"}</span>
+                    <span className="text-white">{"module.exports = {"}</span>
                 </div>
                 <div className="flex gap-4">
                     <span className="text-[#52525B]">09</span>
-                    <span className="bg-[#EF4444]/20 text-[#EF4444] border-l-2 border-[#EF4444] px-2">accessKeyId: "AKIAJ2NFEXAMPLE",</span>
+                    <span className="bg-[#EF4444]/20 text-[#EF4444] border-l-2 border-[#EF4444] px-2">{'accessKeyId: "AKIAJ2NFEXAMPLE",'}</span>
                 </div>
                 <div className="flex gap-4">
                     <span className="text-[#52525B]">10</span>
-                    <span className="text-white">secretAccessKey: "..."</span>
+                    <span className="text-white">{'secretAccessKey: "..."'}</span>
                 </div>
                 <div className="flex gap-4">
                     <span className="text-[#52525B]">11</span>
@@ -72,7 +72,6 @@ const features = [
 export default function FeaturesSection() {
     return (
         <section id="features" className="bg-[#09090B]">
-            {/* Bento Grid Features */}
             <div className="max-w-7xl mx-auto px-6 mt-40">
                 <div className="grid md:grid-cols-12 gap-4">
                     {features.map((item, index) => (

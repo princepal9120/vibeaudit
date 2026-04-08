@@ -1,12 +1,24 @@
 'use client';
 
+import { useSyncExternalStore } from 'react';
 import { cn } from '@/lib/utils';
 import { Zap } from 'lucide-react';
 import Link from 'next/link';
 
+const RESET_TIMER_POLL_MS = 60 * 60 * 1000;
+
 // Calculate days until reset from a period end date
 function calculateDaysUntilReset(periodEnd: string, now: number): number {
   return Math.ceil((new Date(periodEnd).getTime() - now) / (1000 * 60 * 60 * 24));
+}
+
+function subscribeToCurrentTime(callback: () => void) {
+  const intervalId = window.setInterval(callback, RESET_TIMER_POLL_MS);
+  return () => window.clearInterval(intervalId);
+}
+
+function getCurrentTimeSnapshot() {
+  return Date.now();
 }
 
 interface UsageMeterProps {
@@ -28,10 +40,14 @@ export function UsageMeter({
 }: UsageMeterProps) {
   const isAtLimit = !isUnlimited && reviewsUsed >= reviewsLimit;
   const percentUsed = isUnlimited ? 0 : Math.min((reviewsUsed / reviewsLimit) * 100, 100);
+  const currentTime = useSyncExternalStore(
+    subscribeToCurrentTime,
+    getCurrentTimeSnapshot,
+    getCurrentTimeSnapshot,
+  );
 
   // Calculate days until reset based on period end
-  // Note: Date.now() is called on each render, which is intentional for freshness
-  const daysUntilReset = calculateDaysUntilReset(periodEnd, Date.now());
+  const daysUntilReset = calculateDaysUntilReset(periodEnd, currentTime);
 
   if (isUnlimited) {
     return (

@@ -7,7 +7,7 @@ export default function NotFound() {
             <ShieldCheck className="w-12 h-12 text-muted-foreground mb-6" />
             <h1 className="text-4xl font-bold text-white mb-2">Page not found</h1>
             <p className="text-muted-foreground mb-8 text-center max-w-md">
-                The page you're looking for doesn't exist or has been moved.
+                The page you&apos;re looking for doesn&apos;t exist or has been moved.
             </p>
             <Link
                 href="/"

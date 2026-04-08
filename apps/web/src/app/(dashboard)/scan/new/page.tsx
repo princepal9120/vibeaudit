@@ -132,8 +132,8 @@ export default function NewScanPage() {
 
       toast.success('Scan started successfully', { id: toastId });
       router.push(`/scans/${scan.id}`);
-    } catch (err: any) {
-      const errorMessage = err?.message || 'Failed to create scan. Please try again.';
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create scan. Please try again.';
       setErrors({ general: errorMessage });
       toast.error(errorMessage, { id: toastId });
     }
