@@ -6,52 +6,36 @@ import { Check, Shield } from "lucide-react";
 
 const pricingTiers = [
   {
-    name: "Free Trial",
-    description: "Try VibeAudit on one real repo or live app.",
+    name: "Free User",
+    description: "Start using VibeAudit with the core experience at no cost.",
     price: "$0",
-    period: "one-time",
+    period: "free forever",
     features: [
-      { text: "1 free security scan" },
-      { text: "Repo or live URL scan" },
+      { text: "Get started instantly" },
+      { text: "Try the product before upgrading" },
+      { text: "Core security insights" },
       { text: "Plain-English findings" },
-      { text: "Security score" },
-      { text: "Shareable report" },
+      { text: "Shareable report access" },
     ],
-    buttonText: "Start Free Scan",
+    buttonText: "Start Free",
     buttonHref: "/signup",
     featured: false,
   },
   {
-    name: "Launch Audit",
-    description: "Best for a launch, handoff, or pre-release confidence check.",
-    price: "$39",
-    period: "per scan",
+    name: "Lifetime Plan",
+    description: "Unlock all features with a one-time payment and keep access for life.",
+    price: "$29",
+    period: "one-time lifetime access",
     features: [
-      { text: "Full repo + live app scan" },
-      { text: "PDF report export" },
+      { text: "All features included" },
+      { text: "Full repo + live app analysis" },
       { text: "AI fix guidance" },
-      { text: "No subscription required" },
-      { text: "Actionable issues in plain English" },
+      { text: "PDF exports and shareable reports" },
+      { text: "Future updates included" },
     ],
-    buttonText: "Buy Launch Audit",
-    buttonHref: "/checkout",
+    buttonText: "Get Lifetime Access",
+    buttonHref: "/signup",
     featured: true,
-  },
-  {
-    name: "Growth Packs",
-    description: "For freelancers, agencies, and teams shipping repeatedly.",
-    price: "$99",
-    period: "5 scans · or $179 for 10 scans",
-    features: [
-      { text: "Save up to 54% per scan" },
-      { text: "No expiration on credits" },
-      { text: "Great for client work" },
-      { text: "Re-scan after fixes" },
-      { text: "Same full reporting" },
-    ],
-    buttonText: "Buy Growth Pack",
-    buttonHref: "/checkout",
-    featured: false,
   },
 ];
 
@@ -60,9 +44,9 @@ export default function PricingSection() {
     <section id="pricing" className="max-w-7xl mx-auto px-6 mt-40 text-center pb-20">
       <h2 className="text-3xl font-bold mb-4 text-white">Launch-ready security in minutes</h2>
       <p className="text-[#71717A] max-w-2xl mx-auto mb-12">
-        Start with 1 free scan, then only pay when you ship.
+        Choose between a free plan and a simple $29 lifetime unlock.
       </p>
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+      <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
         {pricingTiers.map((tier, index) => (
           <FadeIn key={tier.name} delay={0.1 * index}>
             <div
@@ -100,7 +84,7 @@ export default function PricingSection() {
         ))}
       </div>
       <p className="text-[#71717A] text-sm mt-8">
-        No monthly subscription. Just buy credits when you need them.
+        No monthly subscription. Just free access or one $29 lifetime plan.
       </p>
     </section>
   );

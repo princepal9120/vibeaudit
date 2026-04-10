@@ -27,7 +27,7 @@ export const config = {
   googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8000/api/auth/google/callback',
 
   // OpenAI
-  openaiApiKey: process.env.OPENAI_API_KEY || '',
+  openaiApiKey: process.env.OPENAI_API_KEY || process.env.OPEN_API_KEY || '',
 
   // ImageKit (for PDF/file storage)
   imagekitPublicKey: process.env.IMAGEKIT_PUBLIC_KEY || '',
@@ -74,7 +74,12 @@ export function validateConfig() {
       throw new Error(`Missing critical environment variables: ${missingCritical.join(', ')}`);
     }
 
-    const missingRecommended = recommended.filter(key => !process.env[key]);
+    const missingRecommended = recommended.filter((key) => {
+      if (key === 'OPENAI_API_KEY') {
+        return !process.env.OPENAI_API_KEY && !process.env.OPEN_API_KEY;
+      }
+      return !process.env[key];
+    });
     if (missingRecommended.length > 0) {
       console.warn(`⚠️ Missing recommended environment variables: ${missingRecommended.join(', ')}`);
       console.warn('Some features (OAuth, scanning, AI) will be unavailable.');

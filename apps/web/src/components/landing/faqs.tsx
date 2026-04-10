@@ -25,12 +25,12 @@ export default function FAQs() {
         {
             id: 'item-4',
             question: 'How much does it cost?',
-            answer: 'Your first scan is free. After that, launch audits are $39, with pack pricing at $99 for five scans or $179 for ten scans. No subscription is required for the scanner.',
+            answer: 'There are now just two plans: a free user plan and a $29 lifetime plan that unlocks all features with a one-time payment.',
         },
         {
             id: 'item-5',
-            question: 'Do scan credits expire?',
-            answer: 'No. Once you buy scan credits, they stay on your account until you use them.',
+            question: 'Is the $29 plan really lifetime?',
+            answer: 'Yes. It is a one-time payment for lifetime access, so there is no recurring monthly subscription.',
         },
         {
             id: 'item-6',

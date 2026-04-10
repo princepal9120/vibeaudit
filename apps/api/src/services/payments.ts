@@ -9,7 +9,7 @@ export const PRODUCTS = {
   SCAN_CREDIT: {
     id: 'scan-single',
     name: 'Launch Audit',
-    price: 3900, // $39 in cents
+    price: 2900, // $29 in cents (updated from $39)
     credits: 1,
     description: 'Full security scan for a launch, handoff, or release',
   },

@@ -18,7 +18,7 @@
 
 ### Current Product Reality
 
-- **VibeAudit Security Scan:** 1 free scan, then $30 for 1, $125 for 5, or $200 for 10.
+- **VibeAudit Security Scan:** 1 free scan, then $29 for 1, $99 for 5, or $179 for 10.
 - **PRD Review:** separate product with a free tier and PRD Review Pro for unlimited reviews.
 - **Auth:** Better Auth, not NextAuth.
 - **Billing:** current checkout flow uses Dodo Payments.
