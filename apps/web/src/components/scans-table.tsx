@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import { cn, formatDate, getScanTarget } from '@/lib/utils';
+import { cn, formatDate, getScanTarget, getScanTypeLabel } from '@/lib/utils';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ScanWithReportSummary } from '@/lib/types';
@@ -41,12 +41,6 @@ function StatusBadge({ status, size = 'default' }: StatusBadgeProps) {
   );
 }
 
-function getScanType(scan: ScanWithReportSummary): string {
-  if (scan.githubRepoUrl && scan.liveUrl) return 'SAST + DAST';
-  if (scan.githubRepoUrl) return 'SAST';
-  return 'DAST';
-}
-
 interface ScansTableProps {
   scans: ScanWithReportSummary[];
 }
@@ -73,7 +67,7 @@ export function ScansTable({ scans }: ScansTableProps) {
                 onClick={() => window.location.href = `/scans/${scan.id}`}
               >
                 <TableCell className="font-medium">{getScanTarget(scan)}</TableCell>
-                <TableCell>{getScanType(scan)}</TableCell>
+                <TableCell>{getScanTypeLabel(scan)}</TableCell>
                 <TableCell>
                   <StatusBadge status={scan.status} />
                 </TableCell>
@@ -98,7 +92,7 @@ export function ScansTable({ scans }: ScansTableProps) {
                   <span className="text-sm font-medium truncate">{getScanTarget(scan)}</span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span>{getScanType(scan)}</span>
+                  <span>{getScanTypeLabel(scan)}</span>
                   <span>•</span>
                   <span>{formatDate(scan.createdAt)}</span>
                 </div>

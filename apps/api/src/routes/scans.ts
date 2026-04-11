@@ -12,13 +12,30 @@ router.use(authenticateToken);
 
 // Validation schemas
 const createScanSchema = z.object({
+  auditType: z.enum(['SECURITY', 'CONVERSION']).optional().default('SECURITY'),
   githubRepoUrl: z.string().url().optional(),
   liveUrl: z.string().url().optional(),
   branch: z.string().trim().optional(),
-}).refine(
-  data => data.githubRepoUrl || data.liveUrl,
-  { message: 'Either githubRepoUrl or liveUrl is required' }
-);
+}).superRefine((data, ctx) => {
+  if (data.auditType === 'CONVERSION') {
+    if (!data.liveUrl) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'A liveUrl is required for conversion audits',
+        path: ['liveUrl'],
+      });
+    }
+    return;
+  }
+
+  if (!data.githubRepoUrl && !data.liveUrl) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Either githubRepoUrl or liveUrl is required',
+      path: ['githubRepoUrl'],
+    });
+  }
+});
 
 // GET /api/scans - List user's scans
 router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -96,11 +113,12 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
     const scan = await prisma.scan.create({
       data: {
         userId,
+        auditType: body.auditType,
         githubRepoUrl: body.githubRepoUrl,
         liveUrl: body.liveUrl,
         branch: normalizedBranch ?? null,
         status: 'QUEUED',
-        progress: 'Scan queued...',
+        progress: body.auditType === 'CONVERSION' ? 'Conversion audit queued...' : 'Scan queued...',
         progressPercent: 0,
       },
     });
@@ -110,6 +128,7 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
       await addScanJob({
         scanId: scan.id,
         userId,
+        auditType: body.auditType,
         githubRepoUrl: body.githubRepoUrl,
         liveUrl: body.liveUrl,
         branch: normalizedBranch,
@@ -258,11 +277,12 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
     const newScan = await prisma.scan.create({
       data: {
         userId,
+        auditType: originalScan.auditType,
         githubRepoUrl: originalScan.githubRepoUrl,
         liveUrl: originalScan.liveUrl,
         branch: originalScan.branch,
         status: 'QUEUED',
-        progress: 'Scan queued...',
+        progress: originalScan.auditType === 'CONVERSION' ? 'Conversion audit queued...' : 'Scan queued...',
         progressPercent: 0,
       },
     });
@@ -272,6 +292,7 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
       await addScanJob({
         scanId: newScan.id,
         userId,
+        auditType: originalScan.auditType,
         githubRepoUrl: originalScan.githubRepoUrl || undefined,
         liveUrl: originalScan.liveUrl || undefined,
         branch: originalScan.branch || undefined,

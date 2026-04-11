@@ -5,6 +5,7 @@ import { processScanJob } from './scan-worker.js';
 export interface ScanJobData {
   scanId: string;
   userId: string;
+  auditType?: 'SECURITY' | 'CONVERSION';
   githubRepoUrl?: string;
   liveUrl?: string;
   branch?: string;

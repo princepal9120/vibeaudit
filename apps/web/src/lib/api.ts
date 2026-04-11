@@ -59,7 +59,7 @@ class ApiClient {
     return this.request<Scan>(`/scans/${id}`);
   }
 
-  async createScan(data: { githubRepoUrl?: string; liveUrl?: string; branch?: string }) {
+  async createScan(data: { auditType?: 'SECURITY' | 'CONVERSION'; githubRepoUrl?: string; liveUrl?: string; branch?: string }) {
     return this.request<Scan>('/scans', {
       method: 'POST',
       body: JSON.stringify(data),

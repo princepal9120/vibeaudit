@@ -109,10 +109,15 @@ export function getScanTarget(scan: Scan | ScanWithReportSummary): string {
 }
 
 export function getScanTypeLabel(scan: Scan | ScanWithReportSummary): string {
+  if (scan.auditType === 'CONVERSION') return 'Conversion Audit';
   if (scan.githubRepoUrl && scan.liveUrl) return 'Full Scan';
   if (scan.githubRepoUrl) return 'Code Scan';
   if (scan.liveUrl) return 'DAST Scan';
   return 'Unknown';
+}
+
+export function getScoreDisplayLabel(scan: Scan | ScanWithReportSummary): string {
+  return scan.auditType === 'CONVERSION' ? 'Conversion Score' : 'Security Score';
 }
 
 export function isScanInProgress(status: ScanStatus): boolean {

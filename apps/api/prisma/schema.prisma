@@ -101,6 +101,7 @@ model Scan {
   id              String    @id @default(cuid())
   userId          String
   user            user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auditType       AuditType @default(SECURITY)
 
   githubRepoUrl   String?
   liveUrl         String?
@@ -140,6 +141,11 @@ enum ScanStatus {
   CANCELLED
 }
 
+enum AuditType {
+  SECURITY
+  CONVERSION
+}
+
 model Report {
   id              String    @id @default(cuid())
   scanId          String    @unique
@@ -158,6 +164,7 @@ model Report {
 
   // Generated content
   executiveSummary String?  @db.Text
+  conversionData  Json?
   pdfUrl          String?   // ImageKit URL
   pdfFileId       String?   // ImageKit file ID
 

@@ -7,7 +7,8 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GroupedFindingsList } from '@/components/findings-list';
-import type { Finding as ReportFinding } from '@/lib/types';
+import { ConversionReportView } from '@/components/conversion-report-view';
+import type { Finding as ReportFinding, ConversionReportData } from '@/lib/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -39,11 +40,13 @@ interface Report {
   mediumCount: number;
   lowCount: number;
   executiveSummary: string | null;
+  conversionData?: ConversionReportData | null;
   shareToken: string | null;
   createdAt: string;
   findings: Finding[];
   scan: {
     id: string;
+    auditType: 'SECURITY' | 'CONVERSION';
     githubRepoUrl: string | null;
     liveUrl: string | null;
     createdAt: string;
@@ -202,6 +205,7 @@ export default function ReportDetailPage() {
   }
 
   const target = report.scan.githubRepoUrl || report.scan.liveUrl || 'Unknown';
+  const isConversionAudit = report.scan.auditType === 'CONVERSION';
 
   return (
     <div className="space-y-8">
@@ -209,10 +213,12 @@ export default function ReportDetailPage() {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <ShieldIcon className="h-5 w-5 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">Security Report</h1>
+            <h1 className="text-2xl font-bold text-foreground">
+              {isConversionAudit ? 'Conversion Audit Report' : 'Security Report'}
+            </h1>
           </div>
           <p className="text-muted-foreground">
             {target} - Generated {new Date(report.createdAt).toLocaleDateString()}
@@ -227,13 +233,15 @@ export default function ReportDetailPage() {
           >
             {sharing ? 'Sharing…' : shareUrl ? 'Copy Link' : 'Share Report'}
           </Button>
-          <Button
-            onClick={handleDownloadPdf}
-            disabled={downloading}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            {downloading ? 'Downloading…' : 'Download PDF'}
-          </Button>
+          {!isConversionAudit && (
+            <Button
+              onClick={handleDownloadPdf}
+              disabled={downloading}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              {downloading ? 'Downloading…' : 'Download PDF'}
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={() => router.push('/dashboard')}
@@ -260,63 +268,68 @@ export default function ReportDetailPage() {
         </Card>
       )}
 
-      {/* Score Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className={`border md:col-span-1 ${getScoreBg(report.securityScore)}`}>
-          <CardContent className="py-6 text-center">
-            <div className={`text-6xl font-bold ${getScoreColor(report.securityScore)}`}>
-              {report.securityScore}
-            </div>
-            <div className="text-muted-foreground mt-2">Security Score</div>
-            <div className={`text-sm font-medium mt-1 ${getScoreColor(report.securityScore)}`}>
-              {getScoreLabel(report.securityScore)}
-            </div>
-          </CardContent>
-        </Card>
+      {isConversionAudit ? (
+        <ConversionReportView report={report} />
+      ) : (
+        <>
+          {/* Score Card */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className={`border md:col-span-1 ${getScoreBg(report.securityScore)}`}>
+              <CardContent className="py-6 text-center">
+                <div className={`text-6xl font-bold ${getScoreColor(report.securityScore)}`}>
+                  {report.securityScore}
+                </div>
+                <div className="text-muted-foreground mt-2">Security Score</div>
+                <div className={`text-sm font-medium mt-1 ${getScoreColor(report.securityScore)}`}>
+                  {getScoreLabel(report.securityScore)}
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="border-border md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-foreground">Findings Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-4 text-center">
-              <div className="p-3 rounded-lg bg-red-500/10">
-                <div className="text-3xl font-bold text-red-600">{report.criticalCount}</div>
-                <div className="text-sm text-muted-foreground">Critical</div>
-              </div>
-              <div className="p-3 rounded-lg bg-amber-500/10">
-                <div className="text-3xl font-bold text-amber-600">{report.highCount}</div>
-                <div className="text-sm text-muted-foreground">High</div>
-              </div>
-              <div className="p-3 rounded-lg bg-yellow-500/10">
-                <div className="text-3xl font-bold text-yellow-600">{report.mediumCount}</div>
-                <div className="text-sm text-muted-foreground">Medium</div>
-              </div>
-              <div className="p-3 rounded-lg bg-blue-500/10">
-                <div className="text-3xl font-bold text-blue-600">{report.lowCount}</div>
-                <div className="text-sm text-muted-foreground">Low</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Card className="border-border md:col-span-2">
+              <CardHeader>
+                <CardTitle className="text-foreground">Findings Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-4 gap-4 text-center">
+                  <div className="p-3 rounded-lg bg-red-500/10">
+                    <div className="text-3xl font-bold text-red-600">{report.criticalCount}</div>
+                    <div className="text-sm text-muted-foreground">Critical</div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-amber-500/10">
+                    <div className="text-3xl font-bold text-amber-600">{report.highCount}</div>
+                    <div className="text-sm text-muted-foreground">High</div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-yellow-500/10">
+                    <div className="text-3xl font-bold text-yellow-600">{report.mediumCount}</div>
+                    <div className="text-sm text-muted-foreground">Medium</div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-blue-500/10">
+                    <div className="text-3xl font-bold text-blue-600">{report.lowCount}</div>
+                    <div className="text-sm text-muted-foreground">Low</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-      {/* Executive Summary */}
-      {report.executiveSummary && (
-        <Card className="border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground">Executive Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground whitespace-pre-wrap">{report.executiveSummary}</p>
-          </CardContent>
-        </Card>
+          {/* Executive Summary */}
+          {report.executiveSummary && (
+            <Card className="border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">Executive Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground whitespace-pre-wrap">{report.executiveSummary}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          <div>
+            <GroupedFindingsList findings={report.findings as ReportFinding[]} />
+          </div>
+        </>
       )}
-
-      {/* Findings List (grouped with tabs when launch readiness findings exist) */}
-      <div>
-        <GroupedFindingsList findings={report.findings as ReportFinding[]} />
-      </div>
     </div>
   );
 }

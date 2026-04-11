@@ -7,10 +7,10 @@
 
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
-import { GitHubIcon, GlobeIcon } from '@/components/icons';
+import { GitHubIcon, GlobeIcon, SearchIcon } from '@/components/icons';
 import { StatusBadge, ScoreBadge, FindingsSummary } from '@/components/badges';
 import { ProgressBar } from '@/components/loading';
-import { cn, formatDate, getScanTarget, isScanInProgress } from '@/lib/utils';
+import { cn, formatDate, getScanTarget, getScanTypeLabel, isScanInProgress } from '@/lib/utils';
 import type { ScanWithReportSummary } from '@/lib/types';
 import type { ScanStatus } from '@/lib/constants';
 
@@ -19,14 +19,22 @@ import type { ScanStatus } from '@/lib/constants';
 // ============================================
 
 interface ScanTypeIconProps {
-  isGitHub: boolean;
+  scan: ScanWithReportSummary;
   className?: string;
 }
 
-function ScanTypeIcon({ isGitHub, className }: ScanTypeIconProps) {
+function ScanTypeIcon({ scan, className }: ScanTypeIconProps) {
   const baseClasses = 'h-11 w-11 rounded-xl flex items-center justify-center transition-colors';
 
-  if (isGitHub) {
+  if (scan.auditType === 'CONVERSION') {
+    return (
+      <div className={cn(baseClasses, 'bg-violet-500/10 group-hover:bg-violet-500/20', className)}>
+        <SearchIcon className="h-5 w-5 text-violet-500" />
+      </div>
+    );
+  }
+
+  if (scan.githubRepoUrl) {
     return (
       <div className={cn(baseClasses, 'bg-[#27272A] group-hover:bg-[#3F3F46]', className)}>
         <GitHubIcon className="h-5 w-5 text-white" />
@@ -73,7 +81,6 @@ interface ScanCardProps {
 }
 
 export function ScanCard({ scan, className }: ScanCardProps) {
-  const isGitHub = Boolean(scan.githubRepoUrl);
   const target = getScanTarget(scan);
   const hasReport = Boolean(scan.report);
   const showProgress = isScanInProgress(scan.status);
@@ -91,10 +98,12 @@ export function ScanCard({ scan, className }: ScanCardProps) {
           <div className="flex items-center justify-between">
             {/* Left: Icon + Target Info */}
             <div className="flex items-center gap-4 min-w-0">
-              <ScanTypeIcon isGitHub={isGitHub} />
+              <ScanTypeIcon scan={scan} />
               <div className="min-w-0">
                 <div className="font-semibold text-white truncate group-hover:text-[#A1A1AA] transition-colors">{target}</div>
-                <div className="text-sm text-[#71717A]">{formatDate(scan.createdAt)}</div>
+                <div className="text-sm text-[#71717A]">
+                  {getScanTypeLabel(scan)} • {formatDate(scan.createdAt)}
+                </div>
               </div>
             </div>
 

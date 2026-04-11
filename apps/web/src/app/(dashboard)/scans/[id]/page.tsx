@@ -20,6 +20,7 @@ import { LoadingOverlay, ProgressBar, PulsingDot } from '@/components/loading';
 import { StatusBadge, FindingsSummary } from '@/components/badges';
 import { SecurityScoreCard } from '@/components/security-score';
 import { GroupedFindingsList } from '@/components/findings-list';
+import { ConversionReportView } from '@/components/conversion-report-view';
 import { useScan } from '@/hooks';
 import { cn, formatDateLong, getScanTarget, isScanInProgress, isScanFailed } from '@/lib/utils';
 import type { Scan } from '@/lib/types';
@@ -34,6 +35,7 @@ interface ScanHeaderProps {
 }
 
 function ScanHeader({ scan, onBack }: ScanHeaderProps) {
+  const isConversionAudit = scan.auditType === 'CONVERSION';
   const isGitHub = Boolean(scan.githubRepoUrl);
   const target = getScanTarget(scan);
   const hasReport = Boolean(scan.report);
@@ -47,10 +49,21 @@ function ScanHeader({ scan, onBack }: ScanHeaderProps) {
         <div
           className={cn(
             'h-14 w-14 rounded-2xl flex items-center justify-center flex-shrink-0',
-            isGitHub ? 'bg-secondary' : 'bg-blue-500/10'
+            isConversionAudit ? 'bg-violet-500/10' : isGitHub ? 'bg-secondary' : 'bg-blue-500/10'
           )}
         >
-          {isGitHub ? (
+          {isConversionAudit ? (
+            <svg
+              className="h-7 w-7 text-violet-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          ) : isGitHub ? (
             <GitHubIcon className="h-7 w-7 text-foreground" />
           ) : (
             <GlobeIcon className="h-7 w-7 text-blue-500" />
@@ -78,8 +91,10 @@ function ScanHeader({ scan, onBack }: ScanHeaderProps) {
           <Link href={`/reports/${scan.report!.id}`}>
             <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm">
               <DocumentIcon className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">View Full Report</span>
-              <span className="sm:hidden">Report</span>
+              <span className="hidden sm:inline">
+                {isConversionAudit ? 'View Audit Report' : 'View Full Report'}
+              </span>
+              <span className="sm:hidden">{isConversionAudit ? 'Audit' : 'Report'}</span>
             </Button>
           </Link>
         )}
@@ -184,6 +199,10 @@ function ResultsSection({ scan }: ResultsSectionProps) {
   const { report } = scan;
 
   if (!report) return null;
+
+  if (scan.auditType === 'CONVERSION') {
+    return <ConversionReportView report={report} />;
+  }
 
   return (
     <div className="space-y-6">

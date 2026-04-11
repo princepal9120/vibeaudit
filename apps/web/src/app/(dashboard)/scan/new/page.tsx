@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Github, Globe, Shield, Check, Loader2, FileText, Upload } from 'lucide-react';
+import { Github, Globe, Shield, Check, Loader2, FileText, Upload, Search } from 'lucide-react';
 import { PageHeader } from '@/components/dashboard/page-header';
 import { useCreateScan } from '@/hooks';
 import { cn, isValidGithubUrl, isValidUrl } from '@/lib/utils';
@@ -35,6 +35,12 @@ const scanTypes = [
     title: 'Full Scan',
     description: 'SAST + DAST + Launch',
   },
+  {
+    type: 'conversion' as ScanType,
+    icon: Search,
+    title: 'Conversion Audit',
+    description: 'Messaging + CTA review',
+  },
 ];
 
 const githubFeatures = [
@@ -65,6 +71,15 @@ const prdFeatures = [
   'Authentication gaps',
 ];
 
+const conversionFeatures = [
+  'What your page seems to say in one sentence',
+  'Weak messaging, trust, and CTA friction',
+  'Sharper positioning and clearer value proposition',
+  'A rewritten headline and subheadline',
+  '3-5 stronger benefit bullets',
+  'Better CTA, social proof, and trust signals',
+];
+
 function validateForm(data: ScanFormData & { file?: File | null }): ScanFormErrors & { file?: string } {
   const errors: ScanFormErrors & { file?: string } = {};
 
@@ -81,6 +96,14 @@ function validateForm(data: ScanFormData & { file?: File | null }): ScanFormErro
       errors.liveUrl = 'Live URL is required';
     } else if (!isValidUrl(data.liveUrl)) {
       errors.liveUrl = 'Please enter a valid URL';
+    }
+  }
+
+  if (data.scanType === 'conversion') {
+    if (!data.liveUrl) {
+      errors.liveUrl = 'Landing page URL is required';
+    } else if (!isValidUrl(data.liveUrl)) {
+      errors.liveUrl = 'Please enter a valid landing page URL';
     }
   }
 
@@ -120,17 +143,32 @@ export default function NewScanPage() {
     }
 
     setErrors({});
-    const toastId = toast.loading('Initializing security scan...');
+    const isConversionAudit = formData.scanType === 'conversion';
+    const toastId = toast.loading(
+      isConversionAudit ? 'Initializing conversion audit...' : 'Initializing security scan...'
+    );
 
     try {
       const scan = await createScan({
-        githubRepoUrl: formData.scanType !== 'url' && formData.scanType !== 'file' ? formData.githubUrl : undefined,
-        liveUrl: formData.scanType !== 'github' && formData.scanType !== 'file' ? formData.liveUrl : undefined,
-        branch: formData.branch.trim() || undefined,
+        auditType: isConversionAudit ? 'CONVERSION' : 'SECURITY',
+        githubRepoUrl:
+          formData.scanType !== 'url' &&
+          formData.scanType !== 'file' &&
+          formData.scanType !== 'conversion'
+            ? formData.githubUrl
+            : undefined,
+        liveUrl:
+          formData.scanType !== 'github' && formData.scanType !== 'file'
+            ? formData.liveUrl
+            : undefined,
+        branch:
+          formData.scanType === 'github' || formData.scanType === 'both'
+            ? formData.branch.trim() || undefined
+            : undefined,
         file: formData.scanType === 'file' && formData.file ? formData.file : undefined,
       });
 
-      toast.success('Scan started successfully', { id: toastId });
+      toast.success(isConversionAudit ? 'Conversion audit started successfully' : 'Scan started successfully', { id: toastId });
       router.push(`/scans/${scan.id}`);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create scan. Please try again.';
@@ -141,6 +179,7 @@ export default function NewScanPage() {
 
   const features =
     formData.scanType === 'file' ? prdFeatures :
+      formData.scanType === 'conversion' ? conversionFeatures :
       [
         ...(formData.scanType === 'github' || formData.scanType === 'both' ? githubFeatures : []),
         ...(formData.scanType === 'url' || formData.scanType === 'both' ? urlFeatures : []),
@@ -150,14 +189,14 @@ export default function NewScanPage() {
     <div className="space-y-6 md:space-y-8">
       {/* Header */}
       <PageHeader
-        title="New Security Scan"
-        description="Scan your GitHub repository or live application for security, SEO, performance, and launch readiness"
+        title="New Audit"
+        description="Run a security scan, architecture review, or landing-page conversion audit from one place"
       />
 
       {/* Scan Type Selection */}
       <div className="space-y-3 md:space-y-4">
-        <label className="text-sm font-medium text-foreground">Select Scan Type</label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+        <label className="text-sm font-medium text-foreground">Select Audit Type</label>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 md:gap-4">
           {scanTypes.map(({ type, icon: Icon, title, description }) => {
             const isSelected = formData.scanType === type;
             return (
@@ -195,9 +234,13 @@ export default function NewScanPage() {
       {/* Form Section */}
       <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5">
         <div>
-          <h3 className="text-sm sm:text-base font-medium text-foreground">Scan Details</h3>
+          <h3 className="text-sm sm:text-base font-medium text-foreground">
+            {formData.scanType === 'conversion' ? 'Audit Details' : 'Scan Details'}
+          </h3>
           <p className="text-xs sm:text-[13px] text-muted-foreground mt-1">
-            {formData.scanType === 'url'
+            {formData.scanType === 'conversion'
+              ? 'Paste your landing page URL and get clarity, trust, positioning, and CTA feedback'
+              : formData.scanType === 'url'
               ? 'Enter your live URL to scan for vulnerabilities'
               : formData.scanType === 'file'
                 ? 'Upload your PRD or architecture document (PDF, Markdown)'
@@ -228,16 +271,18 @@ export default function NewScanPage() {
           )}
 
           {/* Live URL Input */}
-          {(formData.scanType === 'url' || formData.scanType === 'both') && (
+          {(formData.scanType === 'url' || formData.scanType === 'both' || formData.scanType === 'conversion') && (
             <div className="space-y-2">
-              <label htmlFor="live-url" className="text-xs sm:text-[13px] font-medium text-foreground">Live URL</label>
+              <label htmlFor="live-url" className="text-xs sm:text-[13px] font-medium text-foreground">
+                {formData.scanType === 'conversion' ? 'Landing Page URL' : 'Live URL'}
+              </label>
               <input
                 id="live-url"
                 name="liveUrl"
                 type="url"
                 value={formData.liveUrl}
                 onChange={(e) => setFormData((prev) => ({ ...prev, liveUrl: e.target.value }))}
-                placeholder="https://your-app.com"
+                placeholder={formData.scanType === 'conversion' ? 'https://yourlandingpage.com' : 'https://your-app.com'}
                 autoComplete="url"
                 className={cn(
                   'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
@@ -305,7 +350,9 @@ export default function NewScanPage() {
 
       {/* What we scan for */}
       <div className="space-y-3 md:space-y-4">
-        <label className="text-sm font-medium text-foreground">What we&apos;ll scan for:</label>
+        <label className="text-sm font-medium text-foreground">
+          {formData.scanType === 'conversion' ? 'What we&apos;ll audit:' : 'What we&apos;ll scan for:'}
+        </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 sm:gap-y-3">
           {features.map((feature) => (
             <div key={feature} className="flex items-center gap-2.5">
@@ -335,12 +382,16 @@ export default function NewScanPage() {
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-              <span>Starting Scan…</span>
+              <span>{formData.scanType === 'conversion' ? 'Starting Audit…' : 'Starting Scan…'}</span>
             </>
           ) : (
             <>
-              <Shield className="w-4 h-4" aria-hidden="true" />
-              <span>Start Security Scan</span>
+              {formData.scanType === 'conversion' ? (
+                <Search className="w-4 h-4" aria-hidden="true" />
+              ) : (
+                <Shield className="w-4 h-4" aria-hidden="true" />
+              )}
+              <span>{formData.scanType === 'conversion' ? 'Start Conversion Audit' : 'Start Security Scan'}</span>
             </>
           )}
         </button>

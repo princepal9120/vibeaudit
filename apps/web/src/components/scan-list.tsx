@@ -25,9 +25,9 @@ interface EmptyStateProps {
 }
 
 function EmptyState({
-  title = 'No scans yet',
-  description = 'Start your first security scan to see results here',
-  actionLabel = 'Start Your First Scan',
+  title = 'No audits yet',
+  description = 'Start your first security scan or conversion audit to see results here',
+  actionLabel = 'Start Your First Audit',
   actionHref = '/scan/new',
 }: EmptyStateProps) {
   return (
@@ -158,7 +158,7 @@ interface ScanListWithHeaderProps extends ScanListProps {
 }
 
 export function ScanListWithHeader({
-  title = 'Recent Scans',
+  title = 'Recent Audits',
   showCount = true,
   scans,
   ...props

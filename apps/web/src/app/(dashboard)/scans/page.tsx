@@ -214,8 +214,8 @@ export default function ScansPage() {
         return (
             <div className="space-y-8">
                 <PageHeader
-                    title="Security Scans"
-                    description="Manage and monitor your security scans"
+                    title="Audits"
+                    description="Manage and monitor your security scans and conversion audits"
                 />
                 <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-8 text-center">
                     <p className="text-destructive mb-4">{error}</p>
@@ -232,21 +232,21 @@ export default function ScansPage() {
         return (
             <div className="space-y-8">
                 <PageHeader
-                    title="Security Scans"
-                    description="Manage and monitor your security scans"
+                    title="Audits"
+                    description="Manage and monitor your security scans and conversion audits"
                     actions={
                         <Button onClick={() => router.push('/scan/new')}>
                             <Plus className="mr-2 h-4 w-4" />
-                            New Scan
+                            New Audit
                         </Button>
                     }
                 />
                 <EmptyState
                     icon={Plus}
-                    title="No scans yet"
-                    description="Run your first security scan to identify vulnerabilities in your code or live application."
+                    title="No audits yet"
+                    description="Run your first security scan or conversion audit to identify the biggest issues in your product or landing page."
                     action={{
-                        label: 'Start Your First Scan',
+                        label: 'Start Your First Audit',
                         onClick: () => router.push('/scan/new'),
                     }}
                 />
@@ -257,12 +257,12 @@ export default function ScansPage() {
     return (
         <div className="space-y-8">
             <PageHeader
-                title="Security Scans"
-                description="Manage and monitor your security scans"
+                title="Audits"
+                description="Manage and monitor your security scans and conversion audits"
                 actions={
                     <Button onClick={() => router.push('/scan/new')}>
                         <Plus className="mr-2 h-4 w-4" />
-                        New Scan
+                        New Audit
                     </Button>
                 }
             />

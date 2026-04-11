@@ -23,6 +23,7 @@ interface SecurityScoreCardProps {
   className?: string;
   showLabel?: boolean;
   showGrade?: boolean;
+  label?: string;
 }
 
 export function SecurityScoreCard({
@@ -30,6 +31,7 @@ export function SecurityScoreCard({
   className,
   showLabel = true,
   showGrade = false,
+  label = 'Security Score',
 }: SecurityScoreCardProps) {
   const bgColor = getScoreBgColor(score);
   const borderColor = getScoreBorderColor(score);
@@ -51,7 +53,7 @@ export function SecurityScoreCard({
           )}
           <SecurityScoreGauge score={score} size="lg" showLabel={showLabel} />
         </div>
-        <div className="text-[#71717A] text-sm mt-3">Security Score</div>
+        <div className="text-[#71717A] text-sm mt-3">{label}</div>
       </CardContent>
     </Card>
   );

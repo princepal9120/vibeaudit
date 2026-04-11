@@ -15,6 +15,7 @@ const dummyScans: ScanWithReportSummary[] = [
   {
     id: 'demo-scan-5',
     userId: 'demo-user',
+    auditType: 'SECURITY',
     githubRepoUrl: 'vibeaudit/core-api',
     liveUrl: 'https://api.vibeaudit.site',
     branch: null,
@@ -35,6 +36,7 @@ const dummyScans: ScanWithReportSummary[] = [
   {
     id: 'demo-scan-4',
     userId: 'demo-user',
+    auditType: 'SECURITY',
     githubRepoUrl: 'indiehacker/saas-startup',
     liveUrl: null,
     branch: null,
@@ -55,6 +57,7 @@ const dummyScans: ScanWithReportSummary[] = [
   {
     id: 'demo-scan-3',
     userId: 'demo-user',
+    auditType: 'SECURITY',
     githubRepoUrl: 'vibecoder/auth-service',
     liveUrl: null,
     branch: null,
@@ -95,7 +98,7 @@ export default function DashboardPage() {
       {/* Page Header */}
       <PageHeader
         title="Dashboard"
-        description="Monitor your security scans and findings"
+        description="Monitor your security scans and conversion audits"
         actions={
           <div className="flex items-center gap-2">
             <Button
@@ -109,7 +112,7 @@ export default function DashboardPage() {
             </Button>
             <Button size="sm" onClick={() => router.push('/scan/new')}>
               <Plus className="h-4 w-4 mr-2" />
-              New Scan
+              New Audit
             </Button>
           </div>
         }
@@ -118,7 +121,7 @@ export default function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          title="Total Scans"
+          title="Total Audits"
           value={stats.totalScans}
           description="All time"
           icon={Activity}
@@ -136,7 +139,7 @@ export default function DashboardPage() {
         <StatsCard
           title="Average Score"
           value={stats.averageScore > 0 ? stats.averageScore : '-'}
-          description="Security score"
+          description="Average audit score"
           icon={TrendingUp}
           trend={{
             value: 5.2,
@@ -169,7 +172,7 @@ export default function DashboardPage() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#22C55E] opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#22C55E]" />
           </span>
-          <span className="font-medium">Scans in progress</span>
+          <span className="font-medium">Audits in progress</span>
           <span className="text-[#22C55E]/60">- auto-refreshing every 5s</span>
         </div>
       )}
@@ -177,7 +180,7 @@ export default function DashboardPage() {
       {/* Recent Scans Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Recent Scans</h2>
+          <h2 className="text-lg font-semibold">Recent Audits</h2>
           <Button
             variant="ghost"
             size="sm"
@@ -201,12 +204,12 @@ export default function DashboardPage() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <Plus className="h-6 w-6 text-muted-foreground" />
             </div>
-            <h3 className="mt-4 text-lg font-semibold">No scans yet</h3>
+            <h3 className="mt-4 text-lg font-semibold">No audits yet</h3>
             <p className="mt-2 text-sm text-muted-foreground max-w-sm mx-auto">
-              Run your first security scan to identify vulnerabilities in your code or live application.
+              Run your first security scan or conversion audit to identify the biggest issues on your product or landing page.
             </p>
             <Button className="mt-6" onClick={() => router.push('/scan/new')}>
-              Start Your First Scan
+              Start Your First Audit
             </Button>
           </div>
         ) : (

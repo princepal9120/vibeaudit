@@ -21,6 +21,7 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, ne
       include: {
         scan: {
           select: {
+            auditType: true,
             githubRepoUrl: true,
             liveUrl: true,
             branch: true,
@@ -247,6 +248,7 @@ router.get('/shared/:token', optionalAuth, async (req: Request, res: Response, n
       include: {
         scan: {
           select: {
+            auditType: true,
             githubRepoUrl: true,
             liveUrl: true,
             createdAt: true,

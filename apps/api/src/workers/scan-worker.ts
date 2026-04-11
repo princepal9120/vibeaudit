@@ -17,45 +17,62 @@ import { runEssentialsScanner } from '../services/scanners/essentials-scanner.js
 import { cloneRepository, cleanupRepository } from '../services/git.js';
 import { generateAIExplanations } from '../services/ai-explanations.js';
 import { calculateSecurityScore } from '../services/scoring.js';
+import { runConversionAudit } from '../services/conversion-audit.js';
 import type { RawFinding, TriagedFinding } from '../services/scanners/types.js';
 
+type ActiveScanStatus =
+  | 'QUEUED'
+  | 'CLONING'
+  | 'SCANNING'
+  | 'ANALYZING'
+  | 'GENERATING_REPORT'
+  | 'COMPLETED'
+  | 'FAILED';
+
 export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
+  const { auditType = 'SECURITY' } = job.data;
+
+  if (auditType === 'CONVERSION') {
+    await processConversionJob(job);
+    return;
+  }
+
+  await processSecurityJob(job);
+}
+
+async function processSecurityJob(job: Job<ScanJobData>): Promise<void> {
   const { scanId, githubRepoUrl, liveUrl, branch } = job.data;
   let repoPath: string | null = null;
 
   try {
-    // Update status: Starting
     await updateScanStatus(scanId, 'SCANNING', 'Starting security scan...', 5);
     await job.updateProgress(5);
 
     const allFindings: RawFinding[] = [];
 
-    // Clone repository if GitHub URL provided
     if (githubRepoUrl) {
       await updateScanStatus(scanId, 'CLONING', 'Cloning repository...', 10);
       await job.updateProgress(10);
 
       repoPath = await cloneRepository(githubRepoUrl, branch);
 
-      // Run SAST tools in parallel
       await updateScanStatus(scanId, 'SCANNING', 'Running static analysis...', 20);
       await job.updateProgress(20);
 
-      // Phase 1: Run traditional SAST tools in parallel
       const [semgrepFindings, npmAuditFindings, trivyFindings, gitleaksFindings] = await Promise.all([
-        runSemgrep(repoPath).catch(err => {
+        runSemgrep(repoPath).catch((err) => {
           console.error('Semgrep error:', err);
           return [] as RawFinding[];
         }),
-        runNpmAudit(repoPath).catch(err => {
+        runNpmAudit(repoPath).catch((err) => {
           console.error('npm audit error:', err);
           return [] as RawFinding[];
         }),
-        runTrivy(repoPath).catch(err => {
+        runTrivy(repoPath).catch((err) => {
           console.error('Trivy error:', err);
           return [] as RawFinding[];
         }),
-        runGitleaks(repoPath).catch(err => {
+        runGitleaks(repoPath).catch((err) => {
           console.error('Gitleaks error:', err);
           return [] as RawFinding[];
         }),
@@ -64,19 +81,18 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
       allFindings.push(...semgrepFindings, ...npmAuditFindings, ...trivyFindings, ...gitleaksFindings);
       await job.updateProgress(35);
 
-      // Phase 2: Run advanced security scanners in parallel
       await updateScanStatus(scanId, 'SCANNING', 'Running advanced security analysis...', 40);
 
       const [advancedFindings, configFindings, frameworkFindings] = await Promise.all([
-        runAdvancedSecurityScan(repoPath).catch(err => {
+        runAdvancedSecurityScan(repoPath).catch((err) => {
           console.error('Advanced security scan error:', err);
           return [] as RawFinding[];
         }),
-        runConfigSecurityScan(repoPath).catch(err => {
+        runConfigSecurityScan(repoPath).catch((err) => {
           console.error('Config security scan error:', err);
           return [] as RawFinding[];
         }),
-        runFrameworkSecurityScan(repoPath).catch(err => {
+        runFrameworkSecurityScan(repoPath).catch((err) => {
           console.error('Framework security scan error:', err);
           return [] as RawFinding[];
         }),
@@ -85,10 +101,9 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
       allFindings.push(...advancedFindings, ...configFindings, ...frameworkFindings);
       await job.updateProgress(45);
 
-      // Phase 3: Run AI-powered deep analysis (separate phase for better progress tracking)
       await updateScanStatus(scanId, 'SCANNING', 'Running AI-powered deep analysis...', 48);
 
-      const aiFindings = await runAIDeepAnalysis(repoPath).catch(err => {
+      const aiFindings = await runAIDeepAnalysis(repoPath).catch((err) => {
         console.error('AI deep analysis error:', err);
         return [] as RawFinding[];
       });
@@ -97,12 +112,11 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
       await job.updateProgress(50);
     }
 
-    // Run DAST if live URL provided
     if (liveUrl) {
       await updateScanStatus(scanId, 'SCANNING', 'Running dynamic analysis on live URL...', 55);
       await job.updateProgress(55);
 
-      const zapFindings = await runZap(liveUrl).catch(err => {
+      const zapFindings = await runZap(liveUrl).catch((err) => {
         console.error('ZAP error:', err);
         return [] as RawFinding[];
       });
@@ -110,23 +124,22 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
       allFindings.push(...zapFindings);
       await job.updateProgress(62);
 
-      // Phase 5: Launch Readiness Checks (SEO, Performance, Accessibility, Essentials)
       await updateScanStatus(scanId, 'SCANNING', 'Running launch readiness checks...', 63);
 
       const [seoFindings, perfFindings, a11yFindings, essentialsFindings] = await Promise.all([
-        runSeoScanner(liveUrl).catch(err => {
+        runSeoScanner(liveUrl).catch((err) => {
           console.error('SEO scanner error:', err);
           return [] as RawFinding[];
         }),
-        runPerformanceScanner(liveUrl).catch(err => {
+        runPerformanceScanner(liveUrl).catch((err) => {
           console.error('Performance scanner error:', err);
           return [] as RawFinding[];
         }),
-        runAccessibilityScanner(liveUrl).catch(err => {
+        runAccessibilityScanner(liveUrl).catch((err) => {
           console.error('Accessibility scanner error:', err);
           return [] as RawFinding[];
         }),
-        runEssentialsScanner(liveUrl).catch(err => {
+        runEssentialsScanner(liveUrl).catch((err) => {
           console.error('Essentials scanner error:', err);
           return [] as RawFinding[];
         }),
@@ -136,26 +149,20 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
       await job.updateProgress(70);
     }
 
-    // Triage and filter findings
     await updateScanStatus(scanId, 'ANALYZING', 'Analyzing and filtering findings...', 75);
     await job.updateProgress(75);
 
     const triagedFindings = triageFindings(allFindings);
 
-    // Generate AI explanations
     await updateScanStatus(scanId, 'ANALYZING', 'Generating AI-powered explanations...', 80);
     await job.updateProgress(80);
 
     const enhancedFindings = await generateAIExplanations(triagedFindings);
     await job.updateProgress(90);
 
-    // Calculate security score
     const securityScore = calculateSecurityScore(enhancedFindings);
-
-    // Count findings by severity
     const counts = countBySeverity(enhancedFindings);
 
-    // Create report
     await updateScanStatus(scanId, 'GENERATING_REPORT', 'Generating report...', 95);
     await job.updateProgress(95);
 
@@ -169,69 +176,110 @@ export async function processScanJob(job: Job<ScanJobData>): Promise<void> {
         highCount: counts.HIGH,
         mediumCount: counts.MEDIUM,
         lowCount: counts.LOW,
-        executiveSummary: generateExecutiveSummary(securityScore, counts, githubRepoUrl, liveUrl),
+        executiveSummary: generateSecurityExecutiveSummary(securityScore, counts, githubRepoUrl, liveUrl),
         findings: {
-          create: enhancedFindings.map(f => ({
-            title: f.title,
-            severity: f.severity,
-            category: f.category,
-            source: f.source,
-            description: f.description,
-            impact: f.impact,
-            remediation: f.remediation,
-            filePath: f.filePath,
-            lineNumber: f.lineNumber,
-            codeSnippet: f.codeSnippet,
-            confidence: f.confidence,
-            aiValidated: f.aiValidated || false,
-            rawFinding: f.rawFinding as object,
-            ruleId: f.ruleId,
+          create: enhancedFindings.map((finding) => ({
+            title: finding.title,
+            severity: finding.severity,
+            category: finding.category,
+            source: finding.source,
+            description: finding.description,
+            impact: finding.impact,
+            remediation: finding.remediation,
+            filePath: finding.filePath,
+            lineNumber: finding.lineNumber,
+            codeSnippet: finding.codeSnippet,
+            confidence: finding.confidence,
+            aiValidated: finding.aiValidated || false,
+            rawFinding: finding.rawFinding as object,
+            ruleId: finding.ruleId,
           })),
         },
       },
     });
 
-    // Update scan with completion status
-    await prisma.scan.update({
-      where: { id: scanId },
-      data: {
-        status: 'COMPLETED',
-        progress: 'Scan completed successfully',
-        progressPercent: 100,
-        completedAt: new Date(),
-        totalFindings: enhancedFindings.length,
-        criticalCount: counts.CRITICAL,
-        highCount: counts.HIGH,
-        mediumCount: counts.MEDIUM,
-        lowCount: counts.LOW,
-      },
-    });
-
+    await completeScan(scanId, 'Scan completed successfully', enhancedFindings.length, counts);
     await job.updateProgress(100);
   } catch (error) {
-    console.error('Scan job failed:', error);
-
-    await prisma.scan.update({
-      where: { id: scanId },
-      data: {
-        status: 'FAILED',
-        errorMessage: error instanceof Error ? error.message : 'Unknown error occurred',
-        completedAt: new Date(),
-      },
-    });
-
+    await failScan(scanId, error);
     throw error;
   } finally {
-    // Cleanup cloned repository
     if (repoPath) {
       await cleanupRepository(repoPath);
     }
   }
 }
 
+async function processConversionJob(job: Job<ScanJobData>): Promise<void> {
+  const { scanId, liveUrl, userId } = job.data;
+
+  if (!liveUrl) {
+    throw new Error('Conversion audits require a live URL');
+  }
+
+  try {
+    await updateScanStatus(scanId, 'SCANNING', 'Fetching landing page and extracting page signals...', 15);
+    await job.updateProgress(15);
+
+    await updateScanStatus(scanId, 'ANALYZING', 'Reviewing clarity, trust, and CTA friction...', 55);
+    await job.updateProgress(55);
+
+    const conversionReport = await runConversionAudit(liveUrl);
+    const counts = countBySeverity(conversionReport.opportunities);
+
+    await updateScanStatus(scanId, 'GENERATING_REPORT', 'Writing your conversion audit report...', 90);
+    await job.updateProgress(90);
+
+    await prisma.report.create({
+      data: {
+        scanId,
+        userId,
+        securityScore: conversionReport.score,
+        totalFindings: conversionReport.opportunities.length,
+        criticalCount: counts.CRITICAL,
+        highCount: counts.HIGH,
+        mediumCount: counts.MEDIUM,
+        lowCount: counts.LOW,
+        executiveSummary: conversionReport.executiveSummary,
+        conversionData: conversionReport as unknown as object,
+        findings: {
+          create: conversionReport.opportunities.map((item) => ({
+            title: item.title,
+            severity: item.severity,
+            category: 'OTHER',
+            source: 'ADVANCED',
+            description: item.description,
+            impact: item.impact,
+            remediation: item.recommendation,
+            confidence: 0.9,
+            aiValidated: Boolean(job.data.auditType === 'CONVERSION'),
+            rawFinding: {
+              auditType: 'CONVERSION',
+              category: item.category,
+              liveUrl,
+            },
+            ruleId: `conversion-${item.category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+          })),
+        },
+      },
+    });
+
+    await completeScan(
+      scanId,
+      'Conversion audit completed successfully',
+      conversionReport.opportunities.length,
+      counts
+    );
+    await job.updateProgress(100);
+  } catch (error) {
+    await failScan(scanId, error);
+    throw error;
+  }
+}
+
 async function updateScanStatus(
   scanId: string,
-  status: 'QUEUED' | 'CLONING' | 'SCANNING' | 'ANALYZING' | 'GENERATING_REPORT' | 'COMPLETED' | 'FAILED',
+  status: ActiveScanStatus,
   progress: string,
   progressPercent: number
 ): Promise<void> {
@@ -241,35 +289,64 @@ async function updateScanStatus(
       status,
       progress,
       progressPercent,
-      ...(status === 'CLONING' ? { startedAt: new Date() } : {}),
+      ...(status === 'CLONING' || status === 'SCANNING' ? { startedAt: new Date() } : {}),
+    },
+  });
+}
+
+async function completeScan(
+  scanId: string,
+  progress: string,
+  totalFindings: number,
+  counts: Record<Severity, number>
+): Promise<void> {
+  await prisma.scan.update({
+    where: { id: scanId },
+    data: {
+      status: 'COMPLETED',
+      progress,
+      progressPercent: 100,
+      completedAt: new Date(),
+      totalFindings,
+      criticalCount: counts.CRITICAL,
+      highCount: counts.HIGH,
+      mediumCount: counts.MEDIUM,
+      lowCount: counts.LOW,
+    },
+  });
+}
+
+async function failScan(scanId: string, error: unknown): Promise<void> {
+  console.error('Scan job failed:', error);
+
+  await prisma.scan.update({
+    where: { id: scanId },
+    data: {
+      status: 'FAILED',
+      errorMessage: error instanceof Error ? error.message : 'Unknown error occurred',
+      completedAt: new Date(),
     },
   });
 }
 
 function triageFindings(findings: RawFinding[]): TriagedFinding[] {
-  // Filter out known false positives and low-confidence findings
   return findings
-    .filter(f => f.confidence >= 0.5) // Minimum confidence threshold
-    .filter(f => !isKnownFalsePositive(f))
-    .map(f => ({
-      ...f,
+    .filter((finding) => finding.confidence >= 0.5)
+    .filter((finding) => !isKnownFalsePositive(finding))
+    .map((finding) => ({
+      ...finding,
       aiValidated: false,
     }));
 }
 
 function isKnownFalsePositive(finding: RawFinding): boolean {
-  // Check for common false positive patterns
   const fpPatterns = [
-    // Test files
     /\.test\.(ts|js|tsx|jsx)$/,
     /\.spec\.(ts|js|tsx|jsx)$/,
     /__tests__\//,
-    // Documentation
     /\.md$/,
-    // Example/sample directories
     /\/examples?\//i,
     /\/samples?\//i,
-    // Mock/stub files
     /\/__mocks__\//,
     /\.mock\.(ts|js|tsx|jsx)$/,
     /\/fixtures?\//i,
@@ -286,17 +363,26 @@ function isKnownFalsePositive(finding: RawFinding): boolean {
   return false;
 }
 
-function countBySeverity(findings: TriagedFinding[]): Record<string, number> {
-  const counts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+function countBySeverity(
+  findings: Array<{ severity: Severity }>
+): Record<Severity, number> {
+  const counts: Record<Severity, number> = {
+    CRITICAL: 0,
+    HIGH: 0,
+    MEDIUM: 0,
+    LOW: 0,
+  };
+
   for (const finding of findings) {
-    counts[finding.severity]++;
+    counts[finding.severity] += 1;
   }
+
   return counts;
 }
 
-function generateExecutiveSummary(
+function generateSecurityExecutiveSummary(
   score: number,
-  counts: Record<string, number>,
+  counts: Record<Severity, number>,
   repoUrl?: string,
   liveUrl?: string
 ): string {

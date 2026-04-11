@@ -33,6 +33,7 @@ export function useCreateScan(): UseCreateScanResult {
         // Use FormData for file uploads
         const formData = new FormData();
         formData.append('file', data.file);
+        if (data.auditType) formData.append('auditType', data.auditType);
         if (data.githubRepoUrl) formData.append('githubRepoUrl', data.githubRepoUrl);
         if (data.liveUrl) formData.append('liveUrl', data.liveUrl);
         if (data.branch) formData.append('branch', data.branch);
