@@ -1,32 +1,26 @@
-import DodoPayments from 'dodopayments';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { prisma } from '../db.js';
-import { config } from '../config.js';
 import type { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
+
+const LIFETIME_PERIOD_END = new Date('2099-12-31T23:59:59.999Z');
 
 // Subscription pricing configuration
 export const SUBSCRIPTION_PLANS = {
   FREE: {
     id: 'free',
-    name: 'Free',
+    name: 'Free User',
     price: 0,
     reviewsPerMonth: 2,
     description: '2 PRD reviews per month',
   },
   PRO: {
-    id: 'prd-pro-monthly',
-    name: 'PRD Review Pro',
-    price: 1900, // $19 in cents
+    id: 'lifetime-access',
+    name: 'Lifetime Plan',
+    price: 2900, // $29 in cents
     reviewsPerMonth: -1, // Unlimited
-    description: 'Unlimited PRD reviews',
+    description: 'Lifetime access to all features',
   },
 } as const;
-
-// Initialize Dodo Payments client
-const dodo = new DodoPayments({
-  bearerToken: config.dodoPaymentsApiKey,
-  environment: config.dodoPaymentsEnvironment === 'live_mode' ? 'live_mode' : 'test_mode',
-});
 
 /**
  * Get or create the current month's usage record for a user
@@ -107,7 +101,7 @@ export async function canCreateReview(userId: string): Promise<{
   if (usage.reviewsUsed >= usage.reviewsLimit) {
     return {
       allowed: false,
-      reason: 'Monthly PRD review limit reached. Upgrade to PRD Review Pro for unlimited reviews.',
+      reason: 'Free plan limit reached. Upgrade to the $29 lifetime plan for unlimited reviews.',
       usage: {
         reviewsUsed: usage.reviewsUsed,
         reviewsLimit: usage.reviewsLimit,
@@ -206,78 +200,6 @@ export async function getOrCreateSubscription(userId: string): Promise<{
   };
 }
 
-export interface CreateSubscriptionCheckoutOptions {
-  userId: string;
-  userEmail: string;
-  plan: 'PRO';
-  successUrl: string;
-  cancelUrl: string;
-}
-
-/**
- * Create a checkout session for subscription
- */
-export async function createSubscriptionCheckout(
-  options: CreateSubscriptionCheckoutOptions
-): Promise<{ checkoutUrl: string }> {
-  const { userId, userEmail, plan, successUrl, cancelUrl } = options;
-
-  const planConfig = SUBSCRIPTION_PLANS[plan];
-  if (!planConfig) {
-    throw new Error('Invalid subscription plan');
-  }
-
-  try {
-    // Create subscription with Dodo Payments
-    const subscription = await dodo.subscriptions.create({
-      billing: {
-        city: 'Unknown',
-        country: 'US',
-        state: 'Unknown',
-        street: 'Unknown',
-        zipcode: '00000',
-      },
-      customer: {
-        email: userEmail,
-        name: userEmail.split('@')[0],
-      },
-      product_id: planConfig.id,
-      quantity: 1,
-      payment_link: true,
-      return_url: successUrl,
-      metadata: {
-        userId,
-        plan,
-      },
-    });
-
-    // Store pending subscription
-    await prisma.subscription.upsert({
-      where: { userId },
-      create: {
-        userId,
-        plan: 'FREE', // Will be updated on webhook
-        status: 'ACTIVE',
-        dodoSubscriptionId: subscription.subscription_id,
-        dodoCustomerId: subscription.customer.customer_id,
-        currentPeriodStart: new Date(),
-        currentPeriodEnd: endOfMonth(new Date()),
-      },
-      update: {
-        dodoSubscriptionId: subscription.subscription_id,
-        dodoCustomerId: subscription.customer.customer_id,
-      },
-    });
-
-    return {
-      checkoutUrl: subscription.payment_link || '',
-    };
-  } catch (error) {
-    console.error('Failed to create subscription checkout:', error);
-    throw error;
-  }
-}
-
 /**
  * Cancel subscription at period end
  */
@@ -294,23 +216,7 @@ export async function cancelSubscription(userId: string): Promise<void> {
     throw new Error('Cannot cancel free plan');
   }
 
-  // Cancel with Dodo if there's an active subscription
-  if (subscription.dodoSubscriptionId) {
-    try {
-      await dodo.subscriptions.update(subscription.dodoSubscriptionId, {
-        status: 'cancelled',
-      });
-    } catch (error) {
-      console.error('Failed to cancel subscription with Dodo:', error);
-    }
-  }
-
-  await prisma.subscription.update({
-    where: { userId },
-    data: {
-      cancelAtPeriodEnd: true,
-    },
-  });
+  throw new Error('Lifetime access is a one-time purchase and does not require cancellation.');
 }
 
 /**
@@ -349,7 +255,7 @@ export async function processSubscriptionWebhook(
             : new Date(),
           currentPeriodEnd: data.current_period_end
             ? new Date(data.current_period_end)
-            : endOfMonth(new Date()),
+            : LIFETIME_PERIOD_END,
           cancelAtPeriodEnd: false,
         },
       });

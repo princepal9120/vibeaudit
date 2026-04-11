@@ -14,13 +14,13 @@ import {
 } from '../services/payments.js';
 
 // Define ProductType locally to avoid Prisma client issues
-type ProductType = 'SCAN_CREDIT' | 'SCAN_BUNDLE_5' | 'SCAN_BUNDLE_10';
+type ProductType = 'SCAN_CREDIT';
 
 const router: IRouter = Router();
 
 // Validation schemas
 const checkoutSchema = z.object({
-  productType: z.enum(['SCAN_CREDIT', 'SCAN_BUNDLE_5', 'SCAN_BUNDLE_10']),
+  productType: z.literal('SCAN_CREDIT'),
 });
 
 // GET /api/payments/products - Get available products
@@ -30,14 +30,15 @@ router.get('/products', (_req: Request, res: Response) => {
     currency: 'USD',
   });
 
-  const products = Object.entries(PRODUCTS).map(([type, product]) => ({
-    type,
+  const product = PRODUCTS.SCAN_CREDIT;
+  const products = [{
+    type: 'SCAN_CREDIT',
     ...product,
     priceFormatted: usd.format(product.price / 100),
     perScanPrice: product.price / product.credits,
     perScanFormatted: usd.format(product.price / product.credits / 100),
     currency: 'USD',
-  }));
+  }];
 
   res.json({ products });
 });

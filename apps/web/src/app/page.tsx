@@ -2,6 +2,7 @@
 
 import Navigation from "@/components/landing/navigation";
 import HeroSection from "@/components/landing/hero-section";
+import FounderStory from "@/components/landing/founder-story";
 import StatsSection from "@/components/landing/stats-section";
 import HowItWorks from "@/components/landing/how-it-works";
 import TestimonialSection from "@/components/testimonials";
@@ -16,6 +17,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-[#09090B] text-white font-sans selection:bg-white selection:text-black">
       <Navigation />
       <HeroSection />
+      <FounderStory />
       <StatsSection />
       <HowItWorks />
       <FeaturesSection />

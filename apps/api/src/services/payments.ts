@@ -4,14 +4,16 @@ import { prisma } from '../db.js';
 import { config } from '../config.js';
 import type { ProductType, PaymentStatus } from '@prisma/client';
 
+const LIFETIME_PERIOD_END = new Date('2099-12-31T23:59:59.999Z');
+
 // Product pricing configuration
 export const PRODUCTS = {
   SCAN_CREDIT: {
     id: 'scan-single',
-    name: 'Launch Audit',
+    name: 'Lifetime Access',
     price: 2900, // $29 in cents (updated from $39)
     credits: 1,
-    description: 'Full security scan for a launch, handoff, or release',
+    description: 'One-time lifetime unlock for all VibeAudit features',
   },
   SCAN_BUNDLE_5: {
     id: 'scan-bundle-5',
@@ -61,8 +63,17 @@ export interface CheckoutSession {
   paymentLink: string;
 }
 
+async function hasLifetimeAccess(userId: string): Promise<boolean> {
+  const subscription = await prisma.subscription.findUnique({
+    where: { userId },
+    select: { plan: true, status: true },
+  });
+
+  return subscription?.plan === 'PRO' && subscription.status === 'ACTIVE';
+}
+
 /**
- * Create a checkout session for purchasing scan credits
+ * Create a checkout session for purchasing lifetime access
  */
 export async function createCheckoutSession(
   options: CreateCheckoutOptions
@@ -202,23 +213,48 @@ export async function processPaymentSuccess(
       },
     });
 
-    // Credit user's scan balance (upsert to create if not exists)
-    await tx.scanCredit.upsert({
-      where: { userId: payment.userId },
-      create: {
-        userId: payment.userId,
-        totalCredits: 1 + creditsToAdd, // 1 free + purchased
-        usedCredits: 0,
-      },
-      update: {
-        totalCredits: {
-          increment: creditsToAdd,
+    if (payment.productType === 'SCAN_CREDIT') {
+      await tx.subscription.upsert({
+        where: { userId: payment.userId },
+        create: {
+          userId: payment.userId,
+          plan: 'PRO',
+          status: 'ACTIVE',
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: LIFETIME_PERIOD_END,
+          cancelAtPeriodEnd: false,
         },
-      },
-    });
+        update: {
+          plan: 'PRO',
+          status: 'ACTIVE',
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: LIFETIME_PERIOD_END,
+          cancelAtPeriodEnd: false,
+        },
+      });
+    } else {
+      // Legacy credit pack fulfillment for older purchases
+      await tx.scanCredit.upsert({
+        where: { userId: payment.userId },
+        create: {
+          userId: payment.userId,
+          totalCredits: 1 + creditsToAdd, // 1 free + purchased
+          usedCredits: 0,
+        },
+        update: {
+          totalCredits: {
+            increment: creditsToAdd,
+          },
+        },
+      });
+    }
   });
 
-  console.log(`Payment ${payment.id} processed successfully. Added ${creditsToAdd} credits.`);
+  console.log(
+    payment.productType === 'SCAN_CREDIT'
+      ? `Payment ${payment.id} processed successfully. Lifetime access unlocked.`
+      : `Payment ${payment.id} processed successfully. Added ${creditsToAdd} credits.`
+  );
 }
 
 /**
@@ -264,9 +300,6 @@ export async function processPaymentRefund(
     return;
   }
 
-  const product = PRODUCTS[payment.productType];
-  const creditsToDeduct = product?.credits || payment.quantity;
-
   await prisma.$transaction(async (tx) => {
     // Update payment status
     await tx.payment.update({
@@ -274,23 +307,45 @@ export async function processPaymentRefund(
       data: { status: 'REFUNDED' },
     });
 
-    // Deduct credits (but don't go below 0 used credits)
-    const credit = await tx.scanCredit.findUnique({
-      where: { userId: payment.userId },
-    });
-
-    if (credit) {
-      const remainingCredits = credit.totalCredits - credit.usedCredits;
-      const actualDeduction = Math.min(creditsToDeduct, remainingCredits);
-
-      await tx.scanCredit.update({
+    if (payment.productType === 'SCAN_CREDIT') {
+      await tx.subscription.upsert({
         where: { userId: payment.userId },
-        data: {
-          totalCredits: {
-            decrement: actualDeduction,
-          },
+        create: {
+          userId: payment.userId,
+          plan: 'FREE',
+          status: 'ACTIVE',
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(),
+          cancelAtPeriodEnd: false,
+        },
+        update: {
+          plan: 'FREE',
+          status: 'ACTIVE',
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(),
+          cancelAtPeriodEnd: false,
         },
       });
+    } else {
+      const product = PRODUCTS[payment.productType];
+      const creditsToDeduct = product?.credits || payment.quantity;
+      const credit = await tx.scanCredit.findUnique({
+        where: { userId: payment.userId },
+      });
+
+      if (credit) {
+        const remainingCredits = credit.totalCredits - credit.usedCredits;
+        const actualDeduction = Math.min(creditsToDeduct, remainingCredits);
+
+        await tx.scanCredit.update({
+          where: { userId: payment.userId },
+          data: {
+            totalCredits: {
+              decrement: actualDeduction,
+            },
+          },
+        });
+      }
     }
   });
 }
@@ -302,10 +357,21 @@ export async function getUserCredits(userId: string): Promise<{
   totalCredits: number;
   usedCredits: number;
   availableCredits: number;
+  isUnlimited: boolean;
 }> {
+  const unlimited = await hasLifetimeAccess(userId);
   const credit = await prisma.scanCredit.findUnique({
     where: { userId },
   });
+
+  if (unlimited) {
+    return {
+      totalCredits: credit?.totalCredits || 0,
+      usedCredits: credit?.usedCredits || 0,
+      availableCredits: credit ? credit.totalCredits - credit.usedCredits : 0,
+      isUnlimited: true,
+    };
+  }
 
   if (!credit) {
     // Initialize credits for new user (1 free scan)
@@ -321,6 +387,7 @@ export async function getUserCredits(userId: string): Promise<{
       totalCredits: newCredit.totalCredits,
       usedCredits: newCredit.usedCredits,
       availableCredits: newCredit.totalCredits - newCredit.usedCredits,
+      isUnlimited: false,
     };
   }
 
@@ -328,6 +395,7 @@ export async function getUserCredits(userId: string): Promise<{
     totalCredits: credit.totalCredits,
     usedCredits: credit.usedCredits,
     availableCredits: credit.totalCredits - credit.usedCredits,
+    isUnlimited: false,
   };
 }
 
@@ -335,6 +403,10 @@ export async function getUserCredits(userId: string): Promise<{
  * Check if user has available credits
  */
 export async function hasAvailableCredits(userId: string): Promise<boolean> {
+  if (await hasLifetimeAccess(userId)) {
+    return true;
+  }
+
   const credits = await getUserCredits(userId);
   return credits.availableCredits > 0;
 }
@@ -343,6 +415,10 @@ export async function hasAvailableCredits(userId: string): Promise<boolean> {
  * Deduct a credit for a scan (call when scan starts)
  */
 export async function deductCredit(userId: string): Promise<boolean> {
+  if (await hasLifetimeAccess(userId)) {
+    return true;
+  }
+
   const credit = await prisma.scanCredit.findUnique({
     where: { userId },
   });
@@ -367,6 +443,10 @@ export async function deductCredit(userId: string): Promise<boolean> {
  * Refund a credit (call when scan fails)
  */
 export async function refundCredit(userId: string): Promise<void> {
+  if (await hasLifetimeAccess(userId)) {
+    return;
+  }
+
   const credit = await prisma.scanCredit.findUnique({
     where: { userId },
   });
