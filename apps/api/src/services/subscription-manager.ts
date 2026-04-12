@@ -1,5 +1,6 @@
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { prisma } from '../db.js';
+import { createCheckoutSession } from './payments.js';
 import type { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
 
 const LIFETIME_PERIOD_END = new Date('2099-12-31T23:59:59.999Z');
@@ -197,6 +198,30 @@ export async function getOrCreateSubscription(userId: string): Promise<{
     status: subscription.status,
     currentPeriodEnd: subscription.currentPeriodEnd,
     cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+  };
+}
+
+/**
+ * Create the checkout link for the paid lifetime Pro plan.
+ * This currently reuses the main lifetime-access checkout flow.
+ */
+export async function createSubscriptionCheckout(options: {
+  userId: string;
+  userEmail: string;
+  plan: 'PRO';
+  successUrl: string;
+  cancelUrl: string;
+}): Promise<{ checkoutUrl: string }> {
+  const session = await createCheckoutSession({
+    userId: options.userId,
+    userEmail: options.userEmail,
+    productType: 'SCAN_CREDIT',
+    successUrl: options.successUrl,
+    cancelUrl: options.cancelUrl,
+  });
+
+  return {
+    checkoutUrl: session.paymentLink,
   };
 }
 

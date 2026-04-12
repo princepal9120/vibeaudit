@@ -203,7 +203,7 @@ export default function NewScanPage() {
               <button
                 key={type}
                 type="button"
-                onClick={() => setFormData((prev) => ({ ...prev, scanType: type, file: null, githubUrl: '', liveUrl: '' }))}
+                onClick={() => setFormData((prev) => ({ ...prev, scanType: type, file: null, githubUrl: '', liveUrl: '', branch: '' }))}
                 className={cn(
                   'p-4 rounded-xl text-left transition-all h-full flex flex-col justify-between',
                   isSelected

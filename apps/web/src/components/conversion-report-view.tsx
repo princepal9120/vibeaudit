@@ -3,10 +3,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SecurityScoreCard } from '@/components/security-score';
 import { FindingsSummary, SeverityBadge } from '@/components/badges';
-import type { Report } from '@/lib/types';
+import type { ConversionReportData } from '@/lib/types';
+
+interface ConversionReportLike {
+  securityScore: number;
+  criticalCount: number;
+  highCount: number;
+  mediumCount: number;
+  lowCount: number;
+  executiveSummary: string | null;
+  conversionData?: ConversionReportData | null;
+}
 
 interface ConversionReportViewProps {
-  report: Report;
+  report: ConversionReportLike;
 }
 
 export function ConversionReportView({ report }: ConversionReportViewProps) {

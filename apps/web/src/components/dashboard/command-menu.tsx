@@ -71,7 +71,7 @@ export function CommandMenu() {
                         </CommandItem>
                         <CommandItem onSelect={() => runCommand(() => router.push("/scans"))}>
                             <ShieldAlert className="mr-2 h-4 w-4" />
-                            <span>Scans</span>
+                            <span>Audits</span>
                         </CommandItem>
                         <CommandItem onSelect={() => runCommand(() => router.push("/scan/new"))}>
                             <PlusCircle className="mr-2 h-4 w-4" />

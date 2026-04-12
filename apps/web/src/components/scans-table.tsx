@@ -53,7 +53,7 @@ export function ScansTable({ scans }: ScansTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Repository</TableHead>
+              <TableHead>Target</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>

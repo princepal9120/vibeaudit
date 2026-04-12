@@ -136,7 +136,7 @@ export default function ScansPage() {
         },
         {
             accessorKey: 'report',
-            header: 'Score',
+            header: 'Audit Score',
             cell: ({ row }) => {
                 const report = row.original.report;
                 if (!report) return <span className="text-muted-foreground">-</span>;

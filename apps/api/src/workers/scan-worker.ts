@@ -18,7 +18,7 @@ import { cloneRepository, cleanupRepository } from '../services/git.js';
 import { generateAIExplanations } from '../services/ai-explanations.js';
 import { calculateSecurityScore } from '../services/scoring.js';
 import { runConversionAudit } from '../services/conversion-audit.js';
-import type { RawFinding, TriagedFinding } from '../services/scanners/types.js';
+import type { RawFinding, Severity, TriagedFinding } from '../services/scanners/types.js';
 
 type ActiveScanStatus =
   | 'QUEUED'
@@ -289,7 +289,7 @@ async function updateScanStatus(
       status,
       progress,
       progressPercent,
-      ...(status === 'CLONING' || status === 'SCANNING' ? { startedAt: new Date() } : {}),
+      ...(progressPercent <= 15 ? { startedAt: new Date() } : {}),
     },
   });
 }
