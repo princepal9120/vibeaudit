@@ -43,8 +43,12 @@ async function main() {
 
   // 4. Initialize job queue
   try {
-    await initializeQueue();
-    console.log('✅ Job queue initialized');
+    const queueStatus = await initializeQueue();
+    if (queueStatus.available) {
+      console.log('✅ Job queue initialized');
+    } else {
+      console.warn('⚠️ Job queue unavailable:', queueStatus.reason || 'Unknown Redis error');
+    }
   } catch (error) {
     console.error('⚠️ Job queue initialization failed (Redis may not be running):', error instanceof Error ? error.message : error);
     // Don't exit — scans won't work but the API stays up

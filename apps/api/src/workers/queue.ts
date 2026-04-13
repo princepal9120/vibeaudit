@@ -11,6 +11,11 @@ export interface ScanJobData {
   branch?: string;
 }
 
+export interface QueueInitializationResult {
+  available: boolean;
+  reason?: string;
+}
+
 // BullMQ connection options using URL
 const connectionOptions = {
   url: config.redisUrl,
@@ -18,61 +23,122 @@ const connectionOptions = {
   enableReadyCheck: false,
 };
 
+const scanWorkerDisabledReason =
+  'Scan worker is disabled for request-metered Redis deployments. ' +
+  'Set ENABLE_SCAN_WORKER=true on a dedicated worker service if you want this instance to process scans.';
+
 let scanQueue: Queue<ScanJobData> | null = null;
 let scanWorker: Worker<ScanJobData> | null = null;
+let queueInitializationPromise: Promise<QueueInitializationResult> | null = null;
 
-export async function initializeQueue(): Promise<void> {
-  // Create queue with URL-based connection
-  scanQueue = new Queue<ScanJobData>('scans', {
-    connection: connectionOptions,
-    defaultJobOptions: {
-      attempts: 3,
-      backoff: {
-        type: 'exponential',
-        delay: 5000,
-      },
-      removeOnComplete: {
-        count: 100, // Keep last 100 completed jobs
-      },
-      removeOnFail: {
-        count: 50, // Keep last 50 failed jobs
-      },
-    },
-  });
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
 
-  // Create worker
-  scanWorker = new Worker<ScanJobData>(
-    'scans',
-    async (job: Job<ScanJobData>) => {
-      return processScanJob(job);
-    },
-    {
-      connection: connectionOptions,
-      concurrency: 2, // Process 2 scans at a time
-      limiter: {
-        max: 10,
-        duration: 60000, // Max 10 jobs per minute
-      },
-    }
-  );
+  return String(error);
+}
 
-  // Worker event handlers
-  scanWorker.on('completed', (job) => {
+function attachQueueEventHandlers(worker: Worker<ScanJobData>, queue: Queue<ScanJobData>): void {
+  worker.on('completed', (job) => {
     console.log(`✅ Scan job ${job.id} completed for scan ${job.data.scanId}`);
   });
 
-  scanWorker.on('failed', (job, err) => {
+  worker.on('failed', (job, err) => {
     console.error(`❌ Scan job ${job?.id} failed:`, err.message);
   });
 
-  scanWorker.on('error', (err) => {
-    console.error('Worker error:', err);
+  worker.on('error', (error) => {
+    console.error('Worker error:', error);
   });
+
+  queue.on('error', (error) => {
+    console.error('Queue error:', error);
+  });
+}
+
+export async function initializeQueue(): Promise<QueueInitializationResult> {
+  if (!config.enableScanWorker) {
+    return {
+      available: false,
+      reason: scanWorkerDisabledReason,
+    };
+  }
+
+  if (scanQueue && scanWorker) {
+    return { available: true };
+  }
+
+  if (queueInitializationPromise) {
+    return queueInitializationPromise;
+  }
+
+  queueInitializationPromise = (async () => {
+    const queue = new Queue<ScanJobData>('scans', {
+      connection: connectionOptions,
+      defaultJobOptions: {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 5000,
+        },
+        removeOnComplete: {
+          count: 100, // Keep last 100 completed jobs
+        },
+        removeOnFail: {
+          count: 50, // Keep last 50 failed jobs
+        },
+      },
+    });
+
+    const worker = new Worker<ScanJobData>(
+      'scans',
+      async (job: Job<ScanJobData>) => {
+        return processScanJob(job);
+      },
+      {
+        connection: connectionOptions,
+        concurrency: 2, // Process 2 scans at a time
+        limiter: {
+          max: 10,
+          duration: 60000, // Max 10 jobs per minute
+        },
+      }
+    );
+
+    attachQueueEventHandlers(worker, queue);
+
+    scanQueue = queue;
+    scanWorker = worker;
+
+    try {
+      await Promise.all([
+        queue.waitUntilReady(),
+        worker.waitUntilReady(),
+      ]);
+
+      return { available: true };
+    } catch (error) {
+      const reason = getErrorMessage(error);
+      await closeQueue();
+      return {
+        available: false,
+        reason,
+      };
+    } finally {
+      queueInitializationPromise = null;
+    }
+  })();
+
+  return queueInitializationPromise;
 }
 
 export async function addScanJob(data: ScanJobData): Promise<string | undefined> {
   if (!scanQueue) {
-    throw new Error('Queue not initialized');
+    const result = await initializeQueue();
+    if (!result.available || !scanQueue) {
+      throw new Error(result.reason || 'Queue not initialized');
+    }
   }
 
   const job = await scanQueue.add(`scan-${data.scanId}`, data, {
@@ -107,10 +173,14 @@ export async function getScanJobStatus(jobId: string): Promise<{
 }
 
 export async function closeQueue(): Promise<void> {
-  if (scanWorker) {
-    await scanWorker.close();
-  }
-  if (scanQueue) {
-    await scanQueue.close();
-  }
+  const queue = scanQueue;
+  const worker = scanWorker;
+
+  scanQueue = null;
+  scanWorker = null;
+
+  await Promise.allSettled([
+    worker ? worker.close() : Promise.resolve(),
+    queue ? queue.close() : Promise.resolve(),
+  ]);
 }

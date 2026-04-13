@@ -84,6 +84,7 @@ Optional product integrations:
 - GitHub / Google OAuth
 - ImageKit
 - Dodo Payments
+- `ENABLE_SCAN_WORKER=true` if you want this API instance to run BullMQ workers (recommended only on a dedicated worker service, especially with Upstash)
 
 See `docs/SETUP.md` for a fuller setup walkthrough.
 

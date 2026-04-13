@@ -1,5 +1,11 @@
 import 'dotenv/config';
 
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const usesRequestMeteredRedis = /upstash/i.test(redisUrl) || Boolean(process.env.UPSTASH_REDIS_REST_URL);
+const enableScanWorker = process.env.ENABLE_SCAN_WORKER
+  ? process.env.ENABLE_SCAN_WORKER === 'true'
+  : !usesRequestMeteredRedis;
+
 export const config = {
   // Server
   port: parseInt(process.env.PORT || '8000', 10),
@@ -9,7 +15,8 @@ export const config = {
   databaseUrl: process.env.DATABASE_URL || 'postgresql://localhost:5432/vibeaudit',
 
   // Redis
-  redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
+  redisUrl,
+  enableScanWorker,
 
   // Better Auth
   jwtSecret: process.env.BETTER_AUTH_SECRET || process.env.JWT_SECRET || '',
