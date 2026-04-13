@@ -29,8 +29,12 @@ export function createApp(): Express {
       // Allow any localhost origin
       if (origin.startsWith('http://localhost:')) return callback(null, true);
 
-      // Allow any configured origins
+      // Allow any configured origins (exact match against array)
       if (config.frontendUrl.includes(origin)) return callback(null, true);
+
+      // Allow www/non-www variants of configured origins
+      const wwwStripped = origin.replace(/^https?:\/\/www\./, 'https://');
+      if (config.frontendUrl.includes(wwwStripped)) return callback(null, true);
 
       // Reject otherwise
       console.warn(`🚫 CORS blocked request from: ${origin}`);
