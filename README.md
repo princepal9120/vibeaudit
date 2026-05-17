@@ -3,12 +3,12 @@
 <div align="center">
 
 ![VibeAudit](https://img.shields.io/badge/VibeAudit-v1.0-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 ![Status](https://img.shields.io/badge/status-MVP-yellow)
 
 **Security scanning platform for indie builders, vibe coders, freelancers, and early-stage teams**
 
-[Features](#-features) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [Documentation](#-documentation)
+[Features](#-features) • [Architecture](#-architecture) • [Quick Start](#-quick-start) • [Contributing](#-contributing)
 
 </div>
 
@@ -134,7 +134,7 @@ VibeAudit is a security scanning platform built for developers who ship code fas
 | | AWS S3 | Storage |
 | **Auth** | Auth.js (NextAuth) | 5.x |
 
-See [`ARCHITECTURE.md`](ARCHITECTURE.md) for detailed system design.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for detailed system design.
 
 ---
 
@@ -152,7 +152,7 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) for detailed system design.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourorg/vibeaudit.git
+git clone https://github.com/princepal9120/vibeaudit.git
 cd vibeaudit
 
 # Install dependencies
@@ -165,7 +165,7 @@ cp .env.example .env
 nano .env
 
 # Start local services (PostgreSQL, Redis)
-docker-compose up -d
+docker compose up -d
 
 # Run database migrations
 npm run db:migrate
@@ -212,7 +212,7 @@ API_URL=http://localhost:5000
 NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
-See [`SETUP.md`](SETUP.md) for detailed setup instructions.
+See [`docs/SETUP.md`](docs/SETUP.md) for detailed setup instructions.
 
 ---
 
@@ -222,34 +222,25 @@ See [`SETUP.md`](SETUP.md) for detailed setup instructions.
 vibeaudit/
 ├── apps/
 │   ├── web/                 # Next.js frontend application
-│   │   ├── app/             # App Router pages
-│   │   ├── components/      # React components
-│   │   ├── lib/            # Utilities & helpers
-│   │   └── public/         # Static assets
+│   │   ├── src/app/         # App Router pages
+│   │   ├── src/components/  # React components
+│   │   ├── src/hooks/       # React hooks
+│   │   ├── src/lib/         # Utilities and helpers
+│   │   └── public/          # Static assets
 │   │
 │   └── api/                 # Express.js backend application
-│       ├── src/
-│       │   ├── routes/     # API endpoints
-│       │   ├── services/   # Business logic
-│       │   ├── workers/    # Background jobs
-│       │   └── utils/      # Utilities
-│       └── prisma/         # Database schema
+│       ├── src/routes/      # API endpoints
+│       ├── src/services/    # Business logic
+│       ├── src/workers/     # Background jobs
+│       └── prisma/          # Database schema
 │
 ├── packages/
-│   └── shared/              # Shared TypeScript types & utilities
-│       ├── src/
-│       │   ├── types/      # Shared type definitions
-│       │   └── utils/      # Shared utilities
-│       └── package.json
+│   └── shared/              # Shared TypeScript schemas and utilities
 │
-├── docs/                    # Documentation
-│   ├── ARCHITECTURE.md
-│   ├── SETUP.md
-│   └── API.md
-│
+├── docs/                    # Architecture, setup, PRD, and technical docs
+├── .github/                 # CI, issue templates, and PR template
 ├── docker-compose.yml       # Local development services
-├── package.json            # Root package.json
-├── turbo.json              # Turborepo configuration
+├── package.json             # Root workspace package.json
 └── README.md
 ```
 
@@ -272,38 +263,26 @@ npm run build:api        # Build backend only
 
 # Database
 npm run db:migrate       # Run Prisma migrations
-npm run db:seed          # Seed database with test data
 npm run db:studio        # Open Prisma Studio
-npm run db:reset         # Reset database
 
-# Testing
-npm run test             # Run all tests
-npm run test:unit        # Run unit tests
-npm run test:e2e         # Run E2E tests
-npm run test:coverage    # Generate coverage report
-
-# Linting & Formatting
-npm run lint             # Run ESLint
-npm run lint:fix         # Fix linting errors
-npm run format           # Run Prettier
-npm run format:fix       # Fix formatting issues
-
-# Type Checking
-npm run typecheck        # Run TypeScript type checks
+# Quality checks
+npm run lint             # Run ESLint for the web app
+npm run build            # Build web and API workspaces
+npm run build:web        # Build frontend only
+npm run build:api        # Generate Prisma client and build API only
 
 # Docker
-npm run docker:up        # Start Docker services
-npm run docker:down      # Stop Docker services
-npm run docker:logs      # View Docker logs
+docker compose up -d     # Start local PostgreSQL and Redis
+docker compose down      # Stop local services
+docker compose logs      # View local service logs
 ```
 
 ### Code Quality
 
-- **Linting:** ESLint + TypeScript
-- **Formatting:** Prettier
-- **Type Checking:** TypeScript strict mode
-- **Testing:** Jest + Playwright (E2E)
-- **Pre-commit Hooks:** Husky + lint-staged
+- **Linting:** ESLint for the web workspace
+- **Type checking:** TypeScript builds for the web and API workspaces
+- **Database types:** Prisma client generation through API build and `npm run db:generate`
+- **Testing:** Add feature-level tests as `*.test.ts` or `*.test.tsx` when behavior changes
 
 ---
 
@@ -311,32 +290,26 @@ npm run docker:logs      # View Docker logs
 
 | Document | Description |
 |----------|-------------|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Detailed system architecture, database schema, API design |
-| [`SETUP.md`](SETUP.md) | Development environment setup, deployment guide |
-| [`API.md`](API.md) | API endpoint documentation (auto-generated) |
-| [CLAUDE.md](CLAUDE.md) | Complete PRD and technical specifications |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Detailed system architecture, database schema, API design |
+| [`docs/SETUP.md`](docs/SETUP.md) | Development environment setup and deployment guide |
+| [`docs/VibeAudit_PRD.md`](docs/VibeAudit_PRD.md) | Product requirements and scope |
+| [`docs/VibeAudit_TechSpec.md`](docs/VibeAudit_TechSpec.md) | Technical specification |
+| [`claude.md`](claude.md) | Extended product and implementation notes |
 
 ---
 
 ## 🧪 Testing
 
-### Unit Tests
+The project does not have a full automated test suite yet. Until package-specific tests are added, use the smallest relevant verification for your change:
 
 ```bash
-npm run test:unit
+npm run lint
+npm run build
+npm run build:api
+npm run build:web
 ```
 
-### E2E Tests
-
-```bash
-npm run test:e2e
-```
-
-### Test Coverage
-
-```bash
-npm run test:coverage
-```
+For behavior changes, include manual verification steps in your pull request. New tests should live beside the changed feature as `*.test.ts` or `*.test.tsx`.
 
 ---
 
@@ -396,17 +369,25 @@ See [`SETUP.md`](SETUP.md) for complete deployment guide.
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+VibeAudit is open source and welcomes contributions from builders, security practitioners, designers, and documentation contributors.
 
-### Development Process
+Good first ways to help:
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests and linting (`npm run lint && npm run test`)
-5. Commit your changes (`git commit -m 'Add amazing feature'`)
-6. Push to the branch (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+- Report reproducible bugs with logs or screenshots
+- Improve setup docs and examples
+- Fix UI polish, accessibility, or empty states
+- Add scan rules, dependency checks, or report improvements
+- Review pull requests and test branches locally
+
+Start here:
+
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md).
+2. Read the [Code of Conduct](CODE_OF_CONDUCT.md).
+3. For vulnerabilities, follow [SECURITY.md](SECURITY.md) instead of opening a public issue.
+4. Open an issue or choose one labeled `good first issue`, `help wanted`, or `documentation`.
+5. Fork the repository, create a focused branch, run the relevant checks, and open a pull request using the template.
+
+Maintainers review PRs into `master`, which is protected and requires pull request review.
 
 ---
 
