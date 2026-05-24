@@ -19,7 +19,8 @@ import { GitHubIcon, GlobeIcon, ArrowLeftIcon, DocumentIcon, RefreshIcon } from 
 import { LoadingOverlay, ProgressBar, PulsingDot } from '@/components/loading';
 import { StatusBadge, FindingsSummary } from '@/components/badges';
 import { SecurityScoreCard } from '@/components/security-score';
-import { FindingsListWithHeader, FindingsListSkeleton } from '@/components/findings-list';
+import { GroupedFindingsList } from '@/components/findings-list';
+import { ConversionReportView } from '@/components/conversion-report-view';
 import { useScan } from '@/hooks';
 import { cn, formatDateLong, getScanTarget, isScanInProgress, isScanFailed } from '@/lib/utils';
 import type { Scan } from '@/lib/types';
@@ -34,51 +35,69 @@ interface ScanHeaderProps {
 }
 
 function ScanHeader({ scan, onBack }: ScanHeaderProps) {
+  const isConversionAudit = scan.auditType === 'CONVERSION';
   const isGitHub = Boolean(scan.githubRepoUrl);
   const target = getScanTarget(scan);
   const hasReport = Boolean(scan.report);
+  const isActive = isScanInProgress(scan.status);
+  const isFailed = isScanFailed(scan.status);
 
   return (
-    <div className="flex items-start justify-between">
-      <div>
-        <div className="flex items-center gap-3 mb-2">
-          {/* Scan Type Icon */}
-          <div
-            className={cn(
-              'h-12 w-12 rounded-xl flex items-center justify-center',
-              isGitHub ? 'bg-slate-100' : 'bg-blue-100'
-            )}
-          >
-            {isGitHub ? (
-              <GitHubIcon className="h-6 w-6 text-slate-700" />
-            ) : (
-              <GlobeIcon className="h-6 w-6 text-blue-600" />
-            )}
+    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+      <div className="flex items-start gap-4">
+        {/* Scan Type Icon */}
+        <div
+          className={cn(
+            'h-14 w-14 rounded-2xl flex items-center justify-center flex-shrink-0',
+            isConversionAudit ? 'bg-violet-500/10' : isGitHub ? 'bg-secondary' : 'bg-blue-500/10'
+          )}
+        >
+          {isConversionAudit ? (
+            <svg
+              className="h-7 w-7 text-violet-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          ) : isGitHub ? (
+            <GitHubIcon className="h-7 w-7 text-foreground" />
+          ) : (
+            <GlobeIcon className="h-7 w-7 text-blue-500" />
+          )}
+        </div>
+        {/* Target */}
+        <div className="min-w-0">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground truncate">{target}</h1>
+            <StatusBadge status={scan.status} showPulse={isActive} />
           </div>
-          {/* Target */}
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 truncate max-w-lg">{target}</h1>
-            <p className="text-slate-500 text-sm">
-              Started {formatDateLong(scan.createdAt)}
-            </p>
-          </div>
+          <p className="text-muted-foreground text-sm mt-1">
+            Started {formatDateLong(scan.createdAt)}
+          </p>
         </div>
       </div>
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        {hasReport && (
+        <Button variant="outline" onClick={onBack} className="border-border hover:bg-secondary">
+          <ArrowLeftIcon className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">Back</span>
+        </Button>
+        {hasReport && !isFailed && (
           <Link href={`/reports/${scan.report!.id}`}>
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-              <DocumentIcon className="h-4 w-4 mr-2" />
-              View Report
+            <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm">
+              <DocumentIcon className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">
+                {isConversionAudit ? 'View Audit Report' : 'View Full Report'}
+              </span>
+              <span className="sm:hidden">{isConversionAudit ? 'Audit' : 'Report'}</span>
             </Button>
           </Link>
         )}
-        <Button variant="outline" onClick={onBack} className="border-slate-200">
-          <ArrowLeftIcon className="h-4 w-4 mr-2" />
-          Back
-        </Button>
       </div>
     </div>
   );
@@ -99,16 +118,20 @@ function ProgressSection({ scan, isPolling }: ProgressSectionProps) {
   if (!isActive) return null;
 
   return (
-    <Card className="border-emerald-200 bg-emerald-50/50">
-      <CardContent className="py-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+    <Card className="border-primary/20 bg-primary/5">
+      <CardContent className="py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
             {isPolling && <PulsingDot />}
-            <span className="text-slate-900 font-medium">
-              {scan.progress || 'Processing...'}
-            </span>
+            <div>
+              <span className="text-foreground font-semibold text-lg">
+                {scan.progress || 'Processing...'}
+              </span>
+              <p className="text-sm text-primary mt-0.5">
+                Auto-refreshing every 3s
+              </p>
+            </div>
           </div>
-          <StatusBadge status={scan.status} showPulse />
         </div>
         <ProgressBar value={scan.progressPercent || 0} />
       </CardContent>
@@ -129,32 +152,33 @@ function ErrorSection({ scan, onRetry }: ErrorSectionProps) {
   if (!isScanFailed(scan.status)) return null;
 
   return (
-    <Card className="border-red-200 bg-red-50">
-      <CardContent className="py-6">
-        <div className="flex items-center justify-between">
+    <Card className="border-destructive/20 bg-destructive/5">
+      <CardContent className="py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+            <div className="h-14 w-14 rounded-2xl bg-destructive/10 flex items-center justify-center flex-shrink-0">
               <svg
-                className="h-6 w-6 text-red-600"
+                className="h-7 w-7 text-destructive"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 strokeWidth={2}
+                aria-hidden="true"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-slate-900">Scan Failed</h3>
-              <p className="text-slate-600">
+              <h3 className="text-lg font-bold text-foreground">Scan Failed</h3>
+              <p className="text-muted-foreground mt-1">
                 {scan.errorMessage || 'An error occurred during the scan'}
               </p>
             </div>
           </div>
           {onRetry && (
-            <Button variant="outline" onClick={onRetry} className="border-red-200">
+            <Button variant="outline" onClick={onRetry} className="border-destructive/30 hover:bg-destructive/10 text-destructive">
               <RefreshIcon className="h-4 w-4 mr-2" />
-              Retry
+              Retry Scan
             </Button>
           )}
         </div>
@@ -176,17 +200,21 @@ function ResultsSection({ scan }: ResultsSectionProps) {
 
   if (!report) return null;
 
+  if (scan.auditType === 'CONVERSION') {
+    return <ConversionReportView report={report} />;
+  }
+
   return (
-    <>
+    <div className="space-y-6">
       {/* Score and Summary Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Security Score Card */}
         <SecurityScoreCard score={report.securityScore} showLabel showGrade />
 
         {/* Findings Summary */}
-        <Card className="border-slate-200 lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-slate-900">Findings Summary</CardTitle>
+        <Card className="border-border shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-foreground text-lg">Findings Summary</CardTitle>
           </CardHeader>
           <CardContent>
             <FindingsSummary
@@ -201,25 +229,23 @@ function ResultsSection({ scan }: ResultsSectionProps) {
 
       {/* Executive Summary */}
       {report.executiveSummary && (
-        <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-slate-900">Executive Summary</CardTitle>
+        <Card className="border-border shadow-sm">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-foreground text-lg">Executive Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
+            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
               {report.executiveSummary}
             </p>
           </CardContent>
         </Card>
       )}
 
-      {/* Findings List */}
-      <FindingsListWithHeader
-        findings={report.findings}
-        title="Security Findings"
-        showCount
-      />
-    </>
+      {/* Findings List (grouped with tabs when launch readiness findings exist) */}
+      <div className="pt-4">
+        <GroupedFindingsList findings={report.findings} />
+      </div>
+    </div>
   );
 }
 
@@ -235,15 +261,16 @@ interface ErrorPageProps {
 function ErrorPage({ message, onBack }: ErrorPageProps) {
   return (
     <div className="max-w-2xl mx-auto">
-      <Card className="border-red-200 bg-red-50">
+      <Card className="border-destructive/20 bg-destructive/5">
         <CardContent className="py-12 text-center">
-          <div className="h-16 w-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+          <div className="h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
             <svg
-              className="h-8 w-8 text-red-600"
+              className="h-8 w-8 text-destructive"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={2}
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -252,9 +279,9 @@ function ErrorPage({ message, onBack }: ErrorPageProps) {
               />
             </svg>
           </div>
-          <h3 className="text-xl font-semibold text-slate-900 mb-2">Error</h3>
-          <p className="text-slate-600 mb-6">{message}</p>
-          <Button variant="outline" onClick={onBack} className="border-slate-200">
+          <h3 className="text-xl font-semibold text-foreground mb-2">Error</h3>
+          <p className="text-muted-foreground mb-6">{message}</p>
+          <Button variant="outline" onClick={onBack} className="border-border">
             Back to Dashboard
           </Button>
         </CardContent>
@@ -287,6 +314,7 @@ export default function ScanDetailsPage() {
 
   // Error state
   if (error || !scan) {
+    // Only verify toast once if needed, but here we just render error state
     return <ErrorPage message={error || 'Scan not found'} onBack={handleBack} />;
   }
 

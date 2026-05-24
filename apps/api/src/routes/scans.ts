@@ -1,23 +1,41 @@
-import { Router, type Response, type NextFunction } from 'express';
+import { Router, type Response, type NextFunction, type IRouter } from 'express';
 import { z } from 'zod';
 import { prisma } from '../db.js';
 import { authenticateToken, getUserId, type AuthRequest } from '../middleware/auth.js';
 import { addScanJob } from '../workers/queue.js';
+import { hasAvailableCredits, deductCredit, refundCredit } from '../services/payments.js';
 
-const router = Router();
+const router: IRouter = Router();
 
 // All scan routes require authentication
 router.use(authenticateToken);
 
 // Validation schemas
 const createScanSchema = z.object({
+  auditType: z.enum(['SECURITY', 'CONVERSION']).optional().default('SECURITY'),
   githubRepoUrl: z.string().url().optional(),
   liveUrl: z.string().url().optional(),
-  branch: z.string().optional(),
-}).refine(
-  data => data.githubRepoUrl || data.liveUrl,
-  { message: 'Either githubRepoUrl or liveUrl is required' }
-);
+  branch: z.string().trim().optional(),
+}).superRefine((data, ctx) => {
+  if (data.auditType === 'CONVERSION') {
+    if (!data.liveUrl) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'A liveUrl is required for conversion audits',
+        path: ['liveUrl'],
+      });
+    }
+    return;
+  }
+
+  if (!data.githubRepoUrl && !data.liveUrl) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Either githubRepoUrl or liveUrl is required',
+      path: ['githubRepoUrl'],
+    });
+  }
+});
 
 // GET /api/scans - List user's scans
 router.get('/', async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -67,16 +85,40 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
   try {
     const userId = getUserId(req);
     const body = createScanSchema.parse(req.body);
+    const normalizedBranch = body.branch || undefined;
+
+    // Check if user has available credits
+    const hasCredits = await hasAvailableCredits(userId);
+    if (!hasCredits) {
+      res.status(402).json({
+        error: 'No scan credits available',
+        code: 'INSUFFICIENT_CREDITS',
+        message: 'Please purchase scan credits to continue',
+      });
+      return;
+    }
+
+    // Deduct credit before creating scan
+    const creditDeducted = await deductCredit(userId);
+    if (!creditDeducted) {
+      res.status(402).json({
+        error: 'Failed to deduct credit',
+        code: 'CREDIT_DEDUCTION_FAILED',
+        message: 'Please try again or contact support',
+      });
+      return;
+    }
 
     // Create scan record
     const scan = await prisma.scan.create({
       data: {
         userId,
+        auditType: body.auditType,
         githubRepoUrl: body.githubRepoUrl,
         liveUrl: body.liveUrl,
-        branch: body.branch || 'main',
+        branch: normalizedBranch ?? null,
         status: 'QUEUED',
-        progress: 'Scan queued...',
+        progress: body.auditType === 'CONVERSION' ? 'Conversion audit queued...' : 'Scan queued...',
         progressPercent: 0,
       },
     });
@@ -86,13 +128,18 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
       await addScanJob({
         scanId: scan.id,
         userId,
+        auditType: body.auditType,
         githubRepoUrl: body.githubRepoUrl,
         liveUrl: body.liveUrl,
-        branch: body.branch || 'main',
+        branch: normalizedBranch,
       });
     } catch (queueError) {
       // Queue might not be available in development
       console.error('Failed to add scan to queue:', queueError);
+
+      // Refund the credit since scan failed to queue
+      await refundCredit(userId);
+
       // Update scan status to indicate queue issue
       await prisma.scan.update({
         where: { id: scan.id },
@@ -101,6 +148,12 @@ router.post('/', async (req: AuthRequest, res: Response, next: NextFunction) => 
           errorMessage: 'Job queue unavailable. Please try again later.',
         },
       });
+
+      res.status(503).json({
+        error: 'Job queue unavailable. Please try again later.',
+        code: 'QUEUE_UNAVAILABLE',
+      });
+      return;
     }
 
     res.status(201).json(scan);
@@ -185,6 +238,17 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
     const userId = getUserId(req);
     const scanId = req.params.id as string;
 
+    // Check if user has available credits
+    const hasCredits = await hasAvailableCredits(userId);
+    if (!hasCredits) {
+      res.status(402).json({
+        error: 'No scan credits available',
+        code: 'INSUFFICIENT_CREDITS',
+        message: 'Please purchase scan credits to continue',
+      });
+      return;
+    }
+
     // Get original scan
     const originalScan = await prisma.scan.findFirst({
       where: {
@@ -198,15 +262,27 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
       return;
     }
 
+    // Deduct credit before creating scan
+    const creditDeducted = await deductCredit(userId);
+    if (!creditDeducted) {
+      res.status(402).json({
+        error: 'Failed to deduct credit',
+        code: 'CREDIT_DEDUCTION_FAILED',
+        message: 'Please try again or contact support',
+      });
+      return;
+    }
+
     // Create new scan with same parameters
     const newScan = await prisma.scan.create({
       data: {
         userId,
+        auditType: originalScan.auditType,
         githubRepoUrl: originalScan.githubRepoUrl,
         liveUrl: originalScan.liveUrl,
         branch: originalScan.branch,
         status: 'QUEUED',
-        progress: 'Scan queued...',
+        progress: originalScan.auditType === 'CONVERSION' ? 'Conversion audit queued...' : 'Scan queued...',
         progressPercent: 0,
       },
     });
@@ -216,12 +292,17 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
       await addScanJob({
         scanId: newScan.id,
         userId,
+        auditType: originalScan.auditType,
         githubRepoUrl: originalScan.githubRepoUrl || undefined,
         liveUrl: originalScan.liveUrl || undefined,
-        branch: originalScan.branch || 'main',
+        branch: originalScan.branch || undefined,
       });
     } catch (queueError) {
       console.error('Failed to add rescan to queue:', queueError);
+
+      // Refund the credit since scan failed to queue
+      await refundCredit(userId);
+
       await prisma.scan.update({
         where: { id: newScan.id },
         data: {
@@ -229,6 +310,12 @@ router.post('/:id/rescan', async (req: AuthRequest, res: Response, next: NextFun
           errorMessage: 'Job queue unavailable. Please try again later.',
         },
       });
+
+      res.status(503).json({
+        error: 'Job queue unavailable. Please try again later.',
+        code: 'QUEUE_UNAVAILABLE',
+      });
+      return;
     }
 
     res.status(201).json(newScan);

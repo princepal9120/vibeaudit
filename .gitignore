@@ -42,3 +42,5 @@ next-env.d.ts
 
 # user data (signups stored locally)
 /data/signups.json
+.gstack/
+.omx/

@@ -1,49 +1,29 @@
-// API client for VibeAudit backend
+// API client for the VibeAudit backend
+// Authentication is handled by Better Auth via cookies (credentials: 'include')
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+// API_URL points to the backend server (e.g., http://localhost:8000)
+// We need to append /api for the actual API routes
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+const API_BASE = API_URL ? `${API_URL}/api` : '/api';
 
 interface ApiError {
   error: string;
 }
 
 class ApiClient {
-  private token: string | null = null;
-
-  setToken(token: string | null) {
-    this.token = token;
-    if (token) {
-      localStorage.setItem('vibeaudit_token', token);
-    } else {
-      localStorage.removeItem('vibeaudit_token');
-    }
-  }
-
-  getToken(): string | null {
-    if (this.token) return this.token;
-    if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('vibeaudit_token');
-    }
-    return this.token;
-  }
-
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const token = this.getToken();
-
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       ...options.headers,
     };
 
-    if (token) {
-      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
-    }
-
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
       headers,
+      credentials: 'include', // Include cookies for Better Auth session
     });
 
     if (!response.ok) {
@@ -56,32 +36,15 @@ class ApiClient {
     return response.json();
   }
 
-  // Auth endpoints
-  async signup(email: string, password: string, name?: string) {
-    return this.request<{ user: User; token: string }>('/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, name }),
+  // Helper for authenticated file downloads
+  async fetchWithAuth(url: string): Promise<Blob> {
+    const response = await fetch(url, {
+      credentials: 'include',
     });
-  }
-
-  async login(email: string, password: string) {
-    return this.request<{ user: User; token: string }>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-  }
-
-  async logout() {
-    await this.request('/auth/logout', { method: 'POST' });
-    this.setToken(null);
-  }
-
-  async getCurrentUser() {
-    return this.request<User & { scanCount: number }>('/auth/me');
-  }
-
-  getGitHubAuthUrl() {
-    return `${API_BASE}/auth/github`;
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.blob();
   }
 
   // Scans endpoints
@@ -96,7 +59,7 @@ class ApiClient {
     return this.request<Scan>(`/scans/${id}`);
   }
 
-  async createScan(data: { githubRepoUrl?: string; liveUrl?: string; branch?: string }) {
+  async createScan(data: { auditType?: 'SECURITY' | 'CONVERSION'; githubRepoUrl?: string; liveUrl?: string; branch?: string }) {
     return this.request<Scan>('/scans', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -116,18 +79,16 @@ class ApiClient {
   }
 
   // SSE for scan progress
+  // Note: EventSource doesn't support credentials/cookies natively
+  // The backend should validate session via other means or use polling instead
   subscribeScanProgress(
     id: number,
     onProgress: (progress: ScanProgress) => void,
     onError?: (error: Error) => void
   ): () => void {
-    const token = this.getToken();
     const url = `${API_BASE}/scans/${id}/progress`;
 
-    const eventSource = new EventSource(url, {
-      // Note: EventSource doesn't support custom headers, so we use query params in dev
-      // In production, use cookies or a different approach
-    });
+    const eventSource = new EventSource(url);
 
     eventSource.onmessage = (event) => {
       try {
@@ -138,7 +99,7 @@ class ApiClient {
       }
     };
 
-    eventSource.onerror = (error) => {
+    eventSource.onerror = () => {
       onError?.(new Error('Connection error'));
       eventSource.close();
     };
@@ -176,9 +137,155 @@ class ApiClient {
   getPdfUrl(id: number) {
     return `${API_BASE}/reports/${id}/pdf`;
   }
+
+  // Payment endpoints
+  async getProducts() {
+    return this.request<{
+      products: Array<{
+        type: ProductType;
+        id: string;
+        name: string;
+        price: number;
+        credits: number;
+        description: string;
+        priceFormatted: string;
+        perScanPrice: number;
+        perScanFormatted: string;
+        currency?: string;
+      }>;
+    }>('/payments/products');
+  }
+
+  async createCheckoutSession(productType: ProductType) {
+    return this.request<{
+      paymentId: string;
+      paymentLink: string;
+    }>('/payments/checkout', {
+      method: 'POST',
+      body: JSON.stringify({ productType }),
+    });
+  }
+
+  async getScanCredits() {
+    return this.request<{
+      totalCredits: number;
+      usedCredits: number;
+      availableCredits: number;
+    }>('/payments/credits');
+  }
+
+  async getPaymentHistory(page = 1, limit = 10) {
+    return this.request<{
+      payments: Payment[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/payments/history?page=${page}&limit=${limit}`);
+  }
+
+  // PRD Review endpoints
+  async getPrdReviews(page = 1, limit = 10) {
+    return this.request<{
+      reviews: PrdReview[];
+      pagination: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/prd-reviews?page=${page}&limit=${limit}`);
+  }
+
+  async getPrdReview(id: string) {
+    return this.request<PrdReviewDetail>(`/prd-reviews/${id}`);
+  }
+
+  async createPrdReview(data: { title: string; content: string; fileName?: string }) {
+    return this.request<{ id: string; title: string; status: PrdReviewStatus; createdAt: string }>(
+      '/prd-reviews',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }
+    );
+  }
+
+  async deletePrdReview(id: string) {
+    return this.request<{ message: string }>(`/prd-reviews/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  getPrdReviewDownloadUrl(id: string) {
+    return `${API_BASE}/prd-reviews/${id}/download`;
+  }
+
+  async uploadPrdReviewPdf(id: string) {
+    return this.request<{ url: string; fileId: string; size?: number; cached: boolean }>(
+      `/prd-reviews/${id}/pdf/upload`,
+      { method: 'POST' }
+    );
+  }
+
+  getPrdReviewPdfUrl(id: string) {
+    return `${API_BASE}/prd-reviews/${id}/pdf`;
+  }
+
+  async sharePrdReview(id: string, expiresInDays = 30) {
+    return this.request<{ shareToken: string; shareUrl: string; expiresAt: string }>(
+      `/prd-reviews/${id}/share`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ expiresInDays }),
+      }
+    );
+  }
+
+  async revokePrdReviewShare(id: string) {
+    return this.request<{ message: string }>(`/prd-reviews/${id}/share`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getSharedPrdReview(token: string) {
+    return this.request<PrdReviewDetail & { authorName: string; isSharedView: boolean }>(
+      `/prd-reviews/shared/${token}`
+    );
+  }
+
+  // Subscription endpoints
+  async getCurrentSubscription() {
+    return this.request<{
+      subscription: {
+        plan: SubscriptionPlan;
+        planName: string;
+        status: SubscriptionStatus;
+        currentPeriodEnd: string;
+        cancelAtPeriodEnd: boolean;
+      };
+      usage: {
+        reviewsUsed: number;
+        reviewsLimit: number;
+        periodStart: string;
+        periodEnd: string;
+        isUnlimited: boolean;
+      };
+    }>('/subscriptions/current');
+  }
+
+  async getSubscriptionPlans() {
+    return this.request<{
+      plans: SubscriptionPlanDetail[];
+    }>('/subscriptions/plans');
+  }
+
+  async createSubscriptionCheckout() {
+    return this.request<{ checkoutUrl: string }>('/subscriptions/checkout', {
+      method: 'POST',
+    });
+  }
+
+  async cancelSubscription() {
+    return this.request<{ message: string }>('/subscriptions/cancel', {
+      method: 'POST',
+    });
+  }
 }
 
-// Types (should match @vibeaudit/shared)
+// Types
 export interface User {
   id: number;
   email: string;
@@ -274,6 +381,84 @@ export interface Finding {
   aiValidated: boolean;
   ruleId: string | null;
   createdAt: string;
+}
+
+export type ProductType = 'SCAN_CREDIT' | 'SCAN_BUNDLE_5' | 'SCAN_BUNDLE_10';
+
+export type PaymentStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'REFUNDED';
+
+export interface Payment {
+  id: string;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  productType: ProductType;
+  quantity: number;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+// PRD Review types
+export type PrdReviewStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+
+export interface PrdReview {
+  id: string;
+  title: string;
+  fileName: string | null;
+  status: PrdReviewStatus;
+  securityScore: number | null;
+  processingTimeMs: number | null;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface PrdFinding {
+  id: string;
+  framework: string;
+  frameworkItem: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  title: string;
+  description: string;
+  recommendation: string;
+  section?: string;
+}
+
+export interface FrameworkCoverage {
+  framework: string;
+  frameworkName: string;
+  coveredItems: string[];
+  missingItems: string[];
+  coveragePercent: number;
+}
+
+export interface PrdReviewDetail extends PrdReview {
+  userId: string;
+  originalContent: string;
+  securedContent: string | null;
+  errorMessage: string | null;
+  findings: PrdFinding[] | null;
+  frameworkCoverage: FrameworkCoverage[] | null;
+  // PDF and sharing
+  pdfUrl: string | null;
+  pdfFileId: string | null;
+  shareToken: string | null;
+  shareExpiresAt: string | null;
+}
+
+// Subscription types
+export type SubscriptionPlan = 'FREE' | 'PRO';
+export type SubscriptionStatus = 'ACTIVE' | 'CANCELLED' | 'PAST_DUE' | 'EXPIRED';
+
+export interface SubscriptionPlanDetail {
+  id: string;
+  productId: string;
+  name: string;
+  price: number;
+  priceFormatted: string;
+  reviewsPerMonth: number;
+  reviewsFormatted: string;
+  description: string;
+  features: string[];
 }
 
 // Export singleton instance

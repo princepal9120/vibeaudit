@@ -1,11 +1,8 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { safeSpawn } from '../../lib/safe-exec.js';
 import type { RawFinding, Severity } from './types.js';
 import { SCANNER_TIMEOUTS } from './types.js';
-
-const execAsync = promisify(exec);
 
 interface NpmAuditResult {
   vulnerabilities: Record<string, {
@@ -53,9 +50,12 @@ export async function runNpmAudit(repoPath: string): Promise<RawFinding[]> {
 
   try {
     // npm audit returns exit code 1 if vulnerabilities found, so we handle that
-    const { stdout } = await execAsync(
-      `cd "${repoPath}" && npm audit --json 2>/dev/null || true`,
+    // Using safeSpawn with cwd option instead of shell cd command to prevent injection
+    const { stdout } = await safeSpawn(
+      'npm',
+      ['audit', '--json'],
       {
+        cwd: repoPath,
         timeout: SCANNER_TIMEOUTS.NPM_AUDIT,
         maxBuffer: 10 * 1024 * 1024, // 10MB buffer
       }
@@ -68,6 +68,19 @@ export async function runNpmAudit(repoPath: string): Promise<RawFinding[]> {
     const result: NpmAuditResult = JSON.parse(stdout);
     return parseNpmAuditResult(result);
   } catch (error) {
+    // npm audit returns non-zero exit code when vulnerabilities found
+    // but stdout still contains valid JSON
+    if (error instanceof Error && 'stdout' in error) {
+      const stdout = (error as { stdout: string }).stdout;
+      if (stdout.trim()) {
+        try {
+          const result: NpmAuditResult = JSON.parse(stdout);
+          return parseNpmAuditResult(result);
+        } catch {
+          // JSON parse failed
+        }
+      }
+    }
     console.error('npm audit scan failed:', error);
     return [];
   }

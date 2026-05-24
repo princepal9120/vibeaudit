@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { GroupedFindingsList } from '@/components/findings-list';
+import { ConversionReportView } from '@/components/conversion-report-view';
+import type { Finding as ReportFinding, ConversionReportData } from '@/lib/types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 interface Finding {
   id: string;
@@ -22,6 +25,10 @@ interface Finding {
   lineNumber: number | null;
   codeSnippet: string | null;
   confidence: number;
+  aiValidated?: boolean;
+  falsePositive?: boolean;
+  ruleId?: string | null;
+  createdAt?: string;
 }
 
 interface Report {
@@ -33,28 +40,18 @@ interface Report {
   mediumCount: number;
   lowCount: number;
   executiveSummary: string | null;
+  conversionData?: ConversionReportData | null;
   shareToken: string | null;
   createdAt: string;
   findings: Finding[];
   scan: {
     id: string;
+    auditType: 'SECURITY' | 'CONVERSION';
     githubRepoUrl: string | null;
     liveUrl: string | null;
     createdAt: string;
     completedAt: string | null;
   };
-}
-
-function getSeverityBadge(severity: string) {
-  const config: Record<string, { className: string }> = {
-    CRITICAL: { className: 'bg-red-100 text-red-700 border border-red-200' },
-    HIGH: { className: 'bg-amber-100 text-amber-700 border border-amber-200' },
-    MEDIUM: { className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
-    LOW: { className: 'bg-blue-100 text-blue-700 border border-blue-200' },
-  };
-
-  const { className } = config[severity] || { className: 'bg-slate-100 text-slate-700' };
-  return <Badge className={className}>{severity}</Badge>;
 }
 
 function getScoreColor(score: number): string {
@@ -79,22 +76,8 @@ function getScoreLabel(score: number): string {
 
 function ShieldIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-    </svg>
-  );
-}
-
-function ChevronIcon({ className, direction = 'down' }: { className?: string; direction?: 'up' | 'down' }) {
-  return (
-    <svg
-      className={`${className} transition-transform ${direction === 'up' ? 'rotate-180' : ''}`}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
     </svg>
   );
 }
@@ -107,7 +90,6 @@ export default function ReportDetailPage() {
   const [report, setReport] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedFinding, setExpandedFinding] = useState<string | null>(null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [sharing, setSharing] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -151,9 +133,11 @@ export default function ReportDetailPage() {
         const url = `${window.location.origin}/reports/shared/${data.shareToken}`;
         setShareUrl(url);
         await navigator.clipboard.writeText(url);
+        toast.success('Report link copied to clipboard');
       }
     } catch (err) {
       console.error('Failed to share report:', err);
+      toast.error('Failed to share report');
     } finally {
       setSharing(false);
     }
@@ -171,7 +155,7 @@ export default function ReportDetailPage() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `vibeaudit-report-${reportId}.pdf`;
+        a.download = `VibeAudit-report-${reportId}.pdf`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
@@ -179,6 +163,7 @@ export default function ReportDetailPage() {
       }
     } catch (err) {
       console.error('Failed to download PDF:', err);
+      toast.error('Failed to download report PDF');
     } finally {
       setDownloading(false);
     }
@@ -188,11 +173,11 @@ export default function ReportDetailPage() {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex items-center gap-2 text-slate-500">
-          <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+          <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
-          Loading report...
+          Loading report…
         </div>
       </div>
     );
@@ -201,17 +186,17 @@ export default function ReportDetailPage() {
   if (error || !report) {
     return (
       <div className="max-w-2xl mx-auto">
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-destructive/20 bg-destructive/5">
           <CardContent className="py-8 text-center">
-            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+              <svg className="h-6 w-6 text-destructive" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">Error</h3>
-            <p className="text-slate-600 mb-4">{error || 'Report not found'}</p>
+            <h3 className="text-xl font-semibold text-foreground mb-2">Error</h3>
+            <p className="text-muted-foreground mb-4">{error || 'Report not found'}</p>
             <Link href="/dashboard">
-              <Button variant="outline" className="border-slate-200">Back to Dashboard</Button>
+              <Button variant="outline" className="border-border">Back to Dashboard</Button>
             </Link>
           </CardContent>
         </Card>
@@ -220,6 +205,7 @@ export default function ReportDetailPage() {
   }
 
   const target = report.scan.githubRepoUrl || report.scan.liveUrl || 'Unknown';
+  const isConversionAudit = report.scan.auditType === 'CONVERSION';
 
   return (
     <div className="space-y-8">
@@ -227,12 +213,14 @@ export default function ReportDetailPage() {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-              <ShieldIcon className="h-5 w-5 text-emerald-600" />
+          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <ShieldIcon className="h-5 w-5 text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900">Security Report</h1>
+            <h1 className="text-2xl font-bold text-foreground">
+              {isConversionAudit ? 'Conversion Audit Report' : 'Security Report'}
+            </h1>
           </div>
-          <p className="text-slate-500">
+          <p className="text-muted-foreground">
             {target} - Generated {new Date(report.createdAt).toLocaleDateString()}
           </p>
         </div>
@@ -241,21 +229,23 @@ export default function ReportDetailPage() {
             variant="outline"
             onClick={handleShare}
             disabled={sharing}
-            className="border-slate-200"
+            className="border-border"
           >
-            {sharing ? 'Sharing...' : shareUrl ? 'Copy Link' : 'Share Report'}
+            {sharing ? 'Sharing…' : shareUrl ? 'Copy Link' : 'Share Report'}
           </Button>
-          <Button
-            onClick={handleDownloadPdf}
-            disabled={downloading}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
-          >
-            {downloading ? 'Downloading...' : 'Download PDF'}
-          </Button>
+          {!isConversionAudit && (
+            <Button
+              onClick={handleDownloadPdf}
+              disabled={downloading}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              {downloading ? 'Downloading…' : 'Download PDF'}
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={() => router.push('/dashboard')}
-            className="border-slate-200"
+            className="border-border"
           >
             Back
           </Button>
@@ -266,7 +256,7 @@ export default function ReportDetailPage() {
         <Card className="border-emerald-200 bg-emerald-50">
           <CardContent className="py-4">
             <div className="flex items-center gap-3">
-              <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
               <div className="flex-1">
@@ -278,133 +268,68 @@ export default function ReportDetailPage() {
         </Card>
       )}
 
-      {/* Score Card */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className={`border md:col-span-1 ${getScoreBg(report.securityScore)}`}>
-          <CardContent className="py-6 text-center">
-            <div className={`text-6xl font-bold ${getScoreColor(report.securityScore)}`}>
-              {report.securityScore}
-            </div>
-            <div className="text-slate-500 mt-2">Security Score</div>
-            <div className={`text-sm font-medium mt-1 ${getScoreColor(report.securityScore)}`}>
-              {getScoreLabel(report.securityScore)}
-            </div>
-          </CardContent>
-        </Card>
+      {isConversionAudit ? (
+        <ConversionReportView report={report} />
+      ) : (
+        <>
+          {/* Score Card */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className={`border md:col-span-1 ${getScoreBg(report.securityScore)}`}>
+              <CardContent className="py-6 text-center">
+                <div className={`text-6xl font-bold ${getScoreColor(report.securityScore)}`}>
+                  {report.securityScore}
+                </div>
+                <div className="text-muted-foreground mt-2">Security Score</div>
+                <div className={`text-sm font-medium mt-1 ${getScoreColor(report.securityScore)}`}>
+                  {getScoreLabel(report.securityScore)}
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card className="border-slate-200 md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-slate-900">Findings Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-4 text-center">
-              <div className="p-3 rounded-lg bg-red-50">
-                <div className="text-3xl font-bold text-red-600">{report.criticalCount}</div>
-                <div className="text-sm text-slate-500">Critical</div>
-              </div>
-              <div className="p-3 rounded-lg bg-amber-50">
-                <div className="text-3xl font-bold text-amber-600">{report.highCount}</div>
-                <div className="text-sm text-slate-500">High</div>
-              </div>
-              <div className="p-3 rounded-lg bg-yellow-50">
-                <div className="text-3xl font-bold text-yellow-600">{report.mediumCount}</div>
-                <div className="text-sm text-slate-500">Medium</div>
-              </div>
-              <div className="p-3 rounded-lg bg-blue-50">
-                <div className="text-3xl font-bold text-blue-600">{report.lowCount}</div>
-                <div className="text-sm text-slate-500">Low</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Executive Summary */}
-      {report.executiveSummary && (
-        <Card className="border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-slate-900">Executive Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-slate-600 whitespace-pre-wrap">{report.executiveSummary}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Findings List */}
-      <div>
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">
-          Findings ({report.totalFindings})
-        </h2>
-        {report.findings.length === 0 ? (
-          <Card className="border-slate-200">
-            <CardContent className="py-8 text-center">
-              <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">No Issues Found</h3>
-              <p className="text-slate-500">Great job! No security vulnerabilities were detected.</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {report.findings.map((finding) => (
-              <Card key={finding.id} className="border-slate-200">
-                <CardContent className="py-4">
-                  <button
-                    onClick={() => setExpandedFinding(expandedFinding === finding.id ? null : finding.id)}
-                    className="w-full text-left"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {getSeverityBadge(finding.severity)}
-                        <span className="font-medium text-slate-900">{finding.title}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-slate-500 text-sm">
-                        <span className="px-2 py-0.5 bg-slate-100 rounded text-xs">{finding.source}</span>
-                        <ChevronIcon className="h-4 w-4" direction={expandedFinding === finding.id ? 'up' : 'down'} />
-                      </div>
-                    </div>
-                    {finding.filePath && (
-                      <div className="text-sm text-slate-500 mt-1 font-mono">
-                        {finding.filePath}
-                        {finding.lineNumber && `:${finding.lineNumber}`}
-                      </div>
-                    )}
-                  </button>
-
-                  {expandedFinding === finding.id && (
-                    <div className="mt-4 pt-4 border-t border-slate-100 space-y-4">
-                      <div>
-                        <h4 className="text-sm font-medium text-slate-500 mb-1">What it is</h4>
-                        <p className="text-slate-700">{finding.description}</p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-slate-500 mb-1">Why it matters</h4>
-                        <p className="text-slate-700">{finding.impact}</p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-slate-500 mb-1">How to fix</h4>
-                        <p className="text-slate-700 whitespace-pre-wrap">{finding.remediation}</p>
-                      </div>
-                      {finding.codeSnippet && (
-                        <div>
-                          <h4 className="text-sm font-medium text-slate-500 mb-1">Code</h4>
-                          <pre className="bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-slate-700 overflow-x-auto font-mono">
-                            {finding.codeSnippet}
-                          </pre>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+            <Card className="border-border md:col-span-2">
+              <CardHeader>
+                <CardTitle className="text-foreground">Findings Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-4 gap-4 text-center">
+                  <div className="p-3 rounded-lg bg-red-500/10">
+                    <div className="text-3xl font-bold text-red-600">{report.criticalCount}</div>
+                    <div className="text-sm text-muted-foreground">Critical</div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-amber-500/10">
+                    <div className="text-3xl font-bold text-amber-600">{report.highCount}</div>
+                    <div className="text-sm text-muted-foreground">High</div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-yellow-500/10">
+                    <div className="text-3xl font-bold text-yellow-600">{report.mediumCount}</div>
+                    <div className="text-sm text-muted-foreground">Medium</div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-blue-500/10">
+                    <div className="text-3xl font-bold text-blue-600">{report.lowCount}</div>
+                    <div className="text-sm text-muted-foreground">Low</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        )}
-      </div>
+
+          {/* Executive Summary */}
+          {report.executiveSummary && (
+            <Card className="border-border">
+              <CardHeader>
+                <CardTitle className="text-foreground">Executive Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground whitespace-pre-wrap">{report.executiveSummary}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          <div>
+            <GroupedFindingsList findings={report.findings as ReportFinding[]} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

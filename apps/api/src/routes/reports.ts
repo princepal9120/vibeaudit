@@ -1,10 +1,11 @@
-import { Router, type Request, type Response, type NextFunction } from 'express';
+import { Router, type Request, type Response, type NextFunction, type IRouter } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../db.js';
 import { authenticateToken, optionalAuth, getUserId, type AuthRequest } from '../middleware/auth.js';
 import { generatePdf } from '../services/pdf-generator.js';
+import { imagekit } from '../services/imagekit.js';
 
-const router = Router();
+const router: IRouter = Router();
 
 // GET /api/reports/:id - Get report (requires auth)
 router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -20,6 +21,7 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, ne
       include: {
         scan: {
           select: {
+            auditType: true,
             githubRepoUrl: true,
             liveUrl: true,
             branch: true,
@@ -47,7 +49,7 @@ router.get('/:id', authenticateToken, async (req: AuthRequest, res: Response, ne
   }
 });
 
-// GET /api/reports/:id/pdf - Download PDF report
+// GET /api/reports/:id/pdf - Download PDF report (generates on-the-fly)
 router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const userId = getUserId(req);
@@ -73,9 +75,79 @@ router.get('/:id/pdf', authenticateToken, async (req: AuthRequest, res: Response
     const pdfBuffer = await generatePdf(reportId);
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="vibeaudit-report-${reportId}.pdf"`);
+    res.setHeader('Content-Disposition', `attachment; filename="VibeAudit-report-${reportId}.pdf"`);
     res.setHeader('Content-Length', pdfBuffer.length);
     res.send(pdfBuffer);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// POST /api/reports/:id/pdf/upload - Upload PDF to ImageKit for permanent storage
+router.post('/:id/pdf/upload', authenticateToken, async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = getUserId(req);
+    const reportId = req.params.id as string;
+
+    // Check if ImageKit is configured
+    if (!imagekit.isConfigured()) {
+      res.status(503).json({
+        error: 'Cloud storage not configured',
+        message: 'ImageKit credentials are not set. PDF download is still available.',
+      });
+      return;
+    }
+
+    // Verify ownership and get report
+    const report = await prisma.report.findFirst({
+      where: {
+        id: reportId,
+        userId,
+      },
+      select: {
+        id: true,
+        pdfUrl: true,
+        pdfFileId: true,
+      },
+    });
+
+    if (!report) {
+      res.status(404).json({ error: 'Report not found' });
+      return;
+    }
+
+    // If PDF already uploaded, return existing URL
+    if (report.pdfUrl && report.pdfFileId) {
+      res.json({
+        url: report.pdfUrl,
+        fileId: report.pdfFileId,
+        cached: true,
+      });
+      return;
+    }
+
+    // Generate PDF
+    const pdfBuffer = await generatePdf(reportId);
+    const fileName = `VibeAudit-report-${reportId}.pdf`;
+
+    // Upload to ImageKit
+    const uploadResult = await imagekit.upload(pdfBuffer, fileName, '/VibeAudit-reports');
+
+    // Save URL to database
+    await prisma.report.update({
+      where: { id: reportId },
+      data: {
+        pdfUrl: uploadResult.url,
+        pdfFileId: uploadResult.fileId,
+      },
+    });
+
+    res.json({
+      url: uploadResult.url,
+      fileId: uploadResult.fileId,
+      size: uploadResult.size,
+      cached: false,
+    });
   } catch (error) {
     next(error);
   }
@@ -176,6 +248,7 @@ router.get('/shared/:token', optionalAuth, async (req: Request, res: Response, n
       include: {
         scan: {
           select: {
+            auditType: true,
             githubRepoUrl: true,
             liveUrl: true,
             createdAt: true,

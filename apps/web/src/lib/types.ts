@@ -1,6 +1,54 @@
 
 import type { ScanStatus, Severity, FindingCategory, ScanSource } from './constants';
 
+export type AuditType = 'SECURITY' | 'CONVERSION';
+
+export interface ConversionOpportunity {
+  title: string;
+  severity: Severity;
+  category: string;
+  description: string;
+  impact: string;
+  recommendation: string;
+}
+
+export interface ConversionReportData {
+  score: number;
+  productSummary: string;
+  executiveSummary: string;
+  weaknesses: string[];
+  valueProposition: string;
+  headline: string;
+  subheadline: string;
+  benefits: string[];
+  cta: string;
+  socialProofIdeas: string[];
+  trustSignals: string[];
+  strongerHook: string;
+  finalPolishedCopy: {
+    headline: string;
+    subheadline: string;
+    benefits: string[];
+    cta: string;
+  };
+  opportunities: ConversionOpportunity[];
+  pageSnapshot: {
+    liveUrl: string;
+    title: string;
+    metaDescription: string;
+    h1: string;
+    h2s: string[];
+    ctas: string[];
+    textExcerpt: string;
+    trustSignals: string[];
+    socialProofSignals: string[];
+    hasPricing: boolean;
+    hasFaq: boolean;
+    hasTestimonials: boolean;
+    hasStats: boolean;
+  };
+}
+
 
 export interface Finding {
   id: string;
@@ -32,6 +80,7 @@ export interface Report {
   mediumCount: number;
   lowCount: number;
   executiveSummary: string | null;
+  conversionData?: ConversionReportData | null;
   pdfUrl: string | null;
   shareToken: string | null;
   shareExpiresAt: string | null;
@@ -46,6 +95,7 @@ export interface ReportSummary {
   totalFindings: number;
   criticalCount: number;
   highCount: number;
+  pdfUrl?: string | null;
 }
 
 
@@ -53,6 +103,7 @@ export interface ReportSummary {
 export interface Scan {
   id: string;
   userId: string;
+  auditType: AuditType;
   githubRepoUrl: string | null;
   liveUrl: string | null;
   branch: string | null;
@@ -76,9 +127,11 @@ export interface ScanWithReportSummary extends Omit<Scan, 'report'> {
 }
 
 export interface CreateScanRequest {
+  auditType?: AuditType;
   githubRepoUrl?: string;
   liveUrl?: string;
   branch?: string;
+  file?: File;
 }
 
 
@@ -130,7 +183,7 @@ export interface SortConfig {
 
 
 
-export type ScanType = 'github' | 'url' | 'both';
+export type ScanType = 'github' | 'url' | 'both' | 'file' | 'conversion';
 
 export interface ScanFormData {
   scanType: ScanType;

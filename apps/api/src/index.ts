@@ -4,35 +4,12 @@ import { prisma } from './db.js';
 import { initializeQueue } from './workers/queue.js';
 
 async function main() {
-  // Validate config
-  validateConfig();
-
-  // Test database connection
-  try {
-    await prisma.$connect();
-    console.log('✅ Database connected');
-  } catch (error) {
-    console.error('❌ Database connection failed:', error);
-    process.exit(1);
-  }
-
-  // Initialize job queue
-  try {
-    await initializeQueue();
-    console.log('✅ Job queue initialized');
-  } catch (error) {
-    console.error('⚠️ Job queue initialization failed (Redis may not be running):', error);
-    // Continue without queue in development
-    if (config.nodeEnv === 'production') {
-      process.exit(1);
-    }
-  }
-
-  // Create and start server
+  // 1. Start HTTP server FIRST so healthchecks pass immediately
   const app = createApp();
 
-  app.listen(config.port, () => {
-    console.log(`
+  await new Promise<void>((resolve) => {
+    app.listen(config.port, () => {
+      console.log(`
 🚀 VibeAudit API Server
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    Environment: ${config.nodeEnv}
@@ -40,7 +17,42 @@ async function main() {
    Frontend:    ${config.frontendUrl}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `);
+      resolve();
+    });
   });
+
+  // 2. Validate config (server is already up, healthcheck will pass)
+  try {
+    validateConfig();
+    console.log('✅ Config validated');
+  } catch (error) {
+    console.error('❌ Config validation failed:', error instanceof Error ? error.message : error);
+    if (config.nodeEnv === 'production') {
+      process.exit(1);
+    }
+  }
+
+  // 3. Connect to database
+  try {
+    await prisma.$connect();
+    console.log('✅ Database connected');
+  } catch (error) {
+    console.error('❌ Database connection failed:', error instanceof Error ? error.message : error);
+    // Don't exit — healthcheck stays up, DB-dependent routes will fail gracefully
+  }
+
+  // 4. Initialize job queue
+  try {
+    const queueStatus = await initializeQueue();
+    if (queueStatus.available) {
+      console.log('✅ Job queue initialized');
+    } else {
+      console.warn('⚠️ Job queue unavailable:', queueStatus.reason || 'Unknown Redis error');
+    }
+  } catch (error) {
+    console.error('⚠️ Job queue initialization failed (Redis may not be running):', error instanceof Error ? error.message : error);
+    // Don't exit — scans won't work but the API stays up
+  }
 }
 
 main().catch((error) => {

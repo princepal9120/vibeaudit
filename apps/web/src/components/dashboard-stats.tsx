@@ -1,38 +1,36 @@
+'use client';
 
-import { Card, CardContent, CardDescription, CardHeader } from '@/components/ui/card';
-import { ShieldIcon, CheckCircleIcon, ChartBarIcon, AlertTriangleIcon } from '@/components/icons';
-import { cn, getScoreColor } from '@/lib/utils';
+import { Scan, CheckCircle, BarChart2, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { DashboardStats } from '@/lib/types';
 
-
-
-interface StatCardProps {
-  title: string;
+interface MetricCardProps {
+  label: string;
   value: string | number;
+  change?: string;
+  changeColor?: string;
   icon: React.ReactNode;
-  valueClassName?: string;
-  description?: string;
+  iconBg: string;
 }
 
-function StatCard({ title, value, icon, valueClassName, description }: StatCardProps) {
+function MetricCard({ label, value, change, changeColor = 'text-[#9CA3AF]', icon, iconBg }: MetricCardProps) {
   return (
-    <Card className="border-slate-200 hover:border-slate-300 transition-colors">
-      <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-        <CardDescription className="text-slate-500 font-medium">{title}</CardDescription>
-        <div className="h-8 w-8 rounded-lg bg-slate-100 flex items-center justify-center">
+    <div className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 md:p-5">
+      <div className="flex items-center justify-between mb-2 md:mb-3">
+        <span className="text-xs md:text-[13px] text-[#9CA3AF]">{label}</span>
+        <div className={cn('w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center', iconBg)}>
           {icon}
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className={cn('text-3xl font-bold', valueClassName || 'text-slate-900')}>
-          {value}
-        </div>
-        {description && <p className="text-xs text-slate-500 mt-1">{description}</p>}
-      </CardContent>
-    </Card>
+      </div>
+      <div className="text-2xl md:text-[32px] font-semibold text-[#111827] leading-none mb-1 md:mb-2">
+        {value}
+      </div>
+      {change && (
+        <span className={cn('text-[10px] md:text-xs hidden sm:inline', changeColor)}>{change}</span>
+      )}
+    </div>
   );
 }
-
 
 interface DashboardStatsProps {
   stats: DashboardStats;
@@ -40,95 +38,79 @@ interface DashboardStatsProps {
 }
 
 export function DashboardStatsGrid({ stats, className }: DashboardStatsProps) {
-  const scoreDisplay = stats.averageScore > 0 ? `${stats.averageScore}/100` : '-';
-  const scoreColor = stats.averageScore > 0 ? getScoreColor(stats.averageScore) : 'text-slate-400';
+  const scoreDisplay = stats.averageScore > 0 ? stats.averageScore : '-';
 
   return (
-    <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4', className)}>
-      <StatCard
-        title="Total Scans"
+    <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4', className)}>
+      <MetricCard
+        label="Total Scans"
         value={stats.totalScans}
-        icon={<ShieldIcon className="h-4 w-4 text-slate-600" />}
-        description="All time scans"
+        change="+12% from last month"
+        changeColor="text-[#10B981]"
+        icon={<Scan className="w-4 h-4 text-[#10B981]" />}
+        iconBg="bg-[#D1FAE5]"
       />
-      <StatCard
-        title="Completed"
+      <MetricCard
+        label="Completed"
         value={stats.completedScans}
-        valueClassName="text-emerald-600"
-        icon={<CheckCircleIcon className="h-4 w-4 text-emerald-600" />}
-        description="Successfully analyzed"
+        change="Successfully analyzed"
+        icon={<CheckCircle className="w-4 h-4 text-[#10B981]" />}
+        iconBg="bg-[#D1FAE5]"
       />
-      <StatCard
-        title="Avg Score"
+      <MetricCard
+        label="Avg Score"
         value={scoreDisplay}
-        valueClassName={scoreColor}
-        icon={<ChartBarIcon className="h-4 w-4 text-slate-600" />}
-        description="Security score average"
+        change="Security score average"
+        icon={<BarChart2 className="w-4 h-4 text-[#F59E0B]" />}
+        iconBg="bg-[#FEF3C7]"
       />
-      <StatCard
-        title="Total Findings"
+      <MetricCard
+        label="Total Findings"
         value={stats.totalFindings}
-        valueClassName={stats.criticalFindings > 0 ? 'text-red-600' : 'text-amber-600'}
-        icon={<AlertTriangleIcon className="h-4 w-4 text-amber-600" />}
-        description={
-          stats.criticalFindings > 0
-            ? `${stats.criticalFindings} critical`
-            : 'Issues discovered'
-        }
+        change={stats.criticalFindings > 0 ? `${stats.criticalFindings} critical issues` : 'Issues discovered'}
+        changeColor={stats.criticalFindings > 0 ? 'text-[#DC2626]' : 'text-[#9CA3AF]'}
+        icon={<AlertTriangle className="w-4 h-4 text-[#DC2626]" />}
+        iconBg="bg-[#FEE2E2]"
       />
     </div>
   );
 }
-
-
-interface CompactStatsProps {
-  stats: DashboardStats;
-  className?: string;
-}
-
-export function CompactStats({ stats, className }: CompactStatsProps) {
-  return (
-    <div className={cn('flex items-center gap-6 text-sm', className)}>
-      <div className="flex items-center gap-2">
-        <span className="text-slate-500">Scans:</span>
-        <span className="font-semibold text-slate-900">{stats.totalScans}</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-slate-500">Completed:</span>
-        <span className="font-semibold text-emerald-600">{stats.completedScans}</span>
-      </div>
-      {stats.averageScore > 0 && (
-        <div className="flex items-center gap-2">
-          <span className="text-slate-500">Avg Score:</span>
-          <span className={cn('font-semibold', getScoreColor(stats.averageScore))}>
-            {stats.averageScore}
-          </span>
-        </div>
-      )}
-      {stats.totalFindings > 0 && (
-        <div className="flex items-center gap-2">
-          <span className="text-slate-500">Findings:</span>
-          <span className="font-semibold text-amber-600">{stats.totalFindings}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
 
 export function DashboardStatsSkeleton() {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
       {[...Array(4)].map((_, i) => (
-        <Card key={i} className="border-slate-200">
-          <CardHeader className="pb-2">
-            <div className="h-3 w-20 bg-slate-200 rounded animate-pulse" />
-          </CardHeader>
-          <CardContent>
-            <div className="h-8 w-16 bg-slate-200 rounded animate-pulse" />
-          </CardContent>
-        </Card>
+        <div key={i} className="bg-[#F9FAFB] rounded-xl border border-[#E5E7EB] p-4 md:p-5">
+          <div className="flex items-center justify-between mb-2 md:mb-3">
+            <div className="h-3 md:h-4 w-16 md:w-20 bg-gray-200 rounded animate-pulse" />
+            <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-200 rounded-lg animate-pulse" />
+          </div>
+          <div className="h-6 md:h-8 w-12 md:w-16 bg-gray-200 rounded animate-pulse mb-1 md:mb-2" />
+          <div className="h-2 md:h-3 w-20 md:w-24 bg-gray-100 rounded animate-pulse hidden sm:block" />
+        </div>
       ))}
+    </div>
+  );
+}
+
+// Compact stats for other views
+export function CompactStats({ stats, className }: DashboardStatsProps) {
+  return (
+    <div className={cn('flex items-center gap-6 text-sm', className)}>
+      <div className="flex items-center gap-2">
+        <span className="text-[#9CA3AF]">Scans:</span>
+        <span className="font-semibold text-[#111827]">{stats.totalScans}</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-[#9CA3AF]">Completed:</span>
+        <span className="font-semibold text-[#10B981]">{stats.completedScans}</span>
+      </div>
+      {stats.averageScore > 0 && (
+        <div className="flex items-center gap-2">
+          <span className="text-[#9CA3AF]">Avg Score:</span>
+          <span className="font-semibold text-[#111827]">{stats.averageScore}</span>
+        </div>
+      )}
     </div>
   );
 }

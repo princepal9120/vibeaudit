@@ -1,5 +1,3 @@
-// Prisma schema for VibeAudit
-// Uses better-auth for authentication
 
 generator client {
   provider = "prisma-client-js"
@@ -9,9 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
-// ==========================================
-// better-auth models (required field names)
-// ==========================================
+
 
 model user {
   id            String    @id @default(cuid())
@@ -22,12 +18,29 @@ model user {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // 2FA fields
+  twoFactorEnabled Boolean @default(false)
+
+  // Organization fields
+  activeOrganizationId String?
+
   sessions      session[]
   accounts      account[]
 
-  // VibeAudit relations
   scans         Scan[]
   reports       Report[]
+  payments      Payment[]
+  scanCredit    ScanCredit?
+
+  // PRD Review feature
+  subscription  Subscription?
+  prdUsage      PrdUsage[]
+  prdReviews    PrdReview[]
+
+  // Organization relations
+  members       member[]
+  invitations   invitation[]
+  twoFactor     twoFactor?
 
   @@index([email])
 }
@@ -41,6 +54,9 @@ model session {
   userAgent String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Organization context
+  activeOrganizationId String?
 
   user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -80,14 +96,12 @@ model verification {
   @@index([identifier])
 }
 
-// ==========================================
-// VibeAudit models
-// ==========================================
 
 model Scan {
   id              String    @id @default(cuid())
   userId          String
   user            user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  auditType       AuditType @default(SECURITY)
 
   githubRepoUrl   String?
   liveUrl         String?
@@ -127,6 +141,11 @@ enum ScanStatus {
   CANCELLED
 }
 
+enum AuditType {
+  SECURITY
+  CONVERSION
+}
+
 model Report {
   id              String    @id @default(cuid())
   scanId          String    @unique
@@ -145,7 +164,9 @@ model Report {
 
   // Generated content
   executiveSummary String?  @db.Text
-  pdfUrl          String?   // S3 URL
+  conversionData  Json?
+  pdfUrl          String?   // ImageKit URL
+  pdfFileId       String?   // ImageKit file ID
 
   // Sharing
   shareToken      String?   @unique
@@ -215,6 +236,16 @@ enum FindingCategory {
   DEPENDENCIES
   CRYPTOGRAPHY
   CONFIGURATION
+  RACE_CONDITION
+  IDOR
+  SSRF
+  MASS_ASSIGNMENT
+  DESERIALIZATION
+  // Launch readiness categories
+  SEO
+  PERFORMANCE
+  ACCESSIBILITY
+  ESSENTIALS
   OTHER
 }
 
@@ -224,26 +255,65 @@ enum ScanSource {
   NPM_AUDIT
   TRIVY
   GITLEAKS
+  ADVANCED
+  // Launch readiness scanners
+  SEO_SCANNER
+  PERFORMANCE_SCANNER
+  ACCESSIBILITY_SCANNER
+  ESSENTIALS_SCANNER
 }
 
 // Payment tracking (for pay-per-scan model)
 model Payment {
   id              String    @id @default(cuid())
   userId          String
-  scanId          String?
+  user            user      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Dodo Payments fields
+  dodoPaymentId   String?   @unique
+  dodoSessionId   String?   @unique
+  dodoCustomerId  String?
+
+  // Payment details
   amount          Int       // Amount in cents
-  currency        String    @default("usd")
+  currency        String    @default("USD")
   status          PaymentStatus @default(PENDING)
 
-  stripePaymentId String?   @unique
-  stripeSessionId String?
+  // Product info
+  productType     ProductType   @default(SCAN_CREDIT)
+  quantity        Int           @default(1)
+
+  // Metadata
+  metadata        Json?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  completedAt     DateTime?
+
+  @@index([userId])
+  @@index([dodoPaymentId])
+  @@index([status])
+}
+
+// Track user scan credits
+model ScanCredit {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            user      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalCredits    Int       @default(1)  // Start with 1 free scan
+  usedCredits     Int       @default(0)
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   @@index([userId])
-  @@index([stripePaymentId])
+}
+
+enum ProductType {
+  SCAN_CREDIT      // Single scan ($39)
+  SCAN_BUNDLE_5    // 5-pack ($99)
+  SCAN_BUNDLE_10   // 10-pack ($179)
 }
 
 enum PaymentStatus {
@@ -251,4 +321,156 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+// PRD Review feature
+enum SubscriptionPlan {
+  FREE  // 2 reviews/month
+  PRO   // Unlimited reviews
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  EXPIRED
+}
+
+enum PrdReviewStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  user               user               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan               SubscriptionPlan   @default(FREE)
+  status             SubscriptionStatus @default(ACTIVE)
+  dodoSubscriptionId String?            @unique
+  dodoCustomerId     String?
+  currentPeriodStart DateTime           @default(now())
+  currentPeriodEnd   DateTime
+  cancelAtPeriodEnd  Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([userId])
+}
+
+model PrdUsage {
+  id           String   @id @default(cuid())
+  userId       String
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  periodStart  DateTime
+  periodEnd    DateTime
+  reviewsUsed  Int      @default(0)
+  reviewsLimit Int      @default(2)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, periodStart])
+  @@index([userId])
+}
+
+model PrdReview {
+  id               String          @id @default(cuid())
+  userId           String
+  user             user            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String
+  originalContent  String          @db.Text
+  fileName         String?
+  status           PrdReviewStatus @default(PENDING)
+  errorMessage     String?
+  securedContent   String?         @db.Text
+  securityScore    Int?
+  findings         Json?
+  frameworkCoverage Json?
+  processingTimeMs Int?
+  createdAt        DateTime        @default(now())
+  completedAt      DateTime?
+
+  // PDF Storage (ImageKit)
+  pdfUrl           String?
+  pdfFileId        String?
+
+  // Sharing
+  shareToken       String?         @unique
+  shareExpiresAt   DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([shareToken])
+}
+
+// ============================================
+// Organization Plugin Models (Better Auth)
+// ============================================
+
+model organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  metadata  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members     member[]
+  invitations invitation[]
+
+  @@index([slug])
+}
+
+model member {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           String   @default("member") // owner, admin, member
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         user         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model invitation {
+  id             String   @id @default(cuid())
+  organizationId String
+  email          String
+  role           String   @default("member")
+  status         String   @default("pending") // pending, accepted, expired
+  inviterId      String
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  inviter      user         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+}
+
+// ============================================
+// Two-Factor Authentication Model (Better Auth)
+// ============================================
+
+model twoFactor {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  secret      String
+  backupCodes String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

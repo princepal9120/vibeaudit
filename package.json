@@ -2,25 +2,29 @@
   "name": "vibeaudit",
   "version": "0.1.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "packageManager": "pnpm@10.28.1",
+  "prisma": {
+    "schema": "apps/api/prisma/schema.prisma"
+  },
   "scripts": {
-    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
-    "dev:web": "npm run dev -w apps/web",
-    "dev:api": "npm run dev -w apps/api",
-    "build": "npm run build -w apps/web && npm run build -w apps/api",
-    "build:web": "npm run build -w apps/web",
-    "build:api": "npm run build -w apps/api",
-    "start": "concurrently \"npm run start:api\" \"npm run start:web\"",
-    "start:web": "npm run start -w apps/web",
-    "start:api": "npm run start -w apps/api",
-    "lint": "npm run lint -w apps/web",
-    "db:generate": "npm run db:generate -w apps/api",
-    "db:push": "npm run db:push -w apps/api",
-    "db:migrate": "npm run db:migrate -w apps/api",
-    "db:studio": "npm run db:studio -w apps/api"
+    "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:web\"",
+    "dev:web": "pnpm --filter @vibeaudit/web run dev",
+    "dev:api": "pnpm --filter @vibeaudit/api run dev",
+    "dev:mcp": "pnpm --filter @vibeaudit/mcp-server run dev",
+    "build": "pnpm --filter @vibeaudit/web run build && pnpm --filter @vibeaudit/api run build && pnpm --filter @vibeaudit/mcp-server run build",
+    "build:web": "pnpm --filter @vibeaudit/web run build",
+    "build:api": "pnpm --filter @vibeaudit/api run build",
+    "build:mcp": "pnpm --filter @vibeaudit/mcp-server run build",
+    "start": "concurrently \"pnpm run start:api\" \"pnpm run start:web\"",
+    "start:web": "pnpm --filter @vibeaudit/web run start",
+    "start:api": "pnpm --filter @vibeaudit/api run start",
+    "start:mcp": "pnpm --filter @vibeaudit/mcp-server run start",
+    "mcp:inspect": "pnpm --filter @vibeaudit/mcp-server run inspect",
+    "lint": "pnpm --filter @vibeaudit/web run lint",
+    "db:generate": "pnpm --filter @vibeaudit/api exec prisma generate",
+    "db:push": "pnpm --filter @vibeaudit/api exec prisma db push",
+    "db:migrate": "pnpm --filter @vibeaudit/api exec prisma migrate dev",
+    "db:studio": "pnpm --filter @vibeaudit/api exec prisma studio"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

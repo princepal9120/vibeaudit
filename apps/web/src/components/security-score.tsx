@@ -4,6 +4,7 @@
  */
 
 import { Card, CardContent } from '@/components/ui/card';
+import { SecurityScoreGauge } from '@/components/ui/security-score-gauge';
 import {
   cn,
   getScoreColor,
@@ -22,6 +23,7 @@ interface SecurityScoreCardProps {
   className?: string;
   showLabel?: boolean;
   showGrade?: boolean;
+  label?: string;
 }
 
 export function SecurityScoreCard({
@@ -29,34 +31,29 @@ export function SecurityScoreCard({
   className,
   showLabel = true,
   showGrade = false,
+  label = 'Security Score',
 }: SecurityScoreCardProps) {
-  const color = getScoreColor(score);
   const bgColor = getScoreBgColor(score);
   const borderColor = getScoreBorderColor(score);
-  const label = getScoreLabel(score);
   const grade = getScoreGrade(score);
 
   return (
-    <Card className={cn('border', bgColor, borderColor, className)}>
-      <CardContent className="py-6 text-center">
+    <Card className={cn('border shadow-sm', bgColor, borderColor, className)}>
+      <CardContent className="py-8 flex flex-col items-center justify-center">
         <div className="relative">
           {showGrade && (
             <div
               className={cn(
-                'absolute -top-2 -right-2 h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold',
-                bgColor,
-                color
+                'absolute -top-1 -right-1 h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold bg-white shadow-md',
+                getScoreColor(score)
               )}
             >
               {grade}
             </div>
           )}
-          <div className={cn('text-6xl font-bold', color)}>{score}</div>
+          <SecurityScoreGauge score={score} size="lg" showLabel={showLabel} />
         </div>
-        <div className="text-slate-500 mt-2">Security Score</div>
-        {showLabel && (
-          <div className={cn('text-sm font-medium mt-1', color)}>{label}</div>
-        )}
+        <div className="text-[#71717A] text-sm mt-3">{label}</div>
       </CardContent>
     </Card>
   );
@@ -127,7 +124,7 @@ export function ScoreWithLabel({ score, label = 'Security Score', className }: S
   return (
     <div className={cn('text-center', className)}>
       <div className={cn('text-4xl font-bold', color)}>{score}</div>
-      <div className="text-slate-500 text-sm mt-1">{label}</div>
+      <div className="text-[#71717A] text-sm mt-1">{label}</div>
       <div className={cn('text-xs font-medium mt-0.5', color)}>{scoreLabel}</div>
     </div>
   );
@@ -169,7 +166,7 @@ export function ScoreRing({
           r={radius}
           fill="none"
           strokeWidth={strokeWidth}
-          className="stroke-slate-100"
+          className="stroke-[#27272A]"
         />
         {/* Progress circle */}
         <circle
@@ -186,7 +183,7 @@ export function ScoreRing({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className={cn('text-3xl font-bold', color)}>{score}</span>
-        <span className="text-xs text-slate-500">{label}</span>
+        <span className="text-xs text-[#71717A]">{label}</span>
       </div>
     </div>
   );
@@ -207,7 +204,6 @@ export function ScoreComparison({
   previousScore,
   className,
 }: ScoreComparisonProps) {
-  const color = getScoreColor(currentScore);
   const diff = previousScore !== undefined ? currentScore - previousScore : undefined;
 
   return (
@@ -216,12 +212,12 @@ export function ScoreComparison({
       {diff !== undefined && (
         <div className="text-sm">
           {diff > 0 && (
-            <span className="text-emerald-600 font-medium">+{diff} points</span>
+            <span className="text-[#22C55E] font-medium">+{diff} points</span>
           )}
           {diff < 0 && (
-            <span className="text-red-600 font-medium">{diff} points</span>
+            <span className="text-[#EF4444] font-medium">{diff} points</span>
           )}
-          {diff === 0 && <span className="text-slate-500">No change</span>}
+          {diff === 0 && <span className="text-[#71717A]">No change</span>}
         </div>
       )}
     </div>

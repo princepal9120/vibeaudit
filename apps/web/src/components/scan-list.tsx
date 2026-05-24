@@ -25,21 +25,21 @@ interface EmptyStateProps {
 }
 
 function EmptyState({
-  title = 'No scans yet',
-  description = 'Start your first security scan to see results here',
-  actionLabel = 'Start Your First Scan',
+  title = 'No audits yet',
+  description = 'Start your first security scan or conversion audit to see results here',
+  actionLabel = 'Start Your First Audit',
   actionHref = '/scan/new',
 }: EmptyStateProps) {
   return (
-    <Card className="border-slate-200">
-      <CardContent className="py-12 text-center">
-        <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
+    <Card className="border-slate-200/60 border-dashed">
+      <CardContent className="py-16 text-center">
+        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center mx-auto mb-6 shadow-sm">
           <SearchIcon className="h-8 w-8 text-emerald-600" />
         </div>
         <h3 className="text-xl font-semibold text-slate-900 mb-2">{title}</h3>
-        <p className="text-slate-500 mb-6 max-w-sm mx-auto">{description}</p>
+        <p className="text-slate-500 mb-8 max-w-md mx-auto">{description}</p>
         <Link href={actionHref}>
-          <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
+          <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
             {actionLabel}
           </Button>
         </Link>
@@ -158,7 +158,7 @@ interface ScanListWithHeaderProps extends ScanListProps {
 }
 
 export function ScanListWithHeader({
-  title = 'Recent Scans',
+  title = 'Recent Audits',
   showCount = true,
   scans,
   ...props

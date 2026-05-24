@@ -1,9 +1,6 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { safeSpawn } from '../../lib/safe-exec.js';
 import type { RawFinding, Severity, FindingCategory } from './types.js';
 import { SCANNER_TIMEOUTS } from './types.js';
-
-const execAsync = promisify(exec);
 
 interface SemgrepResult {
   results: Array<{
@@ -32,18 +29,35 @@ interface SemgrepResult {
 export async function runSemgrep(repoPath: string): Promise<RawFinding[]> {
   try {
     // Run Semgrep with auto config (uses OWASP Top 10, CWE Top 25 rules)
-    const { stdout } = await execAsync(
-      `semgrep scan --config auto --json --timeout ${Math.floor(SCANNER_TIMEOUTS.SEMGREP / 1000)} "${repoPath}"`,
+    // Using safeSpawn with args array to prevent command injection
+    const { stdout, exitCode } = await safeSpawn(
+      'semgrep',
+      [
+        'scan',
+        '--config', 'auto',
+        '--json',
+        '--timeout', String(Math.floor(SCANNER_TIMEOUTS.SEMGREP / 1000)),
+        repoPath,
+      ],
       {
         timeout: SCANNER_TIMEOUTS.SEMGREP + 5000, // Extra buffer
         maxBuffer: 50 * 1024 * 1024, // 50MB buffer for large outputs
       }
     );
 
-    const result: SemgrepResult = JSON.parse(stdout);
-    return result.results.map(finding => parseSemgrepFinding(finding));
-  } catch (error) {
     // Semgrep returns exit code 1 if findings exist, but still outputs valid JSON
+    if (stdout.trim()) {
+      try {
+        const result: SemgrepResult = JSON.parse(stdout);
+        return result.results.map(finding => parseSemgrepFinding(finding));
+      } catch {
+        // JSON parse failed
+      }
+    }
+
+    return [];
+  } catch (error) {
+    // Handle errors that still contain stdout (e.g., non-zero exit with findings)
     if (error instanceof Error && 'stdout' in error) {
       try {
         const result: SemgrepResult = JSON.parse((error as { stdout: string }).stdout);

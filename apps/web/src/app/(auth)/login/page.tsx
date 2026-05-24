@@ -4,28 +4,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from '@/lib/auth-client';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
+import { ShieldCheck, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
-// Shield Icon
-function ShieldIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
-      />
-    </svg>
-  );
-}
 
 // GitHub Icon
 function GitHubIcon({ className }: { className?: string }) {
@@ -70,9 +53,13 @@ export default function LoginPage() {
         throw new Error(result.error.message || 'Login failed');
       }
 
+      toast.success('Welcome back!');
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const message = err instanceof Error ? err.message : 'Login failed';
+      const errorMessage = message.includes('fetch') ? 'Unable to connect to the server. Please try again later.' : message;
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -85,10 +72,12 @@ export default function LoginPage() {
     try {
       await signIn.social({
         provider: 'github',
-        callbackURL: '/dashboard',
+        callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'GitHub login failed');
+      const errorMessage = err instanceof Error ? err.message : 'GitHub login failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       setLoading(false);
     }
   };
@@ -100,80 +89,96 @@ export default function LoginPage() {
     try {
       await signIn.social({
         provider: 'google',
-        callbackURL: '/dashboard',
+        callbackURL: window.location.origin + '/dashboard',
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Google login failed');
+      const errorMessage = err instanceof Error ? err.message : 'Google login failed';
+      setError(errorMessage);
+      toast.error(errorMessage);
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden bg-[#09090B]">
+      {/* Background pattern */}
+      <div className="absolute inset-0 bg-dot-pattern opacity-20" />
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <ShieldIcon className="w-10 h-10 text-emerald-600" />
-            <span className="text-2xl font-bold text-slate-900">VibeAudit</span>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8"
+        >
+          <Link href="/" className="inline-flex items-center gap-3 group">
+            <ShieldCheck className="w-8 h-8 text-white" />
+            <span className="text-2xl font-bold text-white tracking-tight">VibeAudit</span>
           </Link>
-        </div>
+        </motion.div>
 
-        <Card className="border-slate-200">
-          <CardHeader className="text-center">
-            <CardTitle className="text-slate-900">Welcome back</CardTitle>
-            <CardDescription className="text-slate-500">
-              Sign in to your account to continue
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* GitHub Login */}
-            <Button
-              onClick={handleGitHubLogin}
-              disabled={loading}
-              variant="outline"
-              className="w-full border-slate-200 hover:bg-slate-50 text-slate-900"
-            >
-              <GitHubIcon className="w-5 h-5 mr-2" />
-              Continue with GitHub
-            </Button>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <div className="bg-[#111113] border border-[#27272A] p-8">
+            <div className="text-center mb-6">
+              <h1 className="text-xl font-bold text-white mb-1">Welcome back</h1>
+              <p className="text-[#71717A] text-sm">Sign in to your account to continue</p>
+            </div>
 
-            {/* Google Login */}
-            <Button
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              variant="outline"
-              className="w-full border-slate-200 hover:bg-slate-50 text-slate-900"
-            >
-              <GoogleIcon className="w-5 h-5 mr-2" />
-              Continue with Google
-            </Button>
+            {/* Social Login Buttons */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <button
+                onClick={handleGitHubLogin}
+                disabled={loading}
+                className="flex items-center justify-center gap-2 h-10 bg-transparent border border-[#27272A] text-white text-sm font-medium hover:bg-[#18181B] transition-colors"
+              >
+                <GitHubIcon className="w-4 h-4" />
+                GitHub
+              </button>
+              <button
+                onClick={handleGoogleLogin}
+                disabled={loading}
+                className="flex items-center justify-center gap-2 h-10 bg-transparent border border-[#27272A] text-white text-sm font-medium hover:bg-[#18181B] transition-colors"
+              >
+                <GoogleIcon className="w-4 h-4" />
+                Google
+              </button>
+            </div>
 
             {/* Divider */}
-            <div className="relative">
+            <div className="relative mb-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200" />
+                <div className="w-full border-t border-[#27272A]" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">or</span>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-2 bg-[#111113] text-[#52525B] uppercase tracking-wider">or continue with email</span>
               </div>
             </div>
 
             {/* Email Login Form */}
             <form onSubmit={handleEmailLogin} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Email</label>
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-[#A1A1AA]">Email</label>
                 <Input
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                  className="bg-[#09090B] border-[#27272A] text-white placeholder:text-[#52525B] focus:border-white h-10 rounded-none"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-slate-700">Password</label>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-[#A1A1AA]">Password</label>
+                  <Link href="/forgot-password" className="text-xs text-[#71717A] hover:text-white transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
                 <Input
                   type="password"
                   placeholder="Enter your password"
@@ -181,45 +186,42 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
-                  className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                  className="bg-[#09090B] border-[#27272A] text-white placeholder:text-[#52525B] focus:border-white h-10 rounded-none"
                 />
               </div>
 
-              {/* Error */}
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-700 text-sm">{error}</p>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-[#EF4444]/10 border border-[#EF4444]/20 p-3"
+                >
+                  <p className="text-[#EF4444] text-sm">{error}</p>
+                </motion.div>
               )}
 
-              <Button
+              <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="w-full bg-white text-black py-2.5 font-bold text-sm tracking-tight active:scale-[0.98] transition-transform mt-2 flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading ? (
-                  <span className="flex items-center gap-2">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
                     Signing in...
-                  </span>
-                ) : (
-                  'Sign in'
-                )}
-              </Button>
+                  </>
+                ) : 'Sign in'}
+              </button>
             </form>
 
-            {/* Sign up link */}
-            <p className="text-center text-sm text-slate-500">
+            <p className="text-center text-sm text-[#71717A] mt-6">
               Don&apos;t have an account?{' '}
-              <Link href="/signup" className="text-emerald-600 hover:text-emerald-700 font-medium">
+              <Link href="/signup" className="text-white hover:underline underline-offset-4 font-medium">
                 Sign up
               </Link>
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

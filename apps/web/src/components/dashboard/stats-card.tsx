@@ -1,0 +1,63 @@
+import { LucideIcon } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+interface StatsCardProps {
+    title: string;
+    value: string | number;
+    description?: string;
+    icon: LucideIcon;
+    trend?: {
+        value: number;
+        label?: string;
+    };
+    className?: string;
+}
+
+export function StatsCard({
+    title,
+    value,
+    description,
+    icon: Icon,
+    trend,
+    className,
+}: StatsCardProps) {
+    const isPositive = trend && trend.value > 0;
+    const isNegative = trend && trend.value < 0;
+
+    return (
+        <Card className={cn("relative overflow-hidden transition-all duration-300 hover:shadow-[0_0_20px_rgba(74,222,128,0.1)] hover:border-[#4ade80]/30 group bg-[#111113]/80 backdrop-blur-xl", className)}>
+            {/* Ambient hover glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#4ade80]/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+                <p className="text-sm font-medium text-muted-foreground group-hover:text-white transition-colors duration-300">{title}</p>
+                <Icon className="h-4 w-4 text-muted-foreground group-hover:text-[#4ade80] transition-colors duration-300" />
+            </CardHeader>
+            <CardContent className="relative z-10">
+                <div className="text-2xl font-bold tracking-tight text-white group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] transition-all duration-300">{value}</div>
+                {description && (
+                    <p className="text-xs text-muted-foreground mt-1">{description}</p>
+                )}
+                {trend && (
+                    <div className="flex items-center gap-1 mt-2">
+                        <span
+                            className={cn(
+                                "text-xs font-medium",
+                                isPositive && "text-[#22C55E]",
+                                isNegative && "text-[#EF4444]",
+                                !isPositive && !isNegative && "text-muted-foreground"
+                            )}
+                        >
+                            {isPositive && "↑"} {isNegative && "↓"} {trend.value > 0 ? "+" : ""}
+                            {trend.value}%
+                        </span>
+                        {trend.label && (
+                            <span className="text-xs text-muted-foreground">{trend.label}</span>
+                        )}
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
+}

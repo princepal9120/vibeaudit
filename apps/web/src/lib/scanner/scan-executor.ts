@@ -12,7 +12,6 @@ import {
   ScanPerformanceTracker,
   executeToolsInParallel,
   MAX_SCAN_TIME_MS,
-  generatePerformanceSummary,
   type ScanTool,
   type ScanPerformanceMetrics,
   type ToolExecutionResult,
@@ -167,13 +166,11 @@ export class ScanExecutor {
       : [];
     const allTools = [...codeTools, ...dastTools];
 
-    let cancelled = false;
     let cancellationReason: string | undefined;
 
     // Set up cancellation handler
     const checkCancellation = () => {
       if (abortSignal?.aborted) {
-        cancelled = true;
         cancellationReason = 'Scan cancelled by user';
         return true;
       }
@@ -365,7 +362,7 @@ export function createMockToolExecutors(): ToolExecutorRegistry {
     delayMs: number,
     mockFindings: number
   ): ToolExecutor => {
-    return async (_target: ScanTarget): Promise<RawFinding[]> => {
+    return async (): Promise<RawFinding[]> => {
       // Simulate tool execution time
       await new Promise(resolve => setTimeout(resolve, delayMs));
 

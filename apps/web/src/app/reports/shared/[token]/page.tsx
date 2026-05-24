@@ -5,8 +5,11 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ConversionReportView } from '@/components/conversion-report-view';
+import { CATEGORY_CONFIG, SOURCE_LABELS } from '@/lib/constants';
+import type { ConversionReportData } from '@/lib/types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 interface Finding {
   id: string;
@@ -32,10 +35,12 @@ interface Report {
   mediumCount: number;
   lowCount: number;
   executiveSummary: string | null;
+  conversionData?: ConversionReportData | null;
   createdAt: string;
   findings: Finding[];
   scan: {
     id: string;
+    auditType: 'SECURITY' | 'CONVERSION';
     githubRepoUrl: string | null;
     liveUrl: string | null;
     createdAt: string;
@@ -166,6 +171,7 @@ export default function SharedReportPage() {
   }
 
   const target = report.scan.githubRepoUrl || report.scan.liveUrl || 'Unknown';
+  const isConversionAudit = report.scan.auditType === 'CONVERSION';
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -184,71 +190,75 @@ export default function SharedReportPage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Header */}
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Security Report</h1>
+          <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            {isConversionAudit ? 'Conversion Audit Report' : 'Security Report'}
+          </h1>
           <p className="text-slate-500">
             {target} - Generated {new Date(report.createdAt).toLocaleDateString()}
           </p>
         </div>
 
-        {/* Score Card */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className={`border md:col-span-1 ${getScoreBg(report.securityScore)}`}>
-            <CardContent className="py-6 text-center">
-              <div className={`text-6xl font-bold ${getScoreColor(report.securityScore)}`}>
-                {report.securityScore}
-              </div>
-              <div className="text-slate-500 mt-2">Security Score</div>
-              <div className={`text-sm font-medium mt-1 ${getScoreColor(report.securityScore)}`}>
-                {getScoreLabel(report.securityScore)}
-              </div>
-            </CardContent>
-          </Card>
+        {isConversionAudit ? (
+          <ConversionReportView report={report} />
+        ) : (
+          <>
+            {/* Score Card */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className={`border md:col-span-1 ${getScoreBg(report.securityScore)}`}>
+                <CardContent className="py-6 text-center">
+                  <div className={`text-6xl font-bold ${getScoreColor(report.securityScore)}`}>
+                    {report.securityScore}
+                  </div>
+                  <div className="text-slate-500 mt-2">Security Score</div>
+                  <div className={`text-sm font-medium mt-1 ${getScoreColor(report.securityScore)}`}>
+                    {getScoreLabel(report.securityScore)}
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="border-slate-200 md:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-slate-900">Findings Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-4 gap-4 text-center">
-                <div className="p-3 rounded-lg bg-red-50">
-                  <div className="text-3xl font-bold text-red-600">{report.criticalCount}</div>
-                  <div className="text-sm text-slate-500">Critical</div>
-                </div>
-                <div className="p-3 rounded-lg bg-amber-50">
-                  <div className="text-3xl font-bold text-amber-600">{report.highCount}</div>
-                  <div className="text-sm text-slate-500">High</div>
-                </div>
-                <div className="p-3 rounded-lg bg-yellow-50">
-                  <div className="text-3xl font-bold text-yellow-600">{report.mediumCount}</div>
-                  <div className="text-sm text-slate-500">Medium</div>
-                </div>
-                <div className="p-3 rounded-lg bg-blue-50">
-                  <div className="text-3xl font-bold text-blue-600">{report.lowCount}</div>
-                  <div className="text-sm text-slate-500">Low</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              <Card className="border-slate-200 md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-slate-900">Findings Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-4 gap-4 text-center">
+                    <div className="p-3 rounded-lg bg-red-50">
+                      <div className="text-3xl font-bold text-red-600">{report.criticalCount}</div>
+                      <div className="text-sm text-slate-500">Critical</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-amber-50">
+                      <div className="text-3xl font-bold text-amber-600">{report.highCount}</div>
+                      <div className="text-sm text-slate-500">High</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-yellow-50">
+                      <div className="text-3xl font-bold text-yellow-600">{report.mediumCount}</div>
+                      <div className="text-sm text-slate-500">Medium</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-blue-50">
+                      <div className="text-3xl font-bold text-blue-600">{report.lowCount}</div>
+                      <div className="text-sm text-slate-500">Low</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-        {/* Executive Summary */}
-        {report.executiveSummary && (
-          <Card className="border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-slate-900">Executive Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600 whitespace-pre-wrap">{report.executiveSummary}</p>
-            </CardContent>
-          </Card>
-        )}
+            {report.executiveSummary && (
+              <Card className="border-slate-200">
+                <CardHeader>
+                  <CardTitle className="text-slate-900">Executive Summary</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-600 whitespace-pre-wrap">{report.executiveSummary}</p>
+                </CardContent>
+              </Card>
+            )}
 
-        {/* Findings List */}
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            Findings ({report.totalFindings})
-          </h2>
-          {report.findings.length === 0 ? (
+            <div>
+              <h2 className="text-xl font-semibold text-slate-900 mb-4">
+                Findings ({report.totalFindings})
+              </h2>
+              {report.findings.length === 0 ? (
             <Card className="border-slate-200">
               <CardContent className="py-8 text-center">
                 <div className="h-16 w-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
@@ -260,73 +270,82 @@ export default function SharedReportPage() {
                 <p className="text-slate-500">Great job! No security vulnerabilities were detected.</p>
               </CardContent>
             </Card>
-          ) : (
-            <div className="space-y-3">
-              {report.findings.map((finding) => (
-                <Card key={finding.id} className="border-slate-200">
-                  <CardContent className="py-4">
-                    <button
-                      onClick={() => setExpandedFinding(expandedFinding === finding.id ? null : finding.id)}
-                      className="w-full text-left"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {getSeverityBadge(finding.severity)}
-                          <span className="font-medium text-slate-900">{finding.title}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-slate-500 text-sm">
-                          <span className="px-2 py-0.5 bg-slate-100 rounded text-xs">{finding.source}</span>
-                          <ChevronIcon className="h-4 w-4" direction={expandedFinding === finding.id ? 'up' : 'down'} />
-                        </div>
-                      </div>
-                      {finding.filePath && (
-                        <div className="text-sm text-slate-500 mt-1 font-mono">
-                          {finding.filePath}
-                          {finding.lineNumber && `:${finding.lineNumber}`}
-                        </div>
-                      )}
-                    </button>
+              ) : (
+                <div className="space-y-3">
+                  {report.findings.map((finding) => (
+                    <Card key={finding.id} className="border-slate-200">
+                      <CardContent className="py-4">
+                        <button
+                          onClick={() => setExpandedFinding(expandedFinding === finding.id ? null : finding.id)}
+                          className="w-full text-left"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              {getSeverityBadge(finding.severity)}
+                              <span className="font-medium text-slate-900">{finding.title}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-slate-500 text-sm">
+                              {CATEGORY_CONFIG[finding.category] && (
+                                <span className={`px-2 py-0.5 rounded text-xs font-medium border ${CATEGORY_CONFIG[finding.category].className}`}>
+                                  {CATEGORY_CONFIG[finding.category].label}
+                                </span>
+                              )}
+                              <span className="px-2 py-0.5 bg-slate-100 rounded text-xs">{SOURCE_LABELS[finding.source] || finding.source}</span>
+                              <ChevronIcon className="h-4 w-4" direction={expandedFinding === finding.id ? 'up' : 'down'} />
+                            </div>
+                          </div>
+                          {finding.filePath && (
+                            <div className="text-sm text-slate-500 mt-1 font-mono">
+                              {finding.filePath}
+                              {finding.lineNumber && `:${finding.lineNumber}`}
+                            </div>
+                          )}
+                        </button>
 
-                    {expandedFinding === finding.id && (
-                      <div className="mt-4 pt-4 border-t border-slate-100 space-y-4">
-                        <div>
-                          <h4 className="text-sm font-medium text-slate-500 mb-1">What it is</h4>
-                          <p className="text-slate-700">{finding.description}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium text-slate-500 mb-1">Why it matters</h4>
-                          <p className="text-slate-700">{finding.impact}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-medium text-slate-500 mb-1">How to fix</h4>
-                          <p className="text-slate-700 whitespace-pre-wrap">{finding.remediation}</p>
-                        </div>
-                        {finding.codeSnippet && (
-                          <div>
-                            <h4 className="text-sm font-medium text-slate-500 mb-1">Code</h4>
-                            <pre className="bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-slate-700 overflow-x-auto font-mono">
-                              {finding.codeSnippet}
-                            </pre>
+                        {expandedFinding === finding.id && (
+                          <div className="mt-4 pt-4 border-t border-slate-100 space-y-4">
+                            <div>
+                              <h4 className="text-sm font-medium text-slate-500 mb-1">What it is</h4>
+                              <p className="text-slate-700">{finding.description}</p>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-medium text-slate-500 mb-1">Why it matters</h4>
+                              <p className="text-slate-700">{finding.impact}</p>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-medium text-slate-500 mb-1">How to fix</h4>
+                              <p className="text-slate-700 whitespace-pre-wrap">{finding.remediation}</p>
+                            </div>
+                            {finding.codeSnippet && (
+                              <div>
+                                <h4 className="text-sm font-medium text-slate-500 mb-1">Code</h4>
+                                <pre className="bg-slate-50 border border-slate-200 p-3 rounded-lg text-sm text-slate-700 overflow-x-auto font-mono">
+                                  {finding.codeSnippet}
+                                </pre>
+                              </div>
+                            )}
                           </div>
                         )}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
 
         {/* CTA */}
         <Card className="border-emerald-200 bg-emerald-50">
           <CardContent className="py-6 text-center">
             <ShieldIcon className="h-10 w-10 text-emerald-600 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-slate-900 mb-2">
-              Want to scan your own project?
+              {isConversionAudit ? 'Want feedback on your own landing page?' : 'Want to scan your own project?'}
             </h3>
             <p className="text-slate-600 mb-4">
-              Get your first security scan free with VibeAudit
+              {isConversionAudit
+                ? 'Run your own conversion audit with VibeAudit'
+                : 'Get your first security scan free with VibeAudit'}
             </p>
             <Link
               href="/"

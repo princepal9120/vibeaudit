@@ -18,7 +18,7 @@ export async function authenticateToken(
     });
 
     if (!session) {
-      res.status(401).json({ error: 'Authentication required' });
+      res.status(401).json({ error: 'Unauthorized' });
       return;
     }
 
@@ -26,8 +26,8 @@ export async function authenticateToken(
     req.session = session;
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid session' });
-    return;
+    console.error('Authentication failed:', error);
+    res.status(401).json({ error: 'Unauthorized' });
   }
 }
 

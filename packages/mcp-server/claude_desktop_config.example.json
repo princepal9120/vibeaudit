@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "VibeAudit": {
+      "command": "node",
+      "args": [
+        "/path/to/vibeaudit/packages/mcp-server/dist/index.js"
+      ],
+      "env": {
+        "VIBEAUDIT_API_URL": "https://api.vibeaudit.site",
+        "VIBEAUDIT_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}

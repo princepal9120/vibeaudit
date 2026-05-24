@@ -9,6 +9,9 @@ import authRoutes from './routes/auth.js';
 import scanRoutes from './routes/scans.js';
 import reportRoutes from './routes/reports.js';
 import healthRoutes from './routes/health.js';
+import paymentRoutes from './routes/payments.js';
+import prdReviewRoutes from './routes/prd-reviews.js';
+import subscriptionRoutes from './routes/subscriptions.js';
 
 export function createApp(): Express {
   const app = express();
@@ -17,8 +20,26 @@ export function createApp(): Express {
   app.use(helmet());
 
   // CORS
+  console.log('🛡️ Configuring CORS with origins:', config.frontendUrl);
   app.use(cors({
-    origin: config.frontendUrl,
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+
+      // Allow any localhost origin
+      if (origin.startsWith('http://localhost:')) return callback(null, true);
+
+      // Allow any configured origins (exact match against array)
+      if (config.frontendUrl.includes(origin)) return callback(null, true);
+
+      // Allow www/non-www variants of configured origins
+      const wwwStripped = origin.replace(/^https?:\/\/www\./, 'https://');
+      if (config.frontendUrl.includes(wwwStripped)) return callback(null, true);
+
+      // Reject otherwise
+      console.warn(`🚫 CORS blocked request from: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -45,6 +66,9 @@ export function createApp(): Express {
   app.use('/api/auth', authRoutes);
   app.use('/api/scans', scanRoutes);
   app.use('/api/reports', reportRoutes);
+  app.use('/api/payments', paymentRoutes);
+  app.use('/api/prd-reviews', prdReviewRoutes);
+  app.use('/api/subscriptions', subscriptionRoutes);
 
   // 404 handler
   app.use((_req: Request, res: Response) => {
