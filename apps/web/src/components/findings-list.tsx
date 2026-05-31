@@ -9,7 +9,7 @@ import { useState, useMemo } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { SeverityBadge, SourceBadge, CategoryBadge } from '@/components/badges';
-import { ChevronDownIcon, CheckCircleIcon, SparklesIcon } from '@/components/icons';
+import { ChevronDownIcon, CheckCircleIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { LAUNCH_READINESS_CATEGORIES, CATEGORY_CONFIG } from '@/lib/constants';
 import type { Finding } from '@/lib/types';
