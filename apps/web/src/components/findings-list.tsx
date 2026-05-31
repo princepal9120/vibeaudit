@@ -6,12 +6,32 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { Copy, Check } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { SeverityBadge, SourceBadge, CategoryBadge } from '@/components/badges';
-import { ChevronDownIcon, CheckCircleIcon } from '@/components/icons';
+import { ChevronDownIcon, CheckCircleIcon, SparklesIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { LAUNCH_READINESS_CATEGORIES, CATEGORY_CONFIG } from '@/lib/constants';
 import type { Finding } from '@/lib/types';
+
+function CopyPromptButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute top-2 right-2 p-2 rounded-md bg-[#27272A]/50 hover:bg-[#3F3F46] text-[#A1A1AA] hover:text-white transition-all flex items-center gap-2"
+      title="Copy prompt"
+    >
+      {copied ? <Check className="h-4 w-4 text-[#8B5CF6]" /> : <Copy className="h-4 w-4" />}
+      <span className="text-xs font-medium">{copied ? 'Copied' : 'Copy Prompt'}</span>
+    </button>
+  );
+}
 
 // ============================================
 // Finding Detail Section
@@ -62,6 +82,31 @@ function FindingDetail({ finding }: FindingDetailProps) {
           </pre>
         </div>
       )}
+
+      {/* AI Prompt Section */}
+      <div className="bg-[#8B5CF6]/5 border border-[#8B5CF6]/15 rounded-lg p-4 relative group overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6]/0 via-[#8B5CF6]/5 to-[#8B5CF6]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+          <span className="h-5 w-5 rounded-full bg-[#8B5CF6]/20 flex items-center justify-center text-xs text-[#8B5CF6]">4</span>
+          AI Fix Prompt
+        </h4>
+        <div className="relative bg-[#09090B] border border-[#27272A] rounded-md p-4 mt-2">
+          <CopyPromptButton text={`Fix the following ${finding.category.toLowerCase()} issue in my code:\n\nIssue: ${finding.title}\nDescription: ${finding.description}\nWhy it matters: ${finding.impact}\n\nPlease apply this remediation:\n${finding.remediation}${finding.codeSnippet ? `\n\nCode context:\n${finding.codeSnippet}` : ''}`} />
+          <pre className="text-[#A1A1AA] text-sm leading-relaxed whitespace-pre-wrap font-mono pt-1 pb-1 pr-24">
+{`Fix the following ${finding.category.toLowerCase()} issue in my code:
+
+Issue: ${finding.title}
+Description: ${finding.description}
+Why it matters: ${finding.impact}
+
+Please apply this remediation:
+${finding.remediation}${finding.codeSnippet ? `
+
+Code context:
+${finding.codeSnippet}` : ''}`}
+          </pre>
+        </div>
+      </div>
 
       {/* Metadata */}
       <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-[#71717A]">

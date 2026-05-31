@@ -257,8 +257,8 @@ class ApiClient {
         cancelAtPeriodEnd: boolean;
       };
       usage: {
-        reviewsUsed: number;
-        reviewsLimit: number;
+        scansUsed: number;
+        scansLimit: number;
         periodStart: string;
         periodEnd: string;
         isUnlimited: boolean;
@@ -455,8 +455,8 @@ export interface SubscriptionPlanDetail {
   name: string;
   price: number;
   priceFormatted: string;
-  reviewsPerMonth: number;
-  reviewsFormatted: string;
+  scansPerMonth: number;
+  scansFormatted: string;
   description: string;
   features: string[];
 }

@@ -35,7 +35,7 @@ const scanTypeOptions: { type: ScanType; icon: typeof GitHubIcon; title: string;
   {
     type: 'github',
     icon: GitHubIcon,
-    title: 'GitHub Repo',
+    title: 'Code Scan',
     subtitle: 'SAST scan',
     iconBg: 'bg-slate-100',
   },
@@ -47,9 +47,16 @@ const scanTypeOptions: { type: ScanType; icon: typeof GitHubIcon; title: string;
     iconBg: 'bg-blue-100',
   },
   {
+    type: 'conversion',
+    icon: GlobeIcon,
+    title: 'Landing Page Audit',
+    subtitle: 'Conversion & UX',
+    iconBg: 'bg-amber-100',
+  },
+  {
     type: 'both',
     icon: ShieldIcon,
-    title: 'Full Scan',
+    title: 'Full Security',
     subtitle: 'SAST + DAST',
     iconBg: 'bg-purple-100',
   },
@@ -57,7 +64,7 @@ const scanTypeOptions: { type: ScanType; icon: typeof GitHubIcon; title: string;
 
 function ScanTypeSelector({ selected, onSelect }: ScanTypeSelectorProps) {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {scanTypeOptions.map(({ type, icon: Icon, title, subtitle, iconBg }) => {
         const isSelected = selected === type;
         return (
@@ -122,6 +129,14 @@ const urlFeatures = [
   'Common web vulnerabilities',
 ];
 
+const conversionFeatures = [
+  'Landing page conversion rate optimization',
+  'Headline & copy improvements',
+  'Trust & social proof signals',
+  'UX & Accessibility issues',
+  'AI-generated copy & paste fix prompts',
+];
+
 interface FeatureChecklistProps {
   scanType: ScanType;
 }
@@ -130,6 +145,7 @@ function FeatureChecklist({ scanType }: FeatureChecklistProps) {
   const features = [
     ...(scanType === 'github' || scanType === 'both' ? githubFeatures : []),
     ...(scanType === 'url' || scanType === 'both' ? urlFeatures : []),
+    ...(scanType === 'conversion' ? conversionFeatures : []),
   ];
 
   return (
@@ -162,7 +178,7 @@ function validateForm(data: ScanFormData): ScanFormErrors {
     }
   }
 
-  if (data.scanType === 'url' || data.scanType === 'both') {
+  if (data.scanType === 'url' || data.scanType === 'both' || data.scanType === 'conversion') {
     if (!data.liveUrl) {
       errors.liveUrl = 'Live URL is required';
     } else if (!isValidUrl(data.liveUrl)) {
@@ -261,12 +277,17 @@ export default function NewScanPage() {
       payload.branch = formData.branch || 'main';
     }
 
-    if (formData.scanType === 'url' || formData.scanType === 'both') {
+    if (formData.scanType === 'url' || formData.scanType === 'both' || formData.scanType === 'conversion') {
       payload.liveUrl = formData.liveUrl;
     }
 
+    const requestPayload = {
+      ...payload,
+      auditType: formData.scanType === 'conversion' ? 'CONVERSION' as const : 'SECURITY' as const,
+    };
+
     // Create scan
-    const scan = await createScan(payload);
+    const scan = await createScan(requestPayload);
     if (scan) {
       router.push(`/scans/${scan.id}`);
     }
@@ -298,6 +319,8 @@ export default function NewScanPage() {
                 'Enter your GitHub repository URL to scan for code vulnerabilities'}
               {formData.scanType === 'url' &&
                 'Enter your live application URL to scan for security issues'}
+              {formData.scanType === 'conversion' &&
+                'Enter your live application URL to get a comprehensive landing page conversion audit'}
               {formData.scanType === 'both' &&
                 'Enter both URLs for a comprehensive security scan'}
             </CardDescription>
@@ -328,14 +351,14 @@ export default function NewScanPage() {
             )}
 
             {/* Live URL Input */}
-            {(formData.scanType === 'url' || formData.scanType === 'both') && (
+            {(formData.scanType === 'url' || formData.scanType === 'both' || formData.scanType === 'conversion') && (
               <FormInput
                 label="Live Application URL"
                 placeholder="https://your-app.com"
                 value={formData.liveUrl}
                 onChange={(value) => updateField('liveUrl', value)}
                 error={errors.liveUrl}
-                hint="We'll scan for security headers, SSL issues, and common vulnerabilities"
+                hint={formData.scanType === 'conversion' ? "We'll analyze your landing page for conversion leaks, copy improvements, and UX issues" : "We'll scan for security headers, SSL issues, and common vulnerabilities"}
               />
             )}
 

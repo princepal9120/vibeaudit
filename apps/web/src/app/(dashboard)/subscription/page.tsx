@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Check, Zap, Loader2, AlertCircle, Crown, Sparkles } from 'lucide-react';
 import { api, type SubscriptionPlanDetail } from '@/lib/api';
-import { UsageMeter } from '@/components/prd-review';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -24,8 +23,8 @@ export default function SubscriptionPage() {
     cancelAtPeriodEnd: boolean;
   } | null>(null);
   const [usage, setUsage] = useState<{
-    reviewsUsed: number;
-    reviewsLimit: number;
+    scansUsed: number;
+    scansLimit: number;
     isUnlimited: boolean;
     periodStart: string;
     periodEnd: string;
@@ -48,7 +47,7 @@ export default function SubscriptionPage() {
       setPlans(plansRes.plans);
       setError(null);
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load PRD Review plan data';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load plan data';
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -77,7 +76,7 @@ export default function SubscriptionPage() {
   };
 
   const handleCancel = async () => {
-    if (!confirm('Are you sure you want to cancel PRD Review Pro? You will still have access until the end of your billing period.')) {
+    if (!confirm('Are you sure you want to cancel VibeAudit Pro? You will still have access until the end of your billing period.')) {
       return;
     }
 
@@ -85,9 +84,9 @@ export default function SubscriptionPage() {
       setCancelling(true);
       await api.cancelSubscription();
       await fetchData();
-      toast.success('PRD Review Pro cancelled successfully');
+      toast.success('VibeAudit Pro cancelled successfully');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to cancel PRD Review Pro';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to cancel VibeAudit Pro';
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -109,11 +108,11 @@ export default function SubscriptionPage() {
     <div className="space-y-8 max-w-4xl">
       {/* Back Link */}
       <Link
-        href="/prd-review"
+        href="/dashboard"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
       >
         <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-        Back to PRD Reviews
+        Back to Dashboard
       </Link>
 
       {/* Header */}
@@ -122,10 +121,10 @@ export default function SubscriptionPage() {
           className="text-2xl md:text-3xl font-bold text-foreground"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          PRD Review Plans
+          VibeAudit Plans
         </h1>
         <p className="text-muted-foreground mt-1 hidden sm:block">
-          Manage your PRD Review plan
+          Manage your subscription
         </p>
       </div>
 
@@ -140,9 +139,9 @@ export default function SubscriptionPage() {
             <Check className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="font-semibold text-foreground">Welcome to PRD Review Pro!</p>
+            <p className="font-semibold text-foreground">Welcome to VibeAudit Lifetime!</p>
             <p className="text-sm text-muted-foreground mt-1">
-              You now have unlimited PRD reviews. Start analyzing your specs with confidence.
+              You now have unlimited scans. Start securing your code with confidence.
             </p>
           </div>
         </motion.div>
@@ -158,7 +157,7 @@ export default function SubscriptionPage() {
           <div>
             <p className="font-semibold text-amber-600">Checkout cancelled</p>
             <p className="text-sm text-muted-foreground mt-1">
-              You can upgrade anytime to unlock unlimited PRD reviews.
+              You can upgrade anytime to unlock unlimited scans.
             </p>
           </div>
         </motion.div>
@@ -189,7 +188,7 @@ export default function SubscriptionPage() {
                 className="text-xl font-bold text-foreground"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {isPro ? 'PRD Review Pro' : 'Free Plan'}
+                {isPro ? 'VibeAudit Lifetime' : 'Free Plan'}
               </h3>
               {isPro && (
                 <span className="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-semibold">
@@ -198,7 +197,7 @@ export default function SubscriptionPage() {
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              {isPro ? 'Unlimited PRD reviews' : '2 free reviews per month'}
+              {isPro ? 'Unlimited code scans and landing page audits' : '1 free scan per month'}
             </p>
           </div>
           {isPro && !subscription?.cancelAtPeriodEnd && (
@@ -207,7 +206,7 @@ export default function SubscriptionPage() {
               disabled={cancelling}
               className="text-sm text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
             >
-              {cancelling ? 'Cancelling...' : 'Cancel PRD Review Pro'}
+              {cancelling ? 'Cancelling...' : 'Cancel Subscription'}
             </button>
           )}
         </div>
@@ -216,20 +215,20 @@ export default function SubscriptionPage() {
         {usage && (
           <div className="pt-5 border-t border-border">
             <h4 className="text-sm font-semibold text-foreground mb-4">Current Usage</h4>
-            <UsageMeter
-              reviewsUsed={usage.reviewsUsed}
-              reviewsLimit={usage.reviewsLimit}
-              isUnlimited={usage.isUnlimited}
-              periodEnd={usage.periodEnd}
-              showUpgrade={false}
-            />
+            <div className="text-sm text-muted-foreground">
+              {usage.isUnlimited ? (
+                <p>You have unlimited scans.</p>
+              ) : (
+                <p>You have used {usage.scansUsed} out of {usage.scansLimit} scans this month.</p>
+              )}
+            </div>
           </div>
         )}
 
         {subscription?.cancelAtPeriodEnd && (
           <div className="mt-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
             <p className="text-sm text-amber-600">
-              Your PRD Review Pro plan will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}.
+              Your subscription plan will end on {new Date(subscription.currentPeriodEnd).toLocaleDateString()}.
               You&apos;ll be moved to the free plan after that.
             </p>
           </div>
@@ -242,7 +241,7 @@ export default function SubscriptionPage() {
           className="text-xl font-bold text-foreground"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          PRD Review Plans
+          VibeAudit Plans
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {plans.map((plan) => {
@@ -288,7 +287,7 @@ export default function SubscriptionPage() {
                     >
                       {plan.priceFormatted}
                     </p>
-                    <p className="text-sm text-muted-foreground">{plan.reviewsFormatted}</p>
+                    <p className="text-sm text-muted-foreground">{plan.scansFormatted}</p>
                   </div>
                 </div>
 
@@ -325,7 +324,7 @@ export default function SubscriptionPage() {
                     ) : (
                       <>
                         <Zap className="w-4 h-4" />
-                        <span>Upgrade to PRD Review Pro</span>
+                        <span>Upgrade to Lifetime Access</span>
                       </>
                     )}
                   </Button>
@@ -348,15 +347,15 @@ export default function SubscriptionPage() {
           {[
             {
               q: 'When does my free quota reset?',
-              a: 'Your 2 free reviews reset at the beginning of each calendar month.',
+              a: 'Your 1 free scan resets at the beginning of each calendar month.',
             },
             {
-              q: 'Can I cancel PRD Review Pro anytime?',
-              a: "Yes. You can cancel PRD Review Pro anytime and keep access until the end of your billing period.",
+              q: 'Is this really a lifetime deal?',
+              a: "Yes. Once you pay $29, you get unlimited access forever. No recurring subscriptions.",
             },
             {
-              q: 'What happens to my reviews if I downgrade?',
-              a: "All your existing reviews remain accessible. You just won't be able to create new ones beyond the free PRD review limit.",
+              q: 'What happens to my scans if I downgrade?',
+              a: "All your existing reports remain accessible. You just won't be able to create new ones beyond the free scan limit.",
             },
           ].map((item, i) => (
             <div key={i}>

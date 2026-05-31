@@ -1,9 +1,30 @@
 'use client';
 
+import { useState } from 'react';
+import { Copy, Check, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { SecurityScoreCard } from '@/components/security-score';
 import { FindingsSummary, SeverityBadge } from '@/components/badges';
 import type { ConversionReportData } from '@/lib/types';
+
+function CopyPromptButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute top-2 right-2 p-2 rounded-md bg-[#27272A]/50 hover:bg-[#3F3F46] text-[#A1A1AA] hover:text-white transition-all flex items-center gap-2"
+      title="Copy prompt"
+    >
+      {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+      <span className="text-xs font-medium">{copied ? 'Copied' : 'Copy Prompt'}</span>
+    </button>
+  );
+}
 
 interface ConversionReportLike {
   securityScore: number;
@@ -224,6 +245,30 @@ export function ConversionReportView({ report }: ConversionReportViewProps) {
                   <p className="text-sm text-muted-foreground leading-6">
                     {item.recommendation}
                   </p>
+                </div>
+              </div>
+
+              {/* AI Prompt Section */}
+              <div className="mt-4 rounded-lg bg-[#8B5CF6]/5 border border-[#8B5CF6]/20 p-4 relative group overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6]/0 via-[#8B5CF6]/5 to-[#8B5CF6]/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-6 w-6 rounded-md bg-[#8B5CF6]/10 flex items-center justify-center">
+                    <Sparkles className="h-3.5 w-3.5 text-[#8B5CF6]" />
+                  </div>
+                  <h4 className="text-sm font-semibold text-white">AI Fix Prompt</h4>
+                </div>
+                <div className="relative bg-[#09090B] border border-[#27272A] rounded-md p-4">
+                  <CopyPromptButton text={`I have an issue on my landing page related to ${item.category}:\n\nIssue: ${item.title}\nDescription: ${item.description}\nWhy it matters: ${item.impact}\n\nPlease help me apply the following recommendation:\n${item.recommendation}`} />
+                  <pre className="text-[#A1A1AA] text-sm leading-relaxed whitespace-pre-wrap font-mono pt-1 pb-1 pr-24">
+{`I have an issue on my landing page related to ${item.category}:
+
+Issue: ${item.title}
+Description: ${item.description}
+Why it matters: ${item.impact}
+
+Please help me apply the following recommendation:
+${item.recommendation}`}
+                  </pre>
                 </div>
               </div>
             </div>

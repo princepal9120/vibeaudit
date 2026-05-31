@@ -10,7 +10,6 @@ import scanRoutes from './routes/scans.js';
 import reportRoutes from './routes/reports.js';
 import healthRoutes from './routes/health.js';
 import paymentRoutes from './routes/payments.js';
-import prdReviewRoutes from './routes/prd-reviews.js';
 import subscriptionRoutes from './routes/subscriptions.js';
 
 export function createApp(): Express {
@@ -67,7 +66,6 @@ export function createApp(): Express {
   app.use('/api/scans', scanRoutes);
   app.use('/api/reports', reportRoutes);
   app.use('/api/payments', paymentRoutes);
-  app.use('/api/prd-reviews', prdReviewRoutes);
   app.use('/api/subscriptions', subscriptionRoutes);
 
   // 404 handler

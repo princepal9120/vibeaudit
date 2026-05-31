@@ -388,14 +388,14 @@ export default function Home() {
               </Badge>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.1]">
-                Security scanning for{" "}
+                Landing page & code audits for{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">
                   indie builders
                 </span>
               </h1>
 
               <p className="mt-6 text-lg sm:text-xl text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                48% of AI-generated code has security flaws. VibeAudit scans your repos and live apps in under 3 minutes, explains findings in plain English, and generates client-ready reports.
+                Instantly scan your landing pages for conversion leaks and your code for security flaws. Get AI-generated prompts to fix issues in under 3 minutes.
               </p>
 
               {/* CTA */}
@@ -474,10 +474,10 @@ export default function Home() {
               The Problem
             </Badge>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
-              AI code is fast. Security reviews are not.
+              AI code is fast. Landing pages are hard.
             </h2>
             <p className="text-lg text-slate-600">
-              You&apos;re shipping faster than ever with Cursor, Copilot, and Claude. But who&apos;s checking for vulnerabilities?
+              You&apos;re shipping faster than ever with AI tools. But who&apos;s checking for conversion leaks and security vulnerabilities?
             </p>
           </div>
 
@@ -513,10 +513,10 @@ export default function Home() {
               How It Works
             </Badge>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
-              Security scanning in 3 simple steps
+              Auditing in 3 simple steps
             </h2>
             <p className="text-lg text-slate-600">
-              No complex setup. No DevOps expertise required. Just paste your URL and get results.
+              No complex setup. No self-hosting required. Just paste your URL and get actionable fix prompts.
             </p>
           </div>
 
@@ -847,10 +847,10 @@ export default function Home() {
               Pricing
             </Badge>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
-              Simple, pay-per-scan pricing
+              Simple, once-in-a-lifetime pricing
             </h2>
             <p className="text-lg text-slate-600">
-              No subscriptions. No minimums. Pay only when you scan.
+              No recurring subscriptions. No need to self-host. Pay once, use forever.
             </p>
           </div>
 
@@ -892,48 +892,49 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Pro (Paid - Waitlist) */}
+            {/* Lifetime (Paid) */}
             <Card className="border-emerald-200 bg-white relative shadow-lg ring-1 ring-emerald-500">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge className="bg-emerald-600 text-white px-4 py-1.5 uppercase text-xs font-bold tracking-wide">Most Popular</Badge>
+                <Badge className="bg-emerald-600 text-white px-4 py-1.5 uppercase text-xs font-bold tracking-wide">Lifetime Deal</Badge>
               </div>
               <CardHeader className="text-center pb-4 pt-8">
-                <CardTitle className="text-2xl font-bold text-slate-900">Pro</CardTitle>
-                <CardDescription className="text-base text-emerald-700 font-medium">For professional teams</CardDescription>
+                <CardTitle className="text-2xl font-bold text-slate-900">Lifetime Access</CardTitle>
+                <CardDescription className="text-base text-emerald-700 font-medium">No self-hosting required</CardDescription>
               </CardHeader>
               <CardContent className="text-center px-6">
                 <div className="mb-6 flex items-baseline justify-center gap-1">
                   <span className="text-5xl font-extrabold text-slate-900">$29</span>
-                  <span className="text-slate-500 text-lg">/mo</span>
+                  <span className="text-slate-500 text-lg">one-time</span>
                 </div>
                 <ul className="space-y-4 text-sm text-slate-600 mb-8 text-left">
                   <li className="flex items-start gap-3">
                     <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
-                    <span>Unlimited private repo scans</span>
+                    <span>Unlimited code security scans</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
-                    <span>Live URL / DAST scanning</span>
+                    <span>Unlimited landing page conversion audits</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
-                    <span>AI-powered plain English fixes</span>
+                    <span>AI-generated copy & paste fix prompts</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                    <span>Fully hosted - zero maintenance</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
                     <span>Client-facing PDF reports</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <CheckIcon className="w-5 h-5 text-emerald-500 shrink-0" />
-                    <span>Priority email support</span>
-                  </li>
                 </ul>
-                <Button
-                  onClick={() => setPreorderPlan("pro")}
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-md shadow-emerald-200"
-                >
-                  Join Waitlist
-                </Button>
+                <Link href="/signup">
+                  <Button
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-md shadow-emerald-200"
+                  >
+                    Get Lifetime Access
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
 

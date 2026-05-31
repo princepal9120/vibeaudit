@@ -19,7 +19,7 @@ interface SidebarProps {
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/scan/new', icon: Scan, label: 'New Audit' },
-  { href: '/prd-review', icon: FileText, label: 'PRD Review' },
+  { href: '/scans', icon: ShieldCheck, label: 'Security Scans' },
   { href: '/account', icon: Settings, label: 'Settings' },
 ];
 

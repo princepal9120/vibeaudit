@@ -5,13 +5,13 @@ import { prisma } from '../db.js';
 import { config } from '../config.js';
 import { authenticateToken, getUserId, type AuthRequest } from '../middleware/auth.js';
 import {
-  getCurrentUsage,
   getOrCreateSubscription,
   createSubscriptionCheckout,
   cancelSubscription,
   processSubscriptionWebhook,
   SUBSCRIPTION_PLANS,
 } from '../services/subscription-manager.js';
+import { getUserCredits } from '../services/payments.js';
 
 const router: IRouter = Router();
 
@@ -23,9 +23,9 @@ router.get(
     try {
       const userId = getUserId(req);
 
-      const [subscription, usage] = await Promise.all([
+      const [subscription, credits] = await Promise.all([
         getOrCreateSubscription(userId),
-        getCurrentUsage(userId),
+        getUserCredits(userId),
       ]);
 
       const planConfig = SUBSCRIPTION_PLANS[subscription.plan];
@@ -39,11 +39,11 @@ router.get(
           cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
         },
         usage: {
-          reviewsUsed: usage.reviewsUsed,
-          reviewsLimit: usage.reviewsLimit,
-          periodStart: usage.periodStart,
-          periodEnd: usage.periodEnd,
-          isUnlimited: usage.reviewsLimit === -1,
+          scansUsed: credits.usedCredits,
+          scansLimit: credits.isUnlimited ? -1 : credits.totalCredits,
+          periodStart: subscription.currentPeriodStart || new Date().toISOString(),
+          periodEnd: subscription.currentPeriodEnd || new Date().toISOString(),
+          isUnlimited: credits.isUnlimited,
         },
       });
     } catch (error) {
@@ -60,25 +60,25 @@ router.get('/plans', async (_req: Request, res: Response, next: NextFunction) =>
       productId: plan.id,
       name: plan.name,
       price: plan.price,
-      priceFormatted: plan.price === 0 ? 'Free' : `$${(plan.price / 100).toFixed(2)}/mo`,
-      reviewsPerMonth: plan.reviewsPerMonth,
-      reviewsFormatted:
-        plan.reviewsPerMonth === -1 ? 'Unlimited' : `${plan.reviewsPerMonth} reviews/month`,
+      priceFormatted: plan.price === 0 ? 'Free' : `$${(plan.price / 100).toFixed(2)} one-time`,
+      scansPerMonth: plan.scansPerMonth,
+      scansFormatted:
+        plan.scansPerMonth === -1 ? 'Unlimited' : `${plan.scansPerMonth} scans/month`,
       description: plan.description,
       features:
         key === 'PRO'
           ? [
-              'Unlimited PRD reviews',
-              'Analysis across all security frameworks',
-              'Secured PRD generation',
-              'Framework coverage reports',
-              'Priority support',
+              'Unlimited code security scans',
+              'Unlimited landing page conversion audits',
+              'AI-generated copy & paste fix prompts',
+              'Fully hosted - zero maintenance',
+              'Client-facing PDF reports',
             ]
           : [
-              '2 PRD reviews per month',
-              'Analysis across all security frameworks',
-              'Secured PRD generation',
-              'Framework coverage reports',
+              '1 code scan per month',
+              'Basic security score',
+              'Secrets detection',
+              'Dependency checks',
             ],
     }));
 
