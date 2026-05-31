@@ -4,7 +4,7 @@ Follow these instructions to get VibeAudit running on your local machine.
 
 ## Prerequisites
 
--   **Node.js**: v24.x LTS (required for Next.js 16 compatibility).
+-   **Node.js**: v20 or higher (recommended).
 -   **Docker**: For running the local PostgreSQL database.
 -   **npm**: Included with Node.js.
 
@@ -12,7 +12,7 @@ Follow these instructions to get VibeAudit running on your local machine.
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/your-org/vibeaudit.git
+    git clone <repo-url>
     cd vibeaudit
     ```
 

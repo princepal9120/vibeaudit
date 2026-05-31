@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vibeaudit.site"),
+  metadataBase: new URL("https://vibeaudit.dev"),
   title: {
     default: "VibeAudit - Security Scanning for Indie Builders",
     template: "%s | VibeAudit",
@@ -38,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://vibeaudit.site",
+    url: "https://vibeaudit.dev",
     title: "VibeAudit - Security Scanning for Indie Builders",
     description:
       "Scan your code and live apps for security vulnerabilities. Get plain-English explanations in under 3 minutes.",
@@ -58,6 +57,7 @@ export const metadata: Metadata = {
     description:
       "Scan your code and live apps for security vulnerabilities. Get plain-English explanations in under 3 minutes.",
     images: ["/og-image.png"],
+    creator: "@vibeaudit",
   },
   icons: {
     icon: "/favicon.ico",
@@ -88,7 +88,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        <Toaster />
       </body>
     </html>
   );

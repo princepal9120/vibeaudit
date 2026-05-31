@@ -1,47 +1,110 @@
+/**
+ * New Scan Page
+ * Form for creating new security scans
+ *
+ * Features:
+ * - Scan type selection (GitHub, URL, or both)
+ * - Form validation
+ * - Feature checklist based on scan type
+ * - Loading states
+ */
+
 'use client';
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Github, Globe, Shield, Check, Loader2, FileText, Upload, Search } from 'lucide-react';
-import { PageHeader } from '@/components/dashboard/page-header';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { GitHubIcon, GlobeIcon, ShieldIcon, CheckIcon } from '@/components/icons';
+import { Spinner } from '@/components/loading';
 import { useCreateScan } from '@/hooks';
 import { cn, isValidGithubUrl, isValidUrl } from '@/lib/utils';
-import { toast } from 'sonner';
 import type { ScanType, ScanFormData, ScanFormErrors } from '@/lib/types';
 
-// Scan type configuration
-const scanTypes = [
+// ============================================
+// Scan Type Selector
+// ============================================
+
+interface ScanTypeSelectorProps {
+  selected: ScanType;
+  onSelect: (type: ScanType) => void;
+}
+
+const scanTypeOptions: { type: ScanType; icon: typeof GitHubIcon; title: string; subtitle: string; iconBg: string }[] = [
   {
-    type: 'github' as ScanType,
-    icon: Github,
+    type: 'github',
+    icon: GitHubIcon,
     title: 'GitHub Repo',
-    description: 'SAST scan',
+    subtitle: 'SAST scan',
+    iconBg: 'bg-slate-100',
   },
   {
-    type: 'url' as ScanType,
-    icon: Globe,
+    type: 'url',
+    icon: GlobeIcon,
     title: 'Live URL',
-    description: 'DAST + Launch Readiness',
+    subtitle: 'DAST scan',
+    iconBg: 'bg-blue-100',
   },
   {
-    type: 'file' as ScanType,
-    icon: FileText,
-    title: 'PRD Upload',
-    description: 'Architecture Review',
-  },
-  {
-    type: 'both' as ScanType,
-    icon: Shield,
+    type: 'both',
+    icon: ShieldIcon,
     title: 'Full Scan',
-    description: 'SAST + DAST + Launch',
-  },
-  {
-    type: 'conversion' as ScanType,
-    icon: Search,
-    title: 'Conversion Audit',
-    description: 'Messaging + CTA review',
+    subtitle: 'SAST + DAST',
+    iconBg: 'bg-purple-100',
   },
 ];
+
+function ScanTypeSelector({ selected, onSelect }: ScanTypeSelectorProps) {
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      {scanTypeOptions.map(({ type, icon: Icon, title, subtitle, iconBg }) => {
+        const isSelected = selected === type;
+        return (
+          <button
+            key={type}
+            type="button"
+            onClick={() => onSelect(type)}
+            className={cn(
+              'p-4 rounded-xl border text-center transition-all',
+              isSelected
+                ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500/20'
+                : 'border-slate-200 bg-white hover:border-slate-300'
+            )}
+          >
+            <div
+              className={cn(
+                'h-12 w-12 rounded-xl mx-auto mb-3 flex items-center justify-center transition-colors',
+                isSelected ? 'bg-emerald-100' : iconBg
+              )}
+            >
+              <Icon
+                className={cn('h-6 w-6', isSelected ? 'text-emerald-700' : 'text-slate-600')}
+              />
+            </div>
+            <div
+              className={cn(
+                'font-semibold',
+                isSelected ? 'text-emerald-900' : 'text-slate-900'
+              )}
+            >
+              {title}
+            </div>
+            <div
+              className={cn('text-sm', isSelected ? 'text-emerald-600' : 'text-slate-500')}
+            >
+              {subtitle}
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================
+// Feature Checklist
+// ============================================
 
 const githubFeatures = [
   'Hardcoded secrets & API keys',
@@ -57,31 +120,39 @@ const urlFeatures = [
   'SSL/TLS configuration',
   'Cookie security flags',
   'Common web vulnerabilities',
-  'SEO readiness (meta tags, OG, sitemap)',
-  'Performance (load time, compression)',
-  'Accessibility (alt text, ARIA, headings)',
-  'Launch essentials (favicon, 404, legal pages)',
 ];
 
-const prdFeatures = [
-  'Architecture flaws',
-  'Missing security controls',
-  'Compliance gaps (SOC2, HIPAA)',
-  'Data flow risks',
-  'Authentication gaps',
-];
+interface FeatureChecklistProps {
+  scanType: ScanType;
+}
 
-const conversionFeatures = [
-  'What your page seems to say in one sentence',
-  'Weak messaging, trust, and CTA friction',
-  'Sharper positioning and clearer value proposition',
-  'A rewritten headline and subheadline',
-  '3-5 stronger benefit bullets',
-  'Better CTA, social proof, and trust signals',
-];
+function FeatureChecklist({ scanType }: FeatureChecklistProps) {
+  const features = [
+    ...(scanType === 'github' || scanType === 'both' ? githubFeatures : []),
+    ...(scanType === 'url' || scanType === 'both' ? urlFeatures : []),
+  ];
 
-function validateForm(data: ScanFormData & { file?: File | null }): ScanFormErrors & { file?: string } {
-  const errors: ScanFormErrors & { file?: string } = {};
+  return (
+    <div className="border-t border-slate-100 pt-6">
+      <h4 className="text-sm font-semibold text-slate-700 mb-4">What we&apos;ll scan for:</h4>
+      <div className="grid grid-cols-2 gap-3 text-sm text-slate-600">
+        {features.map((feature) => (
+          <div key={feature} className="flex items-center gap-2">
+            <CheckIcon className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+            <span>{feature}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// Form Validation
+// ============================================
+
+function validateForm(data: ScanFormData): ScanFormErrors {
+  const errors: ScanFormErrors = {};
 
   if (data.scanType === 'github' || data.scanType === 'both') {
     if (!data.githubUrl) {
@@ -95,307 +166,212 @@ function validateForm(data: ScanFormData & { file?: File | null }): ScanFormErro
     if (!data.liveUrl) {
       errors.liveUrl = 'Live URL is required';
     } else if (!isValidUrl(data.liveUrl)) {
-      errors.liveUrl = 'Please enter a valid URL';
-    }
-  }
-
-  if (data.scanType === 'conversion') {
-    if (!data.liveUrl) {
-      errors.liveUrl = 'Landing page URL is required';
-    } else if (!isValidUrl(data.liveUrl)) {
-      errors.liveUrl = 'Please enter a valid landing page URL';
-    }
-  }
-
-  if (data.scanType === 'file') {
-    if (!data.file) {
-      errors.general = 'Please select a PRD file (PDF or Markdown) to upload';
+      errors.liveUrl = 'Please enter a valid URL (including https://)';
     }
   }
 
   return errors;
 }
 
+// ============================================
+// Form Input Component
+// ============================================
+
+interface FormInputProps {
+  label: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+  hint?: string;
+  type?: string;
+}
+
+function FormInput({
+  label,
+  placeholder,
+  value,
+  onChange,
+  error,
+  hint,
+  type = 'url',
+}: FormInputProps) {
+  return (
+    <div className="space-y-2">
+      <label className="text-sm font-semibold text-slate-700">{label}</label>
+      <Input
+        type={type}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={cn(
+          'border-slate-200 focus:border-emerald-500 focus:ring-emerald-500',
+          error && 'border-red-300 focus:border-red-500 focus:ring-red-500'
+        )}
+      />
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      {hint && !error && <p className="text-sm text-slate-500">{hint}</p>}
+    </div>
+  );
+}
+
+// ============================================
+// Main New Scan Page Component
+// ============================================
+
 export default function NewScanPage() {
   const router = useRouter();
-  const { createScan, loading } = useCreateScan();
+  const { createScan, loading, error: apiError, clearError } = useCreateScan();
 
-  const [formData, setFormData] = useState<ScanFormData & { file: File | null }>({
+  // Form state
+  const [formData, setFormData] = useState<ScanFormData>({
     scanType: 'github',
     githubUrl: '',
     liveUrl: '',
-    branch: '',
-    file: null,
+    branch: 'main',
   });
   const [errors, setErrors] = useState<ScanFormErrors>({});
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData(prev => ({ ...prev, file: e.target.files![0] }));
-    }
-  };
+  // Update form field
+  const updateField = useCallback(
+    <K extends keyof ScanFormData>(field: K, value: ScanFormData[K]) => {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+      clearError();
+    },
+    [clearError]
+  );
 
-  const handleSubmit = useCallback(async () => {
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validate form
     const validationErrors = validateForm(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    setErrors({});
-    const isConversionAudit = formData.scanType === 'conversion';
-    const toastId = toast.loading(
-      isConversionAudit ? 'Initializing conversion audit...' : 'Initializing security scan...'
-    );
+    // Build request payload
+    const payload: { githubRepoUrl?: string; liveUrl?: string; branch?: string } = {};
 
-    try {
-      const scan = await createScan({
-        auditType: isConversionAudit ? 'CONVERSION' : 'SECURITY',
-        githubRepoUrl:
-          formData.scanType !== 'url' &&
-          formData.scanType !== 'file' &&
-          formData.scanType !== 'conversion'
-            ? formData.githubUrl
-            : undefined,
-        liveUrl:
-          formData.scanType !== 'github' && formData.scanType !== 'file'
-            ? formData.liveUrl
-            : undefined,
-        branch:
-          formData.scanType === 'github' || formData.scanType === 'both'
-            ? formData.branch.trim() || undefined
-            : undefined,
-        file: formData.scanType === 'file' && formData.file ? formData.file : undefined,
-      });
-
-      toast.success(isConversionAudit ? 'Conversion audit started successfully' : 'Scan started successfully', { id: toastId });
-      router.push(`/scans/${scan.id}`);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create scan. Please try again.';
-      setErrors({ general: errorMessage });
-      toast.error(errorMessage, { id: toastId });
+    if (formData.scanType === 'github' || formData.scanType === 'both') {
+      payload.githubRepoUrl = formData.githubUrl;
+      payload.branch = formData.branch || 'main';
     }
-  }, [formData, createScan, router]);
 
-  const features =
-    formData.scanType === 'file' ? prdFeatures :
-      formData.scanType === 'conversion' ? conversionFeatures :
-      [
-        ...(formData.scanType === 'github' || formData.scanType === 'both' ? githubFeatures : []),
-        ...(formData.scanType === 'url' || formData.scanType === 'both' ? urlFeatures : []),
-      ];
+    if (formData.scanType === 'url' || formData.scanType === 'both') {
+      payload.liveUrl = formData.liveUrl;
+    }
+
+    // Create scan
+    const scan = await createScan(payload);
+    if (scan) {
+      router.push(`/scans/${scan.id}`);
+    }
+  };
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      {/* Header */}
-      <PageHeader
-        title="New Audit"
-        description="Run a security scan, architecture review, or landing-page conversion audit from one place"
-      />
+    <div className="max-w-2xl mx-auto space-y-8">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-3xl font-bold text-slate-900">New Security Scan</h1>
+        <p className="text-slate-500 mt-1">
+          Scan your GitHub repository or live application for vulnerabilities
+        </p>
+      </div>
 
       {/* Scan Type Selection */}
-      <div className="space-y-3 md:space-y-4">
-        <label className="text-sm font-medium text-foreground">Select Audit Type</label>
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 md:gap-4">
-          {scanTypes.map(({ type, icon: Icon, title, description }) => {
-            const isSelected = formData.scanType === type;
-            return (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setFormData((prev) => ({ ...prev, scanType: type, file: null, githubUrl: '', liveUrl: '', branch: '' }))}
-                className={cn(
-                  'p-4 rounded-xl text-left transition-all h-full flex flex-col justify-between',
-                  isSelected
-                    ? 'bg-primary/5 border-2 border-primary shadow-sm'
-                    : 'bg-card border border-border hover:border-input hover:bg-accent/50'
-                )}
-              >
-                <div
-                  className={cn(
-                    'w-10 h-10 rounded-lg flex items-center justify-center mb-3',
-                    isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                  )}
-                >
-                  <Icon className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-foreground">{title}</div>
-                  <div className="text-xs text-muted-foreground mt-1 leading-tight">
-                    {description}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <ScanTypeSelector
+        selected={formData.scanType}
+        onSelect={(type) => updateField('scanType', type)}
+      />
 
-      {/* Form Section */}
-      <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4 sm:space-y-5">
-        <div>
-          <h3 className="text-sm sm:text-base font-medium text-foreground">
-            {formData.scanType === 'conversion' ? 'Audit Details' : 'Scan Details'}
-          </h3>
-          <p className="text-xs sm:text-[13px] text-muted-foreground mt-1">
-            {formData.scanType === 'conversion'
-              ? 'Paste your landing page URL and get clarity, trust, positioning, and CTA feedback'
-              : formData.scanType === 'url'
-              ? 'Enter your live URL to scan for vulnerabilities'
-              : formData.scanType === 'file'
-                ? 'Upload your PRD or architecture document (PDF, Markdown)'
-                : 'Enter your GitHub repository URL to scan for code vulnerabilities'}
-          </p>
-        </div>
+      {/* Scan Form */}
+      <form onSubmit={handleSubmit}>
+        <Card className="border-slate-200">
+          <CardHeader>
+            <CardTitle className="text-slate-900">Scan Details</CardTitle>
+            <CardDescription className="text-slate-500">
+              {formData.scanType === 'github' &&
+                'Enter your GitHub repository URL to scan for code vulnerabilities'}
+              {formData.scanType === 'url' &&
+                'Enter your live application URL to scan for security issues'}
+              {formData.scanType === 'both' &&
+                'Enter both URLs for a comprehensive security scan'}
+            </CardDescription>
+          </CardHeader>
 
-        <div className="space-y-4">
-          {/* GitHub URL Input */}
-          {(formData.scanType === 'github' || formData.scanType === 'both') && (
-            <div className="space-y-2">
-              <label htmlFor="github-url" className="text-xs sm:text-[13px] font-medium text-foreground">GitHub Repository URL</label>
-              <input
-                id="github-url"
-                name="githubUrl"
-                type="url"
-                value={formData.githubUrl}
-                onChange={(e) => setFormData((prev) => ({ ...prev, githubUrl: e.target.value }))}
-                placeholder="https://github.com/username/repo"
-                autoComplete="url"
-                className={cn(
-                  'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
-                  errors.githubUrl ? 'border-destructive' : 'border-border'
-                )}
-              />
-              {errors.githubUrl && <p className="text-xs text-[#EF4444]">{errors.githubUrl}</p>}
-            </div>
-          )}
-
-          {/* Live URL Input */}
-          {(formData.scanType === 'url' || formData.scanType === 'both' || formData.scanType === 'conversion') && (
-            <div className="space-y-2">
-              <label htmlFor="live-url" className="text-xs sm:text-[13px] font-medium text-foreground">
-                {formData.scanType === 'conversion' ? 'Landing Page URL' : 'Live URL'}
-              </label>
-              <input
-                id="live-url"
-                name="liveUrl"
-                type="url"
-                value={formData.liveUrl}
-                onChange={(e) => setFormData((prev) => ({ ...prev, liveUrl: e.target.value }))}
-                placeholder={formData.scanType === 'conversion' ? 'https://yourlandingpage.com' : 'https://your-app.com'}
-                autoComplete="url"
-                className={cn(
-                  'w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent',
-                  errors.liveUrl ? 'border-destructive' : 'border-border'
-                )}
-              />
-              {errors.liveUrl && <p className="text-xs text-[#EF4444]">{errors.liveUrl}</p>}
-            </div>
-          )}
-
-          {/* File Upload Input */}
-          {formData.scanType === 'file' && (
-            <div className="space-y-3">
-              <label htmlFor="prd-file" className="block text-xs sm:text-[13px] font-medium text-foreground">Upload Document</label>
-              <div className={cn(
-                "border-2 border-dashed rounded-xl p-8 text-center transition-colors hover:bg-accent/50 cursor-pointer relative",
-                formData.file ? "border-primary/50 bg-primary/5" : "border-muted-foreground/25"
-              )}>
-                <input
-                  type="file"
-                  id="prd-file"
-                  accept=".pdf,.md,.txt,.docx"
-                  onChange={handleFileChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          <CardContent className="space-y-6">
+            {/* GitHub URL Input */}
+            {(formData.scanType === 'github' || formData.scanType === 'both') && (
+              <div className="space-y-4">
+                <FormInput
+                  label="GitHub Repository URL"
+                  placeholder="https://github.com/username/repo"
+                  value={formData.githubUrl}
+                  onChange={(value) => updateField('githubUrl', value)}
+                  error={errors.githubUrl}
                 />
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <div className="w-10 h-10 rounded-full bg-background border flex items-center justify-center shadow-sm">
-                    {formData.file ? <FileText className="w-5 h-5 text-primary" /> : <Upload className="w-5 h-5 text-muted-foreground" />}
-                  </div>
-                  {formData.file ? (
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-medium text-foreground">{formData.file.name}</p>
-                      <p className="text-xs text-muted-foreground">{(formData.file.size / 1024).toFixed(0)} KB</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium text-foreground">Click to upload or drag and drop</p>
-                      <p className="text-xs text-muted-foreground">PDF, Markdown or Text (max 10MB)</p>
-                    </div>
-                  )}
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-medium text-slate-500">Branch:</label>
+                  <Input
+                    type="text"
+                    placeholder="main"
+                    value={formData.branch}
+                    onChange={(e) => updateField('branch', e.target.value)}
+                    className="border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 max-w-[200px]"
+                  />
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Branch Input */}
-          {(formData.scanType === 'github' || formData.scanType === 'both') && (
-            <div className="space-y-2">
-              <label htmlFor="branch" className="text-xs sm:text-[13px] font-medium text-foreground">Branch</label>
-              <input
-                id="branch"
-                name="branch"
-                type="text"
-                value={formData.branch}
-                onChange={(e) => setFormData((prev) => ({ ...prev, branch: e.target.value }))}
-                placeholder="Leave blank to use the repo default branch"
-                autoComplete="off"
-                className="w-full sm:w-[200px] px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            {/* Live URL Input */}
+            {(formData.scanType === 'url' || formData.scanType === 'both') && (
+              <FormInput
+                label="Live Application URL"
+                placeholder="https://your-app.com"
+                value={formData.liveUrl}
+                onChange={(value) => updateField('liveUrl', value)}
+                error={errors.liveUrl}
+                hint="We'll scan for security headers, SSL issues, and common vulnerabilities"
               />
-              <p className="text-xs text-muted-foreground">Optional. Leave empty to scan the repository&apos;s default branch.</p>
-            </div>
-          )}
-        </div>
-      </div>
+            )}
 
-      {/* What we scan for */}
-      <div className="space-y-3 md:space-y-4">
-        <label className="text-sm font-medium text-foreground">
-          {formData.scanType === 'conversion' ? 'What we&apos;ll audit:' : 'What we&apos;ll scan for:'}
-        </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2.5 sm:gap-y-3">
-          {features.map((feature) => (
-            <div key={feature} className="flex items-center gap-2.5">
-              <div className="w-5 h-5 rounded bg-[#22C55E]/10 flex items-center justify-center flex-shrink-0">
-                <Check className="w-3 h-3 text-[#22C55E]" />
+            {/* Feature Checklist */}
+            <FeatureChecklist scanType={formData.scanType} />
+
+            {/* API Error */}
+            {apiError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-700 text-sm">{apiError}</p>
               </div>
-              <span className="text-xs sm:text-sm text-muted-foreground">{feature}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+            )}
 
-      {/* Error Message */}
-      {errors.general && (
-        <div className="p-4 rounded-lg bg-[#EF4444]/10 border border-[#EF4444]/20">
-          <p className="text-sm text-[#EF4444]">{errors.general}</p>
-        </div>
-      )}
-
-      {/* Submit Button */}
-      <div>
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="flex items-center justify-center gap-2 w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-primary text-primary-foreground text-sm sm:text-base font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-              <span>{formData.scanType === 'conversion' ? 'Starting Audit…' : 'Starting Scan…'}</span>
-            </>
-          ) : (
-            <>
-              {formData.scanType === 'conversion' ? (
-                <Search className="w-4 h-4" aria-hidden="true" />
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-12 text-base font-semibold"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Spinner size="sm" />
+                  Starting scan...
+                </span>
               ) : (
-                <Shield className="w-4 h-4" aria-hidden="true" />
+                'Start Security Scan'
               )}
-              <span>{formData.scanType === 'conversion' ? 'Start Conversion Audit' : 'Start Security Scan'}</span>
-            </>
-          )}
-        </button>
-      </div>
+            </Button>
+
+            {/* Privacy Note */}
+            <p className="text-xs text-slate-500 text-center">
+              Scans typically complete in under 3 minutes. Your code is never stored.
+            </p>
+          </CardContent>
+        </Card>
+      </form>
     </div>
   );
 }

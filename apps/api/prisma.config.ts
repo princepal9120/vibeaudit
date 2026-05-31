@@ -1,19 +1,11 @@
-import path from 'node:path';
-import { defineConfig } from 'prisma/config';
-import dotenv from 'dotenv';
-
-// Load .env from the api directory
-const envPath = path.join(import.meta.dirname, '.env');
-dotenv.config({ path: envPath });
-
-// Fallback to monorepo root
-if (!process.env.DATABASE_URL) {
-  dotenv.config({ path: path.join(import.meta.dirname, '..', '..', '.env') });
-}
+import "dotenv/config";
+import { defineConfig } from "prisma/config";
 
 export default defineConfig({
-  schema: './prisma/schema.prisma',
+  schema: "prisma/schema.prisma",
   datasource: {
-    url: process.env.DATABASE_URL || '',
+    // Prisma generate does not require a live database URL, so keep this
+    // optional for CI/type-check jobs that do not provision Postgres.
+    url: process.env.DATABASE_URL ?? "",
   },
 });

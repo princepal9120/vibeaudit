@@ -13,33 +13,30 @@ The project is structured as a monorepo using npm workspaces:
 ## Technology Stack
 
 ### Frontend (`apps/web`)
--   **Framework**: Next.js 16.1 (App Router)
--   **UI Library**: React 19.2
--   **Styling**: Tailwind CSS v4.1
+-   **Framework**: Next.js 16 (React 19)
+-   **Styling**: Tailwind CSS v4
 -   **Icons**: Lucide React
--   **UI Components**: Radix UI primitives + shadcn/ui
+-   **UI Components**: Radix UI primitives
 -   **Email**: Resend
--   **Authentication**: Better Auth v1.4 (cookie-based sessions, no vendor lock-in)
+-   **Authentication**: Better Auth (in progress/planned)
 
 ### Backend (`apps/api`)
--   **Runtime**: Node.js 24.x LTS
--   **Framework**: Express v5.2
--   **Database ORM**: Prisma 7.2
--   **Main Database**: PostgreSQL 18
--   **Queue System**: BullMQ 5.66
--   **Cache**: Redis 8.4
+-   **Runtime**: Node.js
+-   **Framework**: Express v5
+-   **Database ORM**: Prisma
+-   **Main Database**: PostgreSQL
+-   **Queue System**: BullMQ
 -   **PDF Generation**: PDFKit
--   **AI Integration**: OpenAI SDK (GPT-4o)
+-   **AI Integration**: OpenAI SDK
 -   **Git Operations**: simple-git
--   **Scanning Tools**: Semgrep, OWASP ZAP, Trivy
 -   **Language**: TypeScript
 
 ## Key Components
 
 ### 1. Landing & Pricing (Current Focus)
--   Marketing pages currently focus on VibeAudit Security Scan pricing: 1 free scan, then scan-credit packs.
--   PRD Security Review uses a separate subscription flow and account-management surface.
--   Integration with Resend for transactional emails and product messaging.
+-   Marketing pages with "Starter", "Pro", and "Enterprise" tiers.
+-   Waitlist functionality gating paid features using a modal and email collection.
+-   Integration with Resend for transactional "Coming Soon" emails.
 
 ### 2. Scanner Engine
 -   Analysis of GitHub repositories and Live URLs.

@@ -29,5 +29,26 @@
   "devDependencies": {
     "concurrently": "^9.2.1",
     "typescript": "^5"
-  }
+  },
+  "description": "Open-source security scanning platform for builders who ship fast with AI tools.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/princepal9120/vibeaudit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/princepal9120/vibeaudit/issues"
+  },
+  "homepage": "https://github.com/princepal9120/vibeaudit#readme",
+  "keywords": [
+    "security",
+    "sast",
+    "dast",
+    "semgrep",
+    "owasp-zap",
+    "trivy",
+    "nextjs",
+    "express",
+    "open-source"
+  ]
 }
